@@ -1,0 +1,10 @@
+-- Haskell Playground 1.0
+concat ["a", "b"]
+manipulate 5
+[5, 6] ++ [8, 1, 1, 1, 1] ++ [2]
+
+sublst 2 3 "1234567"
+
+thirdLetter "abcdef"
+
+area 5
