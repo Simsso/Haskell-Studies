@@ -26,3 +26,8 @@ thirdLetter x = (x !! 2) : ""
 
 area d = pi * (r * r)  -- top level
   where r = d / 2  -- local
+  
+
+times5 = (5 *)
+times4 = (4 *) 
+times20 = times5 . times4 -- composition

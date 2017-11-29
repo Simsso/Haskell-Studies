@@ -1,0 +1,20 @@
+-- Haskell Playground 1.0
+customNot True
+customNot False
+
+let a = 5.5
+sizeOf (a :: Float)
+sizeOf (a :: Double)
+
+let i = 8634
+sizeOf (i :: Int)
+sizeOf (i :: Int)
+
+minBound :: Int
+maxBound :: Int16
+
+same 5 8
+same True True
+
+-- Ord is implemented for lists or Ord type.
+[1,2,3] > [1,2,2]

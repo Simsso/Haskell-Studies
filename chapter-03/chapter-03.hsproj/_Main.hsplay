@@ -8,3 +8,5 @@ sublst 2 3 "1234567"
 thirdLetter "abcdef"
 
 area 5
+
+times20 5
