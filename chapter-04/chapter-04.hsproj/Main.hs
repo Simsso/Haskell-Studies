@@ -14,3 +14,7 @@ customNot    _ = True
 -- here the parameters a must implement Eq (equality)
 same :: Eq a => a -> a -> Bool
 same x y = x == y
+
+-- tuple unpacking
+tupleSum :: Num a => (a, a) -> a
+tupleSum (a, b) = a + b

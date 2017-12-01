@@ -1,0 +1,53 @@
+-- Haskell Playground 1.0
+-- 2
+length [1, 2, 3, 4, 5]
+length [(1, 2), (2, 3), (3, 4)]
+length allAwesome
+length (concat allAwesome)
+
+-- 3
+6/3
+-- 6 / length [1, 2, 3]
+-- fails because (/) requires both arguments to
+-- implement Fractional
+
+-- 4
+-- an alternative is usage of `div`
+div 6 (length [1, 2, 3])
+
+-- 5
+2 + 3 == 5  -- Bool
+
+
+-- 7
+length allAwesome == 2
+-- length [1, 'a', 3, 'b']  -- data types of list elements must be equal
+
+length allAwesome + length awesome
+(8 == 8) && ('b' < 'a')
+-- (8 == 8) && 9  -- 9 is not a Bool
+
+
+-- 8 palindrome
+isPalindrome "asdf"
+isPalindrome "asdfxfdsa"
+isPalindrome "asdffdsa"
+
+-- 10
+f (1, 2) (3, 4)
+
+-- 9 abs
+--absIfThenElse 123 == abs 123
+--absIfThenElse -123 == abs -123
+
+
+-- syntax correction
+-- (1) add one to list length 
+let x = (+)
+let f xs = w `x` 1 where w = length xs
+f [1, 2, 3]
+
+-- (2) identity
+id x = x
+
+-- (3) fst

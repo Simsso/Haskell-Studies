@@ -18,3 +18,13 @@ same True True
 
 -- Ord is implemented for lists or Ord type.
 [1,2,3] > [1,2,2]
+
+
+-- tuples
+let x1 = 5
+let x2 = 8
+let x3 = 8
+(,,) x1 x2 x3
+tupleSum (5, 2)
+
+[1,2,3] !! 2

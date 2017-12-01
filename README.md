@@ -64,8 +64,6 @@ sublst :: Int -> Int -> [a] -> [a]
 sublst s l x = take l (drop s x)
 ```
 
-The **`n` th element** of a list can be accessed with the `!!` operator (`n` is zero based): ``"abc" !! n``.
-
 ## 4 Basic Data Types
 A **data type** is a set of _values_ with an abstract commonality. A **data declaration** defines a new data type. For example, the data type `Bool` is defined with the following _data declaration_.
 ```haskell
@@ -74,7 +72,9 @@ data Bool = False | True
 
 **Pattern matching** is a feature of Haskell that allows multiple implementations of the same function. When calling the function, the implementation will be chosen depending on the argument's type. `_` is called catch-all and will match any argument type.
 
-**Typeclasses** add functionality to types that is reusable across all inheriting types.
+**Typeclasses** is a polymorphic type that adds functionality to types that is reusable across all inheriting types. A **type alias** is a way of making a type available through a differnt name: `type Name = Integer`.
+
+**Polymorphism** is the provision of a single interface to entities of different types. In Haskell it is either _parametric_ or _constrained_ (or _bounded_). The former is polymorphism that accepts any type, whereas the latter accepts only some types.
 
 Haskell's inequality symbol is `/=`. The **ordering typeclass** `Ord` enforces implementation of the following operators.
 ```haskell
@@ -95,6 +95,8 @@ The **equality typeclass** `Eq` requires the following.
 
 A **typeclass constraint** can be made for parameters with the following syntax (here for the function equality operator which requires both operands to implement `Eq`): `(==) :: Eq a => a -> a -> Bool`.
 
+Variables in type signatures are commonly named according to the following rules: (1) Type variables are called `a`, `b`, ...; (2) function variables are called `f`, `g`, ... (3) Arguments to functions are often called `x`, `y`, and `z`. (4) Lists of `x` values are called `xs`. (5) All names can also occur with numbers or the prime symbol appended to them, e.e. `x1` or `f'`.
+
 ### 4.1 Numbers
 Numbers are inheriting from the _typeclass_ `Num`. 
 * **`Int`**. An integral number (aka. integer) with a fixed precision, that is it has upper and lower bound (size: 8 byte). `GHC.Int` adds the integer types `Int8`, `Int16`, `Int32`, and `Int64`, with the number indicating the number of bits. The value range of `Int` is _[-9223372036854775808, 9223372036854775807]_.
@@ -107,4 +109,18 @@ Numbers are inheriting from the _typeclass_ `Num`.
 The `Integer` type should be preferred over `Int`, and `Scientific` and `Rational` (typeclass `Fractional`) should be preferred over `Float` and `Double`, unless computational efficiency is a factor.
 
 ### 4.2 Boolean
-The boolean data type can either be `True` or `False` and is defined as `data Bool = False | True`. 
+The boolean data type can either be `True` or `False` and is defined as `data Bool = False | True`. Operators for booleans are `&&` for **and**, `||` for **or**, and the function `not` for **inversion**.
+
+Haskell features **if expressions** with the following syntax: `if <condition> then <a> else <b>`. The entire if expression evaluates to either `<a>` or `<b>`, depending on the condition.
+
+### 4.3 Tuples
+**Tuples** are types that store a fixed number _n_ of constituents which may have different types themselfes. _n_ is refered to as _arity_ (numer of parameters that a function takes). A tuple can be created with its constructor, `(,,) x1 x2 x3`, here with _n=3_. Tuples with _n=1_ must not exist, however, _n=0_ is possible and called _unit_ `()`.
+
+For convenience, the first element in a tuple can be accessed using `fst :: (a, b) -> a`; `snd` serves equally for the second value. `Data.Tuple` contains the tuple manipulation functions `curry`, `uncurry`, and `swap`. 
+
+A tuple can be unpacked when passed to a function with the following syntax: `tupleSum (a, b) = a + b`
+
+### 4.4 Lists
+The **list** data type stores _n_ values of equal type, where _n_ can be changed dynamically.
+
+The **`n` th element** of a list can be accessed with the `!!` operator (`n` is zero based): ``"abc" !! n``.

@@ -12,3 +12,5 @@ Executable chapter04
   build-depends:
       base -any
   default-language: Haskell2010
+  other-modules:
+      Exercises
