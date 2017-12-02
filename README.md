@@ -70,11 +70,11 @@ A **data type** is a set of _values_ with an abstract commonality. A **data decl
 data Bool = False | True
 ```
 
-**Pattern matching** is a feature of Haskell that allows multiple implementations of the same function. When calling the function, the implementation will be chosen depending on the argument's type. `_` is called catch-all and will match any argument type.
+**Pattern matching** is a feature of Haskell that allows multiple implementations of the same function. When calling the function, the implementation will be chosen depending on the argument. `_` is called catch-all and will match any argument value.
 
 **Typeclasses** is a polymorphic type that adds functionality to types that is reusable across all inheriting types. A **type alias** is a way of making a type available through a differnt name: `type Name = Integer`.
 
-**Polymorphism** is the provision of a single interface to entities of different types. In Haskell it is either _parametric_ or _constrained_ (or _bounded_). The former is polymorphism that accepts any type, whereas the latter accepts only some types.
+**Polymorphism** is the provision of a single interface to entities of different types. In Haskell it is either _parametric_ or _constrained_ (or _bounded_). The former is polymorphism that accepts any type, whereas the latter accepts only some types. Multiple class constrains must be wrapped in parentheses: `f :: (Eq a, Num b) => a -> b`.
 
 Haskell's inequality symbol is `/=`. The **ordering typeclass** `Ord` enforces implementation of the following operators.
 ```haskell
@@ -104,7 +104,7 @@ Numbers are inheriting from the _typeclass_ `Num`.
 * **`Float`**. Single-precision floating point number (size: 4 byte).
 * **`Double`**. Double-precision floating point number (size: 8 byte).
 * **`Rational`**. Represents a fraction of two integer numbers. The data type wraps two `Integer`s and is hence arbitrarilty precise.
-* **`Scientific`**. Floating point number with an `Integer` base and exponent. Therefore, the numbers can be arbitrarily large and precise. This data type is not part of GHC and must be installed separately (`stack install scientific`).
+* **`Scientific`**. Floating point number with an `Integer` base and `Int` exponent. Therefore, the numbers can be arbitrarily large and precise. This data type is not part of GHC and must be installed separately (`stack install scientific`).
 
 The `Integer` type should be preferred over `Int`, and `Scientific` and `Rational` (typeclass `Fractional`) should be preferred over `Float` and `Double`, unless computational efficiency is a factor.
 

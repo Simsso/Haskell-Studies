@@ -10,3 +10,6 @@ thirdLetter "abcdef"
 area 5
 
 times20 5
+
+main
+putStrLn "asdf"

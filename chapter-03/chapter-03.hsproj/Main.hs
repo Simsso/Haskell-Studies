@@ -31,3 +31,11 @@ area d = pi * (r * r)  -- top level
 times5 = (5 *)
 times4 = (4 *) 
 times20 = times5 . times4 -- composition
+
+test :: Integer -> ()
+test x = ()
+
+
+-- multiple typeclass constraints
+testFn :: (Eq a, Num b) => a -> a -> b
+testFn a b = if a == b then 2 else 3
