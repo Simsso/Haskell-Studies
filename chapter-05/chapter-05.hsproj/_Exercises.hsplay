@@ -1,0 +1,24 @@
+-- Haskell Playground 1.0
+-- Type Arguments (PDF page 166)
+:t y1
+:t y2
+:t y3
+:t y4
+:t y5
+:t y6
+:t y7
+:t y8
+:t y9
+
+
+-- Apply Yourself
+:t myConact
+:t myMult
+:t myTake
+:t myCom
+:t myAlph
+
+-- Write a type signature
+:t functionH
+:t functionC
+:t functionS

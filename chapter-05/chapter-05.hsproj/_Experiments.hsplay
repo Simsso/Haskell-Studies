@@ -1,0 +1,22 @@
+-- Haskell Playground 1.0
+sub 5 5
+-- partially applied first parameter
+subFromFive = sub 5
+-- partially applied second parameter
+subFive = (`sub` 5)
+
+subFromFive 8
+subFive 8
+
+-- uncurrying
+subTuple (5, 5)
+addTuple ((1, 2), 3)
+--addTuple (1, 2, 3)
+
+
+let x = 5 :: Integer
+5.0 / fromIntegral x
+
+
+let a = 8
+typeOf a

@@ -1,0 +1,15 @@
+-- Haskell Playground 1.0
+:t example
+
+-- (1)
+:t a
+:t b
+:t c
+:t d
+:t e
+:t f
+
+-- (2, 3, 4, 5)
+:t w
+:t z
+:t g
