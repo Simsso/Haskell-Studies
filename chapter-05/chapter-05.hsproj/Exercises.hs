@@ -142,3 +142,39 @@ a2 _ a = a
 -- (8)
 a3 :: (a -> b) -> a -> b
 a3 atob a = atob a
+
+
+-- Type-Kwon-Do
+-- (1)
+f1 :: Int -> String
+f1 = undefined
+g1 :: String -> Char
+g1 = undefined
+h1 :: Int -> Char
+h1 x = g1 (f1 x)
+
+-- (2)
+data A
+data B
+data C
+q :: A -> B
+q = undefined
+w :: B -> C
+w = undefined
+e :: A -> C
+e x = w (q x)
+
+-- (3)
+data X
+data Y
+data Z
+xz :: X -> Z
+xz = undefined
+yz :: Y -> Z
+yz = undefined
+xform :: (X, Y) -> (Z, Z)
+xform (x, y) = (xz x, yz y)
+
+-- (4)
+munge :: (x -> y) -> (y -> (w, z)) -> x -> w
+munge xtoy ytowz x = fst (ytowz (xtoy x))

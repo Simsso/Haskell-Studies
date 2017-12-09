@@ -16,3 +16,6 @@ add x y z = x + y + z
 
 addTupleVal = uncurry add
 addTuple = uncurry addTupleVal
+
+--uncurry :: (a -> b -> c) -> (a, b) -> c
+-- (uncurry (+)) :: Num c => (c, c) -> c

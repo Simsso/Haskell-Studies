@@ -72,7 +72,7 @@ data Bool = False | True
 
 **Pattern matching** is a feature of Haskell that allows multiple implementations of the same function. When calling the function, the implementation will be chosen depending on the argument. `_` is called catch-all and will match any argument value.
 
-**Typeclasses** is a polymorphic type that adds functionality to types that is reusable across all inheriting types. A **type alias** is a way of making a type available through a differnt name: `type Name = Integer`.
+**Typeclasses** is a polymorphic type that adds functionality (i.e. faculties or interfaces) to types that is reusable across all inheriting types. A **type alias** is a way of making a type available through a differnt name: `type Name = Integer`.
 
 Haskell's inequality symbol is `/=`. The **ordering typeclass** `Ord` enforces implementation of the following operators.
 ```haskell
@@ -130,5 +130,6 @@ A function signature may have **multiple typeclass constraints** `(Num a, Num b)
 
 The `=>` is called **typeclass arrow**. The right associative **type constructor for functions** `->` realizes currying: `f :: a -> a -> a` is read as `f :: a -> (a -> a)`. Due to currying, functions can be partially applied. Infix operators can be partially applied to a first or second parameter, e.g. `(2^)` or `(^2)`.
 
-**Polymorphism** is the provision of a single interface to entities of different types. In Haskell it is either _parametric_ or _constrained_ (or _bounded_). The former is polymorphism that accepts any type, whereas the latter accepts only some types. Multiple class constrains must be wrapped in parentheses: `f :: (Eq a, Num b) => a -> b`. The opposite of polymorphism is _monomorphism_, in Haskell called _concrete_.
+**Polymorphism** is the provision of a single interface to entities of different types. In Haskell it is either _parametric_ or _constrained_ (aka. _bounded_, _ad-hoc_). The former is polymorphism that accepts any type, whereas the latter accepts only some types. Multiple class constrains must be wrapped in parentheses: `f :: (Eq a, Num b) => a -> b`. The opposite of polymorphism is _monomorphism_, in Haskell called _concrete_. Applied to variables, polymorphism is a property of variables which may refer to more than one concrete type.
 
+**Type inference** is the process of determining a variables _principle type_ by looking at the way it is being used. The **principle type** is the most generic type that can be assigned to a variable.
