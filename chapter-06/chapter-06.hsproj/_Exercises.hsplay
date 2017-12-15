@@ -1,0 +1,31 @@
+-- Haskell Playground 1.0
+let a = TisAnInt 5
+let b = TisAString "asdf"
+
+a == b
+let x = Tuple 5 "asdf"
+let y = Tuple 8 "asdf"
+x == y
+
+
+:t quotRem
+:t divMod
+quotRem 9 8
+divMod 9 8
+
+
+-- Will the work (PDF page 224)
+-- ============================
+
+-- (1)
+max (length [1, 2, 3]) (length [8, 9, 10, 11, 12])
+
+-- (2)
+compare (3 * 4) (3 * 5)
+
+-- (3)
+-- compare "Julie" True
+
+-- (4)
+(5 + 3) > (3 + 6)
+

@@ -1,0 +1,13 @@
+-- Haskell Playground 1.0
+max Three Ace
+min Four Three
+
+let s4 = Card Four Spade
+let da = Card Ace Diamond
+
+max s4 da
+
+-- every second enum element
+enumFromThenTo Two Four Ace
+
+shortshow (Hand (Card Ace Spade) (Card Ace Diamond))

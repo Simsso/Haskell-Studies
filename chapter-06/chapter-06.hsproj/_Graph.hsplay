@@ -1,0 +1,4 @@
+-- Haskell Playground 1.0
+let tree = Node 23 (Node 12 (Leaf 1) (Leaf 2)) (Node 4 (Leaf 3) (Leaf 4))
+
+putStrLn $ show tree
