@@ -1,0 +1,28 @@
+-- Haskell Playground 1.0
+mTh0 1 2 3
+mTh1 1 2 3
+mTh2 1 2 3
+mTh3 1 2 3
+
+:t 3
+:t mTh0 3
+
+:t k
+:t k1
+:t k2
+:t k3
+k3
+
+
+-- Artful Dodgy
+oneIsOne 2
+oneIsTwo 3
+
+pal "asdf"
+pal "asdffdsa"
+:t pal
+:t sgn
+
+
+tensDigit 123
+tensDigit 1

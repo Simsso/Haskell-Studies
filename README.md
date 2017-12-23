@@ -165,7 +165,7 @@ instance Eq Suit where
   (==) _ _ = False
 ```
 
-Typeclasses **default** to certain types. `Num` defaults to `Integer` for example `default Num Integer`.
+Typeclasses **default** to certain types. `Num` defaults to `Integer` for example `default Num Integer`. This can be better explained given an example: When entering a `5` into GHCi, a show method must be called. `:t 5` however gives `Num` so it is left to Haskell to choose a `show` method from the inheriting types. In this case `Integer` is chosen by default. 
 
 **Typeclass instances** are unique pairings of a typeclass and a type.
 
@@ -181,5 +181,28 @@ The following typeclasses can be automatically derived. That means they can be a
  * **`Read`**. Values can be parsed from strings. It is often a _partial_ function as it does not return a proper value for all possible inputs.
  * **`Show`**. Values can be converted to strings (e.g. for output). Enforces implementation of `showsPrec`, `show`, and `showList`. Printing things is possible in Haskell, even though it is purely functional, because the `print` method invokes `IO` which has the _side effect_ of outputting text. It returns the unit `()` because it has no relevant return value.
 
- ### 6.2 Typeclass Inheritance
+### 6.2 Typeclass Inheritance
  Inheritance structure of common typeclasses. `Ord` inherits from `Eq`. `Real` inherits from `Ord` and `Num`. `Fractional` inherits from `Num`. `Integral` inherits from `Real`, `Fractional`, and `Enum`.
+
+
+## 7 Functional Patterns
+Inner variables can _shadow_ outer variables, as can bee seen in the following function which always returns `5`: `func x = let x = 5 in x`.
+
+**Anonymous functions** are functions which are not bound to an identifier and can be declared with this syntax: `(\x -> x * 4) :: Num a => a -> a`. They are often used when a function is passed to another function with the former beeing needed only once.
+
+The signature of **higher order functions** contains functions itself. For example `distributor :: (a -> b -> c) -> (a -> b) -> (a -> c)` takes two functions and returns a new one.
+
+The **guard syntax** of Haskell allows to write compact functions with multiple outcomes depending on boolean conditions. Each line behind a pipe is called _guard case_. `otherwise` is a constant that equals `True`, i.e. the catch-all case.
+```haskell
+clip :: (Num a, Ord a) => a -> a -> a -> a
+clip min max x
+  | x < min   = min
+  | x > max   = max
+  | otherwise = x
+```
+
+**Pointfree** versions of functions drop arguments for the sake of readability. For example, `print a = (putStrLn . show) a` becomes `print = putStrLn . show`.
+
+**Binding** is the assignment of an argument to a parameter.
+
+In Haskell, **bottom** is a _non-value_ that is used to indicate that a function can not return a value. 

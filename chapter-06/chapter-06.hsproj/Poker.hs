@@ -8,6 +8,9 @@ class ShortShow a where
 ----------
 data Suit = Spade | Diamond | Club | Heart
   deriving (Show, Enum)
+  
+instance Ord Suit where
+  compare _ _ = EQ
 
 -- Eq is manually implemented but could also be derived
 instance Eq Suit where
