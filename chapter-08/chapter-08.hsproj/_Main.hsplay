@@ -1,0 +1,7 @@
+-- Haskell Playground 1.0
+xs = [5, 4, 35, 6, 2, -5, 3, -10]
+
+fst (divMod (length xs) 2)
+slowsort xs
+
+fst (divMod (2) 2)

@@ -1,0 +1,15 @@
+-- Haskell Playground 1.0
+appedCatty "woohoo!"
+frappe "1"
+frappe (appedCatty "2")
+appedCatty (frappe "blue")
+cattyConny (frappe "pink") (cattyConny "green" (appedCatty "blue"))
+cattyConny (flippy "Pugs" "are") "awesome"
+
+
+sumto 5
+recursiveMult 5 20
+
+dividedBy 10 (-5)
+
+map mc91 [95..110]

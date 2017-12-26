@@ -6,9 +6,12 @@ func 8
 :i .
 
 map ((+1) . (*2)) $ enumFrom 8
+[8..]
 
 map enumFrom (enumFrom 0)
 
 aCount "What's aaaaap??"
 :i aCount
 :i aCountPf
+
+test

@@ -1,3 +1,6 @@
 -- Haskell Playground 1.0
 print ((roundTrip 4) :: Integer)
 print (id 4)
+
+:t foldr
+\a -> \b -> a + b
