@@ -1,0 +1,90 @@
+-- Haskell Playground 1.0
+eftInt 1 100
+eftBool False True
+
+tail []
+
+splitSpace "a b cd efg hijkl"
+
+
+firstSen = "Tyger Tyger, burning bright\n"
+secondSen = "In the forests of the night\n"
+thirdSen = "What immortal hand or eye\n"
+fourthSen = "Could frame thy fearful symmetry?"
+sentences = firstSen ++ secondSen ++ thirdSen ++ fourthSen
+myLines sentences
+
+
+
+-- Comprehend Thy Lists (PDF page 347)
+let mySqr = [x^2 | x <- [1..10]]
+[x | x <- mySqr, rem x 2 == 0]
+[(x, y) | x <- mySqr, y <- mySqr, x < 50, y > 50]
+take 5 [ (x, y) | x <- mySqr, y <- mySqr, x < 50, y > 50 ]
+
+
+mySqrCubeTuples
+length mySqrCubeTuples2
+
+
+-- Bottom Madness (PDF page 258)
+-- [x^y | x <- [1..5], y <- [2, undefined]]
+take 1 $ [x^y | x <- [1..5], y <- [2, undefined]]
+-- sum [1, undefined, 3]
+length [1, 2, undefined]
+-- length $ [1, 2, 3] ++ undefined
+take 1 $ filter even [1, 2, 3, undefined]
+-- take 1 $ filter even [1, 3, undefined]
+take 1 $ filter odd [1, 3, undefined]
+take 2 $ filter odd [1, 3, undefined]
+-- take 3 $ filter odd [1, 3, undefined]
+
+
+
+-- More Bottoms (PDF page 365)
+-- take 1 $ map (+1) [undefined, 2, 3]
+take 1 $ map (+1) [1, undefined, 3]
+-- take 2 $ map (+1) [1, undefined, 3]
+itIsMystery "hi there how are you"
+map (^2) [1..10]
+map minimum [[1..10], [10..20], [20..30]]
+map sum [[1..5], [1..5], [1..5]]
+
+
+multipleOf3
+length multipleOf3
+myFilter "the brown dog was a goof"
+
+
+myZip2 [1..4] [2..3]
+
+
+
+-- Chapter Exercises (PDF page 371)
+-- Data.Char
+-- (1)
+:t isUpper
+:t toUpper
+-- (2)
+filterUpper "HbEfLrLxO,"
+-- (3)
+capitalize "timo"
+capitalize ""
+-- (4)
+stringToUpper "asdf"
+-- (5)
+getFirstCapitalized "timo"
+
+
+
+-- Writing your own standard functions (PDF page 374)
+-- (2)
+myAny even [1, 3, 5]
+myAny odd [1, 3, 5]
+-- (4)
+myReverse "blah"
+-- (5)
+squish [[1, 2], [3, 4]]
+-- (6)
+squishMap (\x -> [1, x, 3]) [2]
+squishMap (\x -> "WO "++[x]++" HOO ") "123"

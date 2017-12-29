@@ -2,7 +2,9 @@ module WordNumber where
   
 import Data.List (intersperse)
 digitToWord :: Int -> String
-digitToWord n = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] !! n
+digitToWord n 
+  | n < 0 || n > 9 = "undefined"
+  | otherwise      = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"] !! n
 
 digits :: Int -> [Int]
 digits n
@@ -15,4 +17,5 @@ digits n
         dm = divMod n 10
 
 wordNumber :: Int -> String
-wordNumber n = init $ concat $ map ((++ " ") . digitToWord) (digits n)
+wordNumber n = concat $ intersperse " - " (map digitToWord (digits n))
+-- wordNumber n = init $ concat $ map ((++ "-") . digitToWord) (digits n)

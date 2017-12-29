@@ -1,0 +1,15 @@
+-- Haskell Playground 1.0
+cuthead []
+cuthead [1]
+cuthead [1..10]
+
+longlength [1,2]
+
+['A'..'Z'] ++ ['a'..'z']
+
+
+[sqrt x | x <- [0..10], sqrt x < 3]
+
+[x*y | x <- [0..10], y <- [10..20]]
+
+removeVocals "supercharged"
