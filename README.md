@@ -19,7 +19,7 @@ Lambda terms can **diverge** if _evaluation_ does not terminate. For example _λ
 Notes on syntax: _λab.a(b)_ means that _b_ will be applied to _a_ on evaluation (if possible). However, _(λa.λb.a)b_ evaluates to _λb.b'_.
 
 ## 2 Getting Started
-**Prelude** is a library of standard types, classes, and functions, such as `pi`, `Bool`, `Monad`, `map`. Haskell files can be loaded to GHCi REPL using `:load file.hs`. 
+**Prelude** is a library of standard types, classes, and functions, such as `pi`, `Bool`, `Monad`, `map`. Haskell files can be loaded to GHCi REPL using `:load file.hs`. All compiler warning can be enabled with `-Wall` (or equivalently `{-# OPTIONS_GHC -Wall #-}`). 
 
 An _expression_ is in **normal form**, or **irreducible**, when there are no more evaluations steps that can be taken.
 
@@ -234,7 +234,7 @@ of collection that isn’t the values contained therein. Calling the `length` fu
 
 Values in Haskell get reduced to **weak head normal form** by default. **Normal form** means that an expression is fully evaluated. Weak head normal form means the expression is only evaluated as far as is necessary to reach a data constructor. `"a" ++ "b"` is neither of both because the outermost component of the expression is a function.
 
-## 9.1 List Utilities
+### 9.1 List Utilities
  * **`take`** returns the **first _n_ elements** of a list. `take :: Int -> [a] -> [a]`
  * **`drop`** returns **all but the first _n_ elements** of a list. `drop :: Int -> [a] -> [a]`
  * **`takeWhile`** Iterates over the list and returns **all elements until the condition mismatches**. `takeWhile :: (a -> Bool) -> [a] -> [a]`
@@ -249,3 +249,12 @@ Values in Haskell get reduced to **weak head normal form** by default. **Normal 
  * **`zip`** creates a **list of tuples** out of two lists. It stops as soon as one list runs out of values. `zip :: [a] -> [b] -> [(a, b)]`
  * **`unzip`** creates a tuple of **two lists out of a list of tuples**. `unzip :: [(a, b)] -> ([a], [b])`
  * **`zipWith`** combines **two lists into one** by subsequently applying a function to two elements. `zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]`
+
+## 10 Folding Lists
+Folding is the reduction of a structure. It happens at the two stages (1) traversal and (2) reduction. _Folds_ as a concept are also called **catamorphisms**. A **homomorphism** is the unique homomorphism (structure preserving map) from an initial algebra into some other algebra.
+
+The right associative function **fold right**, `foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b`, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to the sequence of values, yielding one value as its result. The function folds a foldable type _with_ the function `f :: a -> b -> b`. When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the folable contains no value, e.g. en empty list `[]`.
+
+The **left fold** is traversing the data structure in the same order as the right fold, however it is left associative. It is inappropriate to use in combinations with very long lists or infinite lists. `foldl'` is the strict version of `foldl`. The relationship between `foldl` and `foldr` is (for finite lists `xs`) `foldr f z xs = foldl (flip f) z (reverse xs)`.
+
+**Scans** return a list of all intermediate values of a fold. `scanr :: (a -> b -> b) -> b -> [a] -> [b]` and `scanl` are the Haskell function for right fold and left fold respectively. `scanl` can for example be used to create an infinite list of Fibonacci numbers: `fibs = 1 : scanl (+) 1 fibs`. 
