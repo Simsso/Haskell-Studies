@@ -10,3 +10,7 @@ length $ take 2 $ take 4 [1, 2, undefined]
 -- Fibonacci
 fibs = 1 : scanl (+) 1 fibs
 fibs
+
+scanl (+) 1 fibs
+[1,1,2,3,5,8,13,21,34,55,89,144,233,377]
+[1, 1+1]

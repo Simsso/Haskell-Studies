@@ -1,0 +1,66 @@
+-- Haskell Playground 1.0
+:t Husky 10
+:t Husky (10 :: Integer)
+
+
+-- Vehicles (PDF page 431)
+myCar = Car Mini (Price 14000)
+urCar = Car Mazda (Price 20000)
+clownCar = Car Tata (Price 7000)
+doge = Plane PapuAir 18
+
+-- (1)
+:t myCar -- Vehicle
+
+getManu doge
+
+
+-- Cardinality (PDF page 436)
+-- (4)
+maxBound :: Int
+minBound :: Int
+-- The Integer data type does not have bounds.
+
+
+-- For Example (PDF page 437)
+:t MakeExample
+:t Example
+:i Example
+:i Example2
+
+
+allProgrammers
+length allProgrammers
+length allOperatingSystems * length allLanguages
+
+
+-- The Quad (PDF page 472)
+
+-- Write map for BinaryTree (PDF page 480)
+-- acceptance test for mapTree
+if mapTree (+1) testTree' == mapExpected then print "yup okay!" else error "test failed!"
+
+testPreorder
+testInorder
+testPostorder
+
+isSubseqOf "blah" "blahwoot"
+isSubseqOf "blah" "wootblah"
+isSubseqOf "blah" "wboloath"
+isSubseqOf "blah" "wootbla"
+isSubseqOf "blah" "halbwoot"
+isSubseqOf "blah" "blawhoot"
+
+capitalizeWords "hi there"
+splitOn ' ' "hi there"
+
+capitalizeWord "bay"
+
+capSentences "hi. there man. "
+
+splitAtSeq "test bla st manst" "st"
+
+stringToBtnPresses "HI THERE"
+
+eval (Add (Lit 1) (Lit 9001))
+printExpr (Add (Lit 1) (Lit 9001))

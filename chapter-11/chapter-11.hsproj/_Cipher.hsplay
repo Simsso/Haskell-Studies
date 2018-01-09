@@ -1,0 +1,14 @@
+-- Haskell Playground 1.0
+baseNumber
+count
+
+rot 4 'z'
+
+ceasar "timo"
+unceasar $ ceasar "timo"
+
+
+vigenereCipher "meetatdawn" "ally"
+
+concat (repeat "asdf")
+encode "ASDFJDKI" "AB"

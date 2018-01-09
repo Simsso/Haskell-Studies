@@ -61,6 +61,6 @@ myMaximumBy compare [1,3,5,10,3,2,3,6]
 
 myMinimumBy (\_ _ -> GT) [1..10]
 myMinimumBy (\_ _ -> LT) [1..10]
-myMinimumBy compare [1..10]
+myMinimumBy compare [3,5,10,3,2,3,6]
 
 
