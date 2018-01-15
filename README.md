@@ -316,3 +316,12 @@ The **cardinality** of a type is the number of values it can possibly have. The 
 **Sum types** are _or_ connections of multiple types; e.g. `A = B | C`. **Product types** are _and_ connections and have e.g. the following shape: `A = B c d`. Here `B` contains `c` and `d`.
 
 The **number of possible behavioural patterns** of a function mapping from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
+
+## 12 Signaling Adversity
+In Haskell it is common to us so called _smart constructors_ [https://wiki.haskell.org/Smart_constructors](wiki.haskell.org). These constructors validate their arguments and return `Maybe`, i.e. either the desired object or `Nothing` (or throw an error). For more detailed information about the error, the return type may also `Either`, which holds a `Left` and a `Right` value. The former is commonly the error object.
+
+**Lifted** and **unlifted types** have different kinds, namely `*` and `#` respectively. Lifted types are much more common and differ from unlifted types by their property of being able to be inhabited by _bottom_.
+
+The type construction `[Maybe]` is– invalid, because `[] :: * -> *` and `Maybe` is not `*` but `* -> *` itself.
+
+Opposed to folds, **unfolds** build up data structures from a single starting value (_anamorphism_). `iterate :: (a -> a) -> a -> [a]` does that infinitely, `unfoldr :: (b -> Maybe (a, b)) -> b -> [a]` (in `Data.List`) is the generalization which may terminate.
