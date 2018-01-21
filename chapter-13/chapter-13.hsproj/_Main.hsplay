@@ -1,0 +1,4 @@
+-- Haskell Playground 1.0
+removeSpecialChars $ toLowerStr "“Madam I’m Adam"
+
+isLeft $ mkPerson "asdf" (-0)

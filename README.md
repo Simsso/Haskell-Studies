@@ -25,7 +25,7 @@ An _expression_ is in **normal form**, or **irreducible**, when there are no mor
 
 Every **Haskell function** is an expression that takes one argument. They always return a result. A **definition** may look like that: `piTimesSquare x = pi * (x ^ 2)`. A function **parameter** stands for a value, while an **argument** is an actual value. Functions are in _prefix_ style by default.
 
-_Infix_ operators are functions that can be used in prefix fashion by wrapping them in parantheses: `(+) 1 2`. The `$` operator has the lowest possible precedence (0). The following example explains its usage: `(5 *) $ 1 + 1` equals `5 * (1 + 1)`. The GHCi command `:info` provides signature and precedence information about functions.
+_Infix_ operators are functions that can be used in prefix fashion by wrapping them in parantheses: `(+) 1 2`. The `$` operator has the lowest possible precedence (0). The following example explains its usage: `(5 *) $ 1 + 1` equals `5 * (1 + 1)`. The GHCi command info` provides signature and precedence information about functions.
 
 An **expression** is a combination of symbols that conforms to syntactic rules and can be evaluated to some result. 
 
@@ -325,3 +325,40 @@ In Haskell it is common to us so called _smart constructors_ [https://wiki.haske
 The type construction `[Maybe]` is– invalid, because `[] :: * -> *` and `Maybe` is not `*` but `* -> *` itself.
 
 Opposed to folds, **unfolds** build up data structures from a single starting value (_anamorphism_). `iterate :: (a -> a) -> a -> [a]` does that infinitely, `unfoldr :: (b -> Maybe (a, b)) -> b -> [a]` (in `Data.List`) is the generalization which may terminate.
+
+## 13 Building Projects
+Haskell **[Cabal](https://www.haskell.org/cabal/users-guide/)** (Common Architecture for Building Applications and Libraries) is a package manager. A package is a program that may have dependencies.
+
+**Stack** is a program for developing Haskell projects. It is built on top of Cabal. The command `stack build` builds a project and `stack setup` [...]. `stack ghci` starts GHCi in the context of a program, where functions can be executed. `stack new <project-name> simple` creates a new project.
+
+The **.cabal** file contains information about the project. For example whether it is a library or an executable.
+```cabal
+library | executable program-name
+  hs-source-dirs:      src
+ [exposed-modules:     Module1, Module2]  -- for libraries
+ [main-is:             Main.hs]  -- for executables
+  default-language:    Haskell2010
+  build-depends:       base >= 4.7 && < 5
+```
+
+A program can be **start**ed with `stack exec <program-name>` from every directory. However, the program executable is only present if the `.cabal` file that was built before contains the line `executable <program-name>`.
+
+By default a module **export**s all its content. This can be changed by adding a list of exported items:
+```haskell
+module ModuleName
+  (function1, constant1)
+  where
+
+-- implementation of function1, constant 1, and possibly more
+```
+The importing module can also choose what to **import**. This is dome similarly through a list of items, e.g. `import Data.Bool (bool)`.  
+**Qualified imports** persist the fully qualified name of the imported items. That means with `import qualified Data.Bool` the function `bool` is only accessible through `Data.Bool.bool`.  
+With an **alias**, e.g. `import qualified Data.Bool as B`, `bool` is accessible through  `B.bool`.
+
+In GHCi the **`:browse <Module>`** command can be used to list all exported items of a module. `Prelude` can be disabled with the command `stack ghci --ghci-options -XNoImplicitPrelude`.
+
+
+## Favorite Quotes
+12. "As natural as any competitive bodybuilder"  
+data Nat = Zero | Succ Nat deriving (Eq, Show)
+13. "Do notation considered harmful! Just kidding."
