@@ -10,8 +10,10 @@ Executable chapter08
   main-is: Main.hs
   buildable: True
   build-depends:
-      base -any
+      base -any,
+      hspec -any
   default-language: Haskell2010
   other-modules:
       WordNumber
       Exercises
+      Test.WordNumberTest

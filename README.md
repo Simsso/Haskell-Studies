@@ -357,8 +357,129 @@ With an **alias**, e.g. `import qualified Data.Bool as B`, `bool` is accessible 
 
 In GHCi the **`:browse <Module>`** command can be used to list all exported items of a module. `Prelude` can be disabled with the command `stack ghci --ghci-options -XNoImplicitPrelude`.
 
+### 13.1 Read CSV File
+Example snippet
+```haskell
+module CSVReader 
+  (readCsv)
+  where
 
-## Favorite Quotes
-12. "As natural as any competitive bodybuilder"  
-data Nat = Zero | Succ Nat deriving (Eq, Show)
-13. "Do notation considered harmful! Just kidding."
+import Data.List.Split (splitOn)
+
+readCsv :: IO [[String]]
+readCsv = do
+  raw <- readFile "data.csv"
+  return $ parseCsv raw
+  where
+    parseCsv :: String -> [[String]]
+    parseCsv s = map (splitOn ",") (lines s)
+```
+
+## 14 Testing
+There are generally four recognized levels of tests.
+1. **Unit testing** tests small units of code, generally on function level or in object-oriented programming environments on class level.
+2. **Integration testing** verifies the interfaces between components against design. It ensures that the units (tested in 1.) are _wired up_ properly.
+3. **Component interface testing** controls the data that is passed between units. The data is commonly logged. Unusual data values in an interface can help explain unexpected performance in the next unit.
+4. **System testing** tests a completely integrated system to verify that the system meets its requirements.
+
+A **property-based testing** framework runs the same test over and over with generated input.
+### 14.1 Hspec
+Hspec ([website](https://hspec.github.io/)) is a Haskell testing framework. In order to work with it, add the dependency `hspec` or install it manually (e.g. v2.4.3) with
+```bash
+cabal install hspec
+```
+Sample snippet
+```haskell
+import Test.Hspec
+
+main :: IO ()
+main = hspec $ do
+  describe "Addition" $ do
+    it "1 + 1 is greater than 1" $ do
+      (1 + 1) > 1 `shouldBe` True
+```
+
+### 14.2 QuickCheck
+QuickCheck ([website](http://www.cse.chalmers.se/~rjmh/QuickCheck/)) was the first library to offer what is today called property testing. The dependency is spelled `QuickCheck`.
+
+```bash
+cabal install QuickCheck
+```
+Sample snippet which uses QuickCheck in combination with hspec. QuickCheck itself does not provide the `describe` and `it` methods.
+```haskell
+import Test.Hspec
+import Test.QuickCheck
+
+main :: IO ()
+main = hspec $ do
+  describe "Addition" $ do
+    it "x + 1 is always greater than x" $ do
+      property $ \x -> x + 1 > (x :: Int)
+```
+Another workflow is calling `quickCheck (fn :: signature)`.
+
+QuickCheck validates the property by plugging in random values and edge cases. These are generated in this manner: ` sample (arbitrary :: Gen Int)`.
+
+Generators select values from a list, e.g. lowercase characters.
+```haskell
+genChar :: Gen Char
+genChar = elements ['a'..'z']
+```
+
+`CoArbitrary` is used when random functions need to be generated.
+
+### Open Questions
+ * In the following snippet, how does QuickCheck choose the types for `x`, `y`, and `z`?  
+   ```haskell
+   describe "Associative" $ do
+    it "Addition" $ do
+      property $ (\x -> \y -> \z -> plusAssociative x y z)
+    it "Multiplication" $ do
+      property $ (\x -> \y -> \z -> multAssociative x y z)
+   ```
+ * Generate non-zero values only for quot rem test. How-to?
+ * Use CoArbitrary to test `f $ a = f a`.
+
+## 15 Monoid and Semigroup
+### 15.1 Monoid
+A **monoid** is a binary associative operation with an identity. In other words, it is an operator that takes two arguments that follow the rules associativity and identity.
+
+```haskell
+class Monoid a where
+  mempty :: a
+  mappend :: a -> a -> a
+  mconcat :: [a] -> a
+  {-# MINIMAL mempty, mappend #-}
+```
+Monoids are all types that let you join values together through the `mappend` function, in accordance with associativity. A `mempty` value exists for which the `mappend` becomes the identity.
+
+Much more extended functionality lies in the **package `Data.Monoid`**. Opposed to many other Haskell typeclasses, monoids do often have multiple implementations per type. That is realized by wrapping the type with `newtype`. For example the `newtype` `Sum`, which wraps `Num`s and determines to use the addition monoid for the wrapped value. Calling `mappend` with two `Product` values, however, would multiply them. The resulting type wraps the sum or the product. The actual number can be retrieved through `getSum` and `getProduct` respectively. Similarly, the `Bool` monoid is wrapped in either `Any` (boolean disjuction) or `All` (boolean conjunction).
+
+**`mconcat`** applies `mappend` to an arbitrary number of values. For the empty ist it returns `mempty`, for a list with one entry it is the identity.
+
+The **Abelian monoid** has the commutative property. An **orphan instance** is an instance that is defined for a datatype
+and typeclass, but not in the same module as either of them. If neither typeclass nor datatype were defined manually, the best workaround is to create a `newtype` which wraps the datatype.
+
+### 15.2 Semigroup
+A **semigroup** (Haskell package `Data.Semigroup`) is a monoid without the identity property. That is an operation which takes two inputs and reduces them to one, and suffices the law of associativity. In code, that means the semigroup defines
+```haskell
+class Semigroup a where
+  (<>) :: a -> a -> a
+```
+while satifying associativity, i.e. `(a <> b) <> c = a <> (b <> c)`.
+
+The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that contains one or more elements.
+
+### Open Questions
+* ~~is `foldr mappend mempty` equal to `mconcat`?~~ yes, see page 624
+* PDF page 624. Haskell does not enforce that, does it?  
+  > Monoid instances must abide by the following laws
+* What's the message of chapter 15.10 (PDF page 628)?
+  > Reusing algebras by asking for algebras
+* > This is the other law for Monoid: the binary operation must be associative and it must have a sensible identity value.
+
+## Quotes
+12. > As natural as any competitive bodybuilder  
+`data Nat = Zero | Succ Nat deriving (Eq, Show)`
+13. > Do notation considered harmful! Just kidding.
+14. > If that succeeded, let’s fire up a REEEEEEEPL and see if we can call sayHello.

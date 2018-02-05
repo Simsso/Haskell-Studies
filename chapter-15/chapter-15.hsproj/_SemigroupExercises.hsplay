@@ -1,0 +1,36 @@
+-- Haskell Playground 1.0
+type TrivAssoc = Trivial -> Trivial -> Trivial -> Bool
+quickCheck (assoc :: TrivAssoc)
+
+type IdAssoc a = (Identity a) -> (Identity a) -> (Identity a) -> Bool
+type IdAssocInteger = IdAssoc Integer
+quickCheck (assoc :: IdAssocInteger)
+
+
+type BoolAssoc = BoolConj -> BoolConj -> BoolConj -> Bool
+quickCheck (assoc :: BoolAssoc)
+
+(BoolConj True) <> (BoolConj True)
+(BoolConj True) <> (BoolConj False)
+
+
+type BoolAssocDisj = BoolDisj -> BoolDisj -> BoolDisj -> Bool
+quickCheck (assoc :: BoolAssocDisj)
+
+(BoolDisj True) <> (BoolDisj True)
+(BoolDisj True) <> (BoolDisj False)
+
+type OrAssoc a b = (Or a b) -> (Or a b) -> (Or a b) -> Bool
+quickCheck (assoc :: (OrAssoc Int Int))
+
+-- (9)
+f = Combine $ \n -> Sum (n + 1)
+g = Combine $ \n -> Sum (n - 1)
+unCombine (f <> g) $ 0
+unCombine (f <> g) $ 1
+unCombine (f <> f) $ 1
+unCombine (g <> f) $ 1
+
+
+-- (11)
+main

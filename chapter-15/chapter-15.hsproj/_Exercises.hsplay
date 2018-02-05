@@ -1,0 +1,88 @@
+-- Haskell Playground 1.0
+import Test.QuickCheck (quickCheck)
+
+---------------
+-- Semigroup
+---------------
+
+-- (1)
+type TrivAssoc = Trivial -> Trivial -> Trivial -> Bool
+quickCheck (assoc :: TrivAssoc)
+
+-- (2)
+type IdAssoc a = (Identity a) -> (Identity a) -> (Identity a) -> Bool
+type IdAssocInteger = IdAssoc Integer
+quickCheck (assoc :: IdAssocInteger)
+
+-- (3)
+type SumI = Sum Integer
+type TwoI = Two SumI SumI
+type TwoIntegerAssoc = TwoI -> TwoI -> TwoI -> Bool
+quickCheck (assoc :: TwoIntegerAssoc)
+
+
+type BoolAssoc = BoolConj -> BoolConj -> BoolConj -> Bool
+quickCheck (assoc :: BoolAssoc)
+
+(BoolConj True) <> (BoolConj True)
+(BoolConj True) <> (BoolConj False)
+
+
+type BoolAssocDisj = BoolDisj -> BoolDisj -> BoolDisj -> Bool
+quickCheck (assoc :: BoolAssocDisj)
+
+(BoolDisj True) <> (BoolDisj True)
+(BoolDisj True) <> (BoolDisj False)
+
+type OrAssoc a b = (Or a b) -> (Or a b) -> (Or a b) -> Bool
+quickCheck (assoc :: (OrAssoc Int Int))
+
+-- (9)
+f = Combine $ \n -> Sum (n + 1)
+g = Combine $ \n -> Sum (n - 1)
+unCombine (f <> g) $ 0
+unCombine (f <> g) $ 1
+unCombine (f <> f) $ 1
+unCombine (g <> f) $ 1
+
+
+type CombineInt = Combine Integer Integer
+type CombineAssoc = CombineInt -> CombineInt -> CombineInt -> Bool
+
+-- (11)
+main
+
+
+
+-------------
+-- Monoid
+-------------
+
+-- (1)
+quickCheck (leftId :: Trivial -> Bool)
+quickCheck (rightId :: Trivial -> Bool)
+
+-- (2)
+:i Identity
+
+quickCheck (leftId :: (Identity (Sum Int)) -> Bool)
+quickCheck (rightId :: (Identity (Sum Int)) -> Bool)
+
+-- (3)
+
+-- (4)
+(BoolConj True) `mappend` mempty
+mempty `mappend` (BoolConj False) 
+
+-- (5)
+(BoolDisj True) `mappend` mempty
+mempty `mappend` (BoolDisj False)
+
+
+-- (6)
+f = Combine $ \n -> M.Sum (n + 1)
+--unCombine (mappend f mempty) $ 1
+
+
+
+

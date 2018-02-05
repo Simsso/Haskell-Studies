@@ -1,4 +1,4 @@
-name: chapter13
+name: chapter15
 version: 1.0
 cabal-version: 1.22
 build-type: Simple
@@ -6,12 +6,16 @@ license: AllRightsReserved
 stability: experimental
 x-ghc-framework-version: 8.0.2-8.9-3
 x-last-ide-version: HfM1.5.1
-Executable chapter13
+Executable chapter15
   main-is: Main.hs
   buildable: True
   build-depends:
       base -any,
-      split -any
+      QuickCheck -any
   default-language: Haskell2010
   other-modules:
-      CSVReader
+      MaybeAnotherMonoid
+      MonoidExercise8
+      Exercises
+      Exclamation
+      MonoidTest
