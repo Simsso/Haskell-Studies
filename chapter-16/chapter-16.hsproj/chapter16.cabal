@@ -1,4 +1,4 @@
-name: chapter15
+name: chapter16
 version: 1.0
 cabal-version: 1.22
 build-type: Simple
@@ -6,7 +6,7 @@ license: AllRightsReserved
 stability: experimental
 x-ghc-framework-version: 8.0.2-8.9-3
 x-last-ide-version: HfM1.5.1
-Executable chapter15
+Executable chapter16
   main-is: Main.hs
   buildable: True
   build-depends:
@@ -14,9 +14,5 @@ Executable chapter15
       QuickCheck -any
   default-language: Haskell2010
   other-modules:
-      MaybeAnotherMonoid
       Exercises
-      MonoidTest
-      MonoidExercise8
-      Exclamation
-      Rest
+      FunctorTest

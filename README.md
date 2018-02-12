@@ -428,18 +428,6 @@ genChar = elements ['a'..'z']
 
 `CoArbitrary` is used when random functions need to be generated.
 
-### Open Questions
- * In the following snippet, how does QuickCheck choose the types for `x`, `y`, and `z`?  
-   ```haskell
-   describe "Associative" $ do
-    it "Addition" $ do
-      property $ (\x -> \y -> \z -> plusAssociative x y z)
-    it "Multiplication" $ do
-      property $ (\x -> \y -> \z -> multAssociative x y z)
-   ```
- * Generate non-zero values only for quot rem test. How-to?
- * Use CoArbitrary to test `f $ a = f a`.
-
 ## 15 Monoid and Semigroup
 ### 15.1 Monoid
 A **monoid** is a binary associative operation with an identity. In other words, it is an operator that takes two arguments that follow the rules associativity and identity.
@@ -470,6 +458,28 @@ while satifying associativity, i.e. `(a <> b) <> c = a <> (b <> c)`.
 
 The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that contains one or more elements.
 
+## 16 Functor
+A functor is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law `fmap (f . g) == fmap f . fmap g` holds. The infix operator for `fmap` is `<$>`.
+```haskell
+class Functor f where
+  fmap :: (a -> b) -> f a -> f b
+```
+
+For nested **functor application**, e.g. when applying a function to characters which are stored in a list of `String`s, `(fmap . fmap) strFn dataStruct` can be used.
+
+In order to use a higher kinded Type, e.g. `* -> * -> *`, as a `Functor`, one of the type parameters has to be applied. This can either be done with a concrete type such as `Integer` or with a type variable `a`, and results in the kind `* -> *`. Sample snippet:
+```haskell
+data Two a b = Two a b deriving (Eq, Show)
+instance Functor (Two a) where
+  fmap f (Two a b) = Two a (f b)
+```
+
+A **natural transformation** is changing the structure while preserving the content.
+```haskell
+{-# LANGUAGE RankNTypes #-}
+type Nat f g = forall a . f a -> g a
+```
+
 ### Open Questions
 * ~~is `foldr mappend mempty` equal to `mconcat`?~~ yes, see page 624
 * PDF page 624. Haskell does not enforce that, does it?  
@@ -478,8 +488,15 @@ The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that c
   > Reusing algebras by asking for algebras
 * > This is the other law for Monoid: the binary operation must be associative and it must have a sensible identity value.
 
+* `fmap (f . g) == fmap f . fmap g` Technically this follows from `fmap id == id` (PDF page 675)
+
+### Todo
+* Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
+
 ## Quotes
 12. > As natural as any competitive bodybuilder  
 `data Nat = Zero | Succ Nat deriving (Eq, Show)`
 13. > Do notation considered harmful! Just kidding.
 14. > If that succeeded, let’s fire up a REEEEEEEPL and see if we can call sayHello.
+16. > 16.4 Let’s talk about 𝑓, baby  
+    > We’re going to return to the topic of natural transformations in the next chapter, so cool your jets for now.

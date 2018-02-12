@@ -1,0 +1,91 @@
+-- Haskell Playground 1.0
+-- Heavy Lifting (PDF page 688)
+
+-- (1)
+read "[1]" :: [Int]
+fmap (+1) $ read "[1]" :: [Int]
+
+-- (2)
+(fmap . fmap) (++ "lol") (Just ["Hi,", "Hello"])
+
+-- (3)
+c = fmap (*2) (\x -> x - 2)
+c 1
+
+-- (4)
+d = fmap ((return '1' ++) . show) (\x -> [x, 1..3])
+d 0
+-- "1[0,1,2,3]"
+
+-- (5)
+e
+
+-- Instances of Func (PDF page 695)
+type IntToInt = Fun Int Int
+type ItItB = IntToInt -> IntToInt -> Bool
+
+-- (1)
+let identityTest :: Identity Int -> Bool
+    identityTest x = FT.identity x
+quickCheck identityTest
+
+type IntIdentityCheck = (Identity Int) -> ItItB
+quickCheck (FT.composeQC :: IntIdentityCheck)
+
+-- (2)
+let pairTest :: Pair Int -> Bool
+    pairTest x = FT.identity x
+quickCheck pairTest
+type IntPairCheck = (Pair Int) -> ItItB
+quickCheck (FT.composeQC :: IntPairCheck)
+
+-- (3)
+let twoTest :: Two Int Int -> Bool
+    twoTest x = FT.identity x
+quickCheck twoTest
+
+type IntTwoCheck = (Two Int Int) -> ItItB
+quickCheck (FT.composeQC :: IntTwoCheck)
+
+-- (4)
+let threeTest :: Three Int Int Int -> Bool
+    threeTest x = FT.identity x
+quickCheck threeTest
+
+type IntThreeCheck = (Three Int Int Int) -> ItItB
+quickCheck (FT.composeQC :: IntThreeCheck)
+
+-- (5)
+let three'Test :: Three' Int Int -> Bool
+    three'Test x = FT.identity x
+quickCheck three'Test
+
+type IntThree'Check = (Three' Int Int) -> ItItB
+quickCheck (FT.composeQC :: IntThree'Check)
+
+-- (6)
+let fourTest :: Four Int Int Int Int -> Bool
+    fourTest x = FT.identity x
+quickCheck fourTest
+
+type IntFourCheck = (Four Int Int Int Int) -> ItItB
+quickCheck (FT.composeQC :: IntFourCheck)
+
+-- (7)
+let four'Test :: Four' Int Int -> Bool
+    four'Test x = FT.identity x
+quickCheck four'Test
+
+type IntFour'Check = (Four' Int Int) -> ItItB
+quickCheck (FT.composeQC :: IntFour'Check)
+
+
+
+-- Chapter Exercises (PDF page 711)
+-- (4)
+newtype Mu f = InF { outF :: f (Mu f) }
+:k Mu
+-- (5)
+import GHC.Arr
+data D = D (Array Word Word) Int Int
+:k D
