@@ -1,0 +1,5 @@
+-- Haskell Playground 1.0
+:t liftA3
+-- liftA3 :: Applicative f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+
+combos stops vowels stops

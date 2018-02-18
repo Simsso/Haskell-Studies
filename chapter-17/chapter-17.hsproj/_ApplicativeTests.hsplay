@@ -1,0 +1,16 @@
+-- Haskell Playground 1.0
+main
+
+
+-- Validation
+let f = Cons (+1) (Cons (*2) Nil)
+let v = Cons 1 (Cons 2 Nil)
+-- supposed to output
+-- Cons 2 (Cons 3 (Cons 2 (Cons 4 Nil)))
+f <*> v
+
+
+let zl' = ZipList'
+let z = zl' [(+9), (*2), (+8)]
+let z' = zl' [1..3]
+z <*> z'

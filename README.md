@@ -461,9 +461,11 @@ The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that c
 ## 16 Functor
 A functor is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law `fmap (f . g) == fmap f . fmap g` holds. The infix operator for `fmap` is `<$>`.
 ```haskell
-class Functor f where
+class Functor (f :: * -> *) where
   fmap :: (a -> b) -> f a -> f b
 ```
+
+Applying a function to a values that is inside a structure is refered to as **lifting**.
 
 For nested **functor application**, e.g. when applying a function to characters which are stored in a list of `String`s, `(fmap . fmap) strFn dataStruct` can be used.
 
@@ -479,6 +481,68 @@ A **natural transformation** is changing the structure while preserving the cont
 {-# LANGUAGE RankNTypes #-}
 type Nat f g = forall a . f a -> g a
 ```
+
+## 17 Applicative
+An **applicative** is a monoidal functor. Opposed to `fmap`, with `<*>` the function (that is applied to the enclosed values) is inside a functor itself. Intuitively this can be understood as _mapping a plurality of functions over a plurality of values_. The type info is the following:
+```haskell
+class Functor f => Applicative (f :: * -> *) where
+  pure :: a -> f a
+  (<*>) :: f (a -> b) -> f a -> f b
+```
+
+The function **`pure`** can be though of as _embedding a value into any structure (functor)_. For example `pure 1 :: [Int]` gives `[1]`.
+
+An `Applicative` satisfies the two following laws:
+1. Identity: `pure id <*> v = v`
+2. Composition: `pure (.) <*> u <*> v <*> w = u <*> (v <*> w)`
+3. Homomorphism (structure preserving): `pure f <*> pure x = pure (f x)`
+4. Interchange: `u <*> pure y = pure ($ y) <*> u`
+
+### 17.1 Examples
+| Command | Result |
+| --- | --- |
+| `(,) <$> [1, 2] <*> [3, 4]` | `[(1,3),(1,4),(2,3),(2,4)]`|
+| `(+) <$> [1, 2] <*> [3, 5]` | `[4,6,5,7]` |
+| `liftA2 (+) [1, 2] [3, 5]` | `[4,6,5,7]` |
+
+### 17.2 Testing
+Validating whether a data structure satisfies the mentioned laws can be done with the [checkers](https://github.com/conal/checkers) package. The following snippets validates an `Applicative`. Note that the value is not actually being used. Its purpose is to indicate which types to validate.
+```haskell
+module ApplicativeTests where
+
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+list = [("b", "w", 1)]
+
+main = do
+  quickBatch $ applicative list
+```
+
+### 17.3 Maybe
+[Source code](https://hackage.haskell.org/package/base-4.10.1.0/docs/src/GHC.Base.html)
+```haskell
+-- | @since 2.01
+instance Applicative Maybe where
+  pure = Just
+
+  Just f  <*> m       = fmap f m
+  Nothing <*> _m      = Nothing
+
+  liftA2 f (Just x) (Just y) = Just (f x y)
+  liftA2 _ _ _ = Nothing
+
+  Just _m1 *> m2      = m2
+  Nothing  *> _m2     = Nothing
+```
+
+
+## 18 Monad
+
+
+
+---
 
 ### Open Questions
 * ~~is `foldr mappend mempty` equal to `mconcat`?~~ yes, see page 624
@@ -500,3 +564,4 @@ type Nat f g = forall a . f a -> g a
 14. > If that succeeded, let’s fire up a REEEEEEEPL and see if we can call sayHello.
 16. > 16.4 Let’s talk about 𝑓, baby  
     > We’re going to return to the topic of natural transformations in the next chapter, so cool your jets for now.
+17. >  If this seems confusing, it’s because it is.

@@ -1,0 +1,10 @@
+-- Haskell Playground 1.0
+f = Constant (Sum 1)
+g = Constant (Sum 2)
+
+f <*> g
+Constant undefined <*> g
+pure 1
+pure 1 :: Constant String Int
+
+:t (<*>)
