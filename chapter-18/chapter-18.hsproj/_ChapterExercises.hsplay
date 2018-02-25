@@ -1,0 +1,31 @@
+-- Haskell Playground 1.0
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+-- (1)
+putStrLn "\n"
+nope = undefined :: Nope (Int, Int, Int)
+quickBatch $ monad nope
+
+-- (2)
+putStrLn "\n"
+either2 = undefined :: Either Int (Int, Int, Int)
+quickBatch $ monad either2
+
+-- (3)
+putStrLn "\n"
+id' = undefined :: Id (Int, Int, Int)
+quickBatch $ monad id'
+
+-- (4)
+putStrLn "\n"
+list = undefined :: List (Int, Int, Int)
+quickBatch $ monad list
+
+
+-- (1)
+j [[1, 2], [], [3]]
+j $ Just $ Just 1
+j $ Just Nothing
+j Nothing
+

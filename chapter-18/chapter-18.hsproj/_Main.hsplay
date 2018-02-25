@@ -1,0 +1,14 @@
+-- Haskell Playground 1.0
+:t fmap
+:t join
+
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+twiceWhenEven [1..4]
+
+fmap (\x -> if even x then [x*x, x*x] else []) [1..4]
+
+list = [("b", "w", 1)]
+
+quickBatch $ monad list

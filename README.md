@@ -1,7 +1,6 @@
 # Haskell Programming Book Notes
 
 ## 1 Introduction
-
 A **function** maps from its _domain_ to its _image_ (which is a subset of the _codomain_). Each input is invariably mapped to exactly one output.
 
 In **lambda calculus** an _abstraction_ is an anonymous function. It consists of _head_ and _body_, for example _λx.x_. The head binds the parameter(s) to the body of the function. 
@@ -539,23 +538,60 @@ instance Applicative Maybe where
 
 
 ## 18 Monad
+Monad is a typeclass reifying an abstraction that is commonly used in Haskell. Instead of an ordinary function of type a to b, it is functorially **applying a function which produces more structure itself** and **using join to reduce the nested structure** that results.
 
+```haskell
+class Applicative m => Monad (m :: * -> *) where
+  (>>=) :: m a -> (a -> m b) -> m b
+  (>>) :: m a -> m b -> m b
+  return :: a -> m a
+  fail :: String -> m a
+  {-# MINIMAL (>>=) #-}
+```
 
+`>>=` is called _bind_ operator. Intuitively it can be understood as given a couple of wrapped values and a function that can be applied to these, the bind operator applies the function to each of the values. Special about it is (compared to `fmap`) that the argument order is flipped and the mapping function returns a monad itself which is joined to make sure the output is not nested. The application to the list monad clarifies: `(>>=) :: [a] -> (a -> [b]) -> [b]`.
+
+`*>` for `Applicative` corresponds to `>>` for `Monad`. The `do` syntax is converted into each line being _concatenated_ with the following line using one of the two operators. Variable assignments `<-` are converted to `>>=`, for example 
+```haskell
+do
+  name <- getLine
+  putStrLn name
+```
+becomes the following:
+```haskell
+getLine >>= \name -> putStrLn name
+```
+
+`Control.Monad` contains a **`join`** function. The book introduced it with the example `join $ putStrLn <$> getLine`, which would, without `join`, fail because of nested `IO`s.
+
+Example of using the `do` syntax in combination with the `List` monad:
+```haskell
+twiceWhenEven :: [Integer] -> [Integer]
+twiceWhenEven xs = do
+  x <- xs
+  if even x
+    then [x*x, x*x]
+    else [x*x]
+```
+
+The Monad **laws** are 
+* Right identity `m >>= return = m`. Applying `return` leaves the data untouched.
+* Left identity `return x >>= f = f x`. Applying `return` leaves the data untouched.
+* Associativity `(m >>= f) >>= g = m >>= (\x -> f x >>= g)`. Regrouping the functions should not have any impact on the final result.
+
+Using Checkers (as in 17.2) with `quickBatch (monad [(a, b, c)])` where `a`, `b`, and `c` are three values which indicate the type to be used.
+
+The **Kleisli composition** (operator: `>=>`) is about composing two functions which both return monads. It can be imported with `import Control.Monad ((>=>))` and has the following signature (in comparison to normal function composition):
+```haskell
+(.)   ::            (b ->   c) -> (a ->   b) -> a ->   c
+(>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
+```
 
 ---
 
-### Open Questions
-* ~~is `foldr mappend mempty` equal to `mconcat`?~~ yes, see page 624
-* PDF page 624. Haskell does not enforce that, does it?  
-  > Monoid instances must abide by the following laws
-* What's the message of chapter 15.10 (PDF page 628)?
-  > Reusing algebras by asking for algebras
-* > This is the other law for Monoid: the binary operation must be associative and it must have a sensible identity value.
-
-* `fmap (f . g) == fmap f . fmap g` Technically this follows from `fmap id == id` (PDF page 675)
-
 ### Todo
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
+* Write Either with failure Monoid which does not store the same error twice.
 
 ## Quotes
 12. > As natural as any competitive bodybuilder  
@@ -565,3 +601,5 @@ instance Applicative Maybe where
 16. > 16.4 Let’s talk about 𝑓, baby  
     > We’re going to return to the topic of natural transformations in the next chapter, so cool your jets for now.
 17. >  If this seems confusing, it’s because it is.
+18. > And putStrLn takes a String argument, performs I/O, and returns nothing interesting — parents of children with an allowance can sympathize.
+    > Fail fast, like an overfunded startup
