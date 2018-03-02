@@ -549,7 +549,7 @@ class Applicative m => Monad (m :: * -> *) where
   {-# MINIMAL (>>=) #-}
 ```
 
-`>>=` is called _bind_ operator. Intuitively it can be understood as given a couple of wrapped values and a function that can be applied to these, the bind operator applies the function to each of the values. Special about it is (compared to `fmap`) that the argument order is flipped and the mapping function returns a monad itself which is joined to make sure the output is not nested. The application to the list monad clarifies: `(>>=) :: [a] -> (a -> [b]) -> [b]`.
+`>>=` is called _bind_ operator (`=<<` . Intuitively it can be understood as given a couple of wrapped values and a function that can be applied to these, the bind operator applies the function to each of the values. Special about it is (compared to `fmap`) that the argument order is flipped and the mapping function returns a monad itself which is joined to make sure the output is not nested. The application to the list monad clarifies: `(>>=) :: [a] -> (a -> [b]) -> [b]`.
 
 `*>` for `Applicative` corresponds to `>>` for `Monad`. The `do` syntax is converted into each line being _concatenated_ with the following line using one of the two operators. Variable assignments `<-` are converted to `>>=`, for example 
 ```haskell
@@ -581,11 +581,32 @@ The Monad **laws** are
 
 Using Checkers (as in 17.2) with `quickBatch (monad [(a, b, c)])` where `a`, `b`, and `c` are three values which indicate the type to be used.
 
-The **Kleisli composition** (operator: `>=>`) is about composing two functions which both return monads. It can be imported with `import Control.Monad ((>=>))` and has the following signature (in comparison to normal function composition):
+The **Kleisli composition** (_fish_ operator: `>=>`) is about composing two functions which both return monads. It can be imported with `import Control.Monad ((>=>))` and has the following signature (in comparison to normal function composition):
 ```haskell
 (.)   ::            (b ->   c) -> (a ->   b) -> a ->   c
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 ```
+
+## 19 Applying Structure
+The operators `*>`, `<*` and `>>` discard one of their arguments and are often used in combination with functions that emit side effects.
+
+### 19.1 JSON Parsing Example
+The data is nested inside of the `Parser` monad so the value constructor `Payload` needs to be lifted.
+```haskell
+parseJSON :: Value -> Parser a
+(.:)      :: FromJSON a => Object -> Text -> Parser a
+
+instance FromJSON Payload where
+  parseJSON (Object v) =
+    Payload <$> v .: "from"
+      <*> v .: "to"
+      <*> v .: "subject"
+      <*> v .: "body"
+      <*> v .: "offset_seconds"
+  parseJSON v = typeMismatch "Payload" v
+```
+
+Clarify why a function can be passed where a monad is required (PDF page 837).
 
 ---
 
