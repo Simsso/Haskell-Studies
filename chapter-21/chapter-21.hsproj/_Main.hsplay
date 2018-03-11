@@ -1,0 +1,12 @@
+-- Haskell Playground 1.0
+sum [1,2,3]
+fmap sum (Just [1,2,3])
+
+:t fmap
+fmap2 = (fmap . fmap)
+:t fmap2
+fmap2sum = fmap2 sum
+fmap2sumjust = fmap2sum Just
+
+
+main

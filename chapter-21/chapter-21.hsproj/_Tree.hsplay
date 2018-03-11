@@ -1,0 +1,13 @@
+-- Haskell Playground 1.0
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+let treeTest :: Tree (Int, Int, [Int])
+    treeTest = undefined
+quickBatch (traversable treeTest)
+
+tree = Node (Leaf 5) 6 (Leaf 7)
+
+traverse (\x -> [x]) tree
+foldMap (\x -> [x]) tree

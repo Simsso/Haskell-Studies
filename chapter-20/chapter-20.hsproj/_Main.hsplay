@@ -1,0 +1,13 @@
+-- Haskell Playground 1.0
+fmap length (Just [1, 2, 3])
+:t fmap length Just
+fmap length Just [5,6,7]
+length $ Just [1,2,3]
+
+:t length
+:t Nothing
+
+length $ Just 1
+length $ Nothing
+fmap length Nothing
+fmap length (Just [])

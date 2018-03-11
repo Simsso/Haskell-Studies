@@ -1,0 +1,38 @@
+-- Haskell Playground 1.0
+-- foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+-- traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
+:t foldMap
+
+
+
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+let identityTest :: Identity (Int, Int, [Int])
+    identityTest = undefined
+quickBatch (traversable identityTest)
+
+let constantTest :: Constant Int (Int, Int, [Int])
+    constantTest = undefined
+quickBatch (traversable constantTest)
+
+let maybeTest :: Optional (Int, Int, [Int])
+    maybeTest = undefined
+quickBatch (traversable maybeTest)
+
+let listTest :: List (Int, Int, [Int])
+    listTest = undefined
+quickBatch (traversable listTest)
+
+let threeTest :: Three Int Int (Int, Int, [Int])
+    threeTest = undefined
+quickBatch (traversable threeTest)
+
+let bigTest :: Big Int (Int, Int, [Int])
+    bigTest = undefined
+quickBatch (traversable bigTest)
+
+let biggerTest :: Bigger Int (Int, Int, [Int])
+    biggerTest = undefined
+quickBatch (traversable biggerTest)
