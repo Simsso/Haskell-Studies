@@ -1,0 +1,18 @@
+-- Haskell Playground 1.0
+import Data.Foldable
+
+:t fold
+:t foldr
+:t foldMap
+
+:i Any
+
+sum' $ Just 1
+
+elem' 1 [1,5]
+
+length' [1,3,4,5]
+
+toList' [1,2,3]
+
+fold' [1,2,3] :: Sum Int

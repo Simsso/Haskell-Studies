@@ -1,6 +1,6 @@
 # Haskell Programming Book Notes
 
-## 1 Introduction
+# 1 Introduction
 A **function** maps from its _domain_ to its _image_ (which is a subset of the _codomain_). Each input is invariably mapped to exactly one output.
 
 In **lambda calculus** an _abstraction_ is an anonymous function. It consists of _head_ and _body_, for example _λx.x_. The head binds the parameter(s) to the body of the function. 
@@ -17,7 +17,7 @@ Lambda terms can **diverge** if _evaluation_ does not terminate. For example _λ
 
 Notes on syntax: _λab.a(b)_ means that _b_ will be applied to _a_ on evaluation (if possible). However, _(λa.λb.a)b_ evaluates to _λb.b'_.
 
-## 2 Getting Started
+# 2 Getting Started
 **Prelude** is a library of standard types, classes, and functions, such as `pi`, `Bool`, `Monad`, `map`. Haskell files can be loaded to GHCi REPL using `:load file.hs`. All compiler warning can be enabled with `-Wall` (or equivalently `{-# OPTIONS_GHC -Wall #-}`). 
 
 An _expression_ is in **normal form**, or **irreducible**, when there are no more evaluations steps that can be taken.
@@ -30,7 +30,7 @@ An **expression** is a combination of symbols that conforms to syntactic rules a
 
 A **value** is an expression that can not be evaluated any further. Haskell uses **lazy evaluation**, i.e. it only evaluates an expression when it is forced to by other terms which refer to the expession.
 
-## 3 Strings
+# 3 Strings
 The GHCi command `:type` prints the type of a variable / expression. `a :: b` means that `a` has the type `b`.
 
 `String` is a type alias for `[Char]`, i.e. a list of characters.
@@ -63,7 +63,7 @@ sublst :: Int -> Int -> [a] -> [a]
 sublst s l x = take l (drop s x)
 ```
 
-## 4 Basic Data Types
+# 4 Basic Data Types
 A **data type** is a set of _values_ with an abstract commonality. A **data declaration** defines a new data type. For example, the data type `Bool` is defined with the following _data declaration_.
 ```haskell
 data Bool = False | True
@@ -94,7 +94,7 @@ A **typeclass constraint** can be made for parameters with the following syntax 
 
 Variables in type signatures are commonly named according to the following rules: (1) Type variables are called `a`, `b`, ...; (2) function variables are called `f`, `g`, ... (3) Arguments to functions are often called `x`, `y`, and `z`. (4) Lists of `x` values are called `xs`. (5) All names can also occur with numbers or the prime symbol appended to them, e.e. `x1` or `f'`.
 
-### 4.1 Numbers
+## 4.1 Numbers
 Numbers are inheriting from the _typeclass_ `Num`. 
 * **`Int`**. An integral number (aka. integer) with a fixed precision, that is it has upper and lower bound (size: 8 byte). `GHC.Int` adds the integer types `Int8`, `Int16`, `Int32`, and `Int64`, with the number indicating the number of bits. The value range of `Int` is _[-9223372036854775808, 9223372036854775807]_.
 * **`Integer`**. An integral number that supports arbitrarily large or small numbers.
@@ -105,24 +105,24 @@ Numbers are inheriting from the _typeclass_ `Num`.
 
 The `Integer` type should be preferred over `Int`, and `Scientific` and `Rational` (typeclass `Fractional`) should be preferred over `Float` and `Double`, unless computational efficiency is a factor.
 
-### 4.2 Boolean
+## 4.2 Boolean
 The boolean data type can either be `True` or `False` and is defined as `data Bool = False | True`. Operators for booleans are `&&` for **and**, `||` for **or**, and the function `not` for **inversion**.
 
 Haskell features **if expressions** with the following syntax: `if <condition> then <a> else <b>`. The entire if expression evaluates to either `<a>` or `<b>`, depending on the condition.
 
-### 4.3 Tuples
+## 4.3 Tuples
 **Tuples** are types that store a fixed number _n_ of constituents which may have different types themselfes. _n_ is refered to as _arity_ (numer of parameters that a function takes). A tuple can be created with its constructor, `(,,) x1 x2 x3`, here with _n=3_. Tuples with _n=1_ must not exist, however, _n=0_ is possible and called _unit_ `()`.
 
 For convenience, the first element in a tuple can be accessed using `fst :: (a, b) -> a`; `snd` serves equally for the second value. `Data.Tuple` contains the tuple manipulation functions `curry`, `uncurry`, and `swap`. 
 
 A tuple can be unpacked when passed to a function with the following syntax: `tupleSum (a, b) = a + b`
 
-### 4.4 Lists
+## 4.4 Lists
 The **list** data type stores _n_ values of equal type, where _n_ can be changed dynamically.
 
 The **`n` th element** of a list can be accessed with the `!!` operator (`n` is zero based): ``"abc" !! n``.
 
-## 5 Types
+# 5 Types
 Type systems have been defined to enforce correctness. In Haskell, typing is _static_ and typechecking occurs at _compile time_. A **data type declaration** defines a _type constructor_ and _data constructors_. Haskell functions are created from the function type constructor `->` and the function is a _value_.
 
 A function signature may have **multiple typeclass constraints** `(Num a, Num b) => a -> b -> b`. In the example, `a` could be an `Integer` and both `b` could be `Double`s. However, different types for the second argument and the return type would not be possible. 
@@ -134,7 +134,7 @@ The `=>` is called **typeclass arrow**. The right associative **type constructor
 **Type inference** is the process of determining a variables _principle type_ by looking at the way it is being used. The **principle type** is the most generic type that can be assigned to a variable.
 
 
-## 6 Typeclasses
+# 6 Typeclasses
 **Typeclasses** generalize over a set of types in terms of comsumption or usage in computation. After declaring a data type with the `data Typename` keyword, typeclasses can be assigned with e.g. `instance Typeclass Typename`. Typeclasses can **inherit** from a _superclass_ (e.g. `class Num a => Fractional a`).
 
 A typeclass can be defined with the `class` keyword. The `Num` typeclass for example is defined as follows.
@@ -170,7 +170,7 @@ Typeclasses **default** to certain types. `Num` defaults to `Integer` for exampl
 
 **Effects** are observable actions programs may take, such as writing to a file or printing to the console. `IO` is the type for values whose evaluation bears the possibility of causing side effects.
 
-### 6.1 Derivable Typeclasses
+## 6.1 Derivable Typeclasses
 The following typeclasses can be automatically derived. That means they can be automatically instantiated for a given type, based on how it is defined.
 
  * **`Bounded`**. Types that have an upper and lower bound.
@@ -180,14 +180,14 @@ The following typeclasses can be automatically derived. That means they can be a
  * **`Read`**. Values can be parsed from strings. It is often a _partial_ function as it does not return a proper value for all possible inputs.
  * **`Show`**. Values can be converted to strings (e.g. for output). Enforces implementation of `showsPrec`, `show`, and `showList`. Printing things is possible in Haskell, even though it is purely functional, because the `print` method invokes `IO` which has the _side effect_ of outputting text. It returns the unit `()` because it has no relevant return value.
 
-### 6.2 Typeclass Inheritance
+## 6.2 Typeclass Inheritance
  Inheritance structure of common typeclasses. `Ord` inherits from `Eq`. `Real` inherits from `Ord` and `Num`. `Fractional` inherits from `Num`. `Integral` inherits from `Real`, `Fractional`, and `Enum`.
 
 
-## 7 Functional Patterns
+# 7 Functional Patterns
 Inner variables can _shadow_ outer variables, as can bee seen in the following function which always returns `5`: `func x = let x = 5 in x`.
 
-**Anonymous functions** are functions which are not bound to an identifier and can be declared with this syntax: `(\x -> x * 4) :: Num a => a -> a`. They are often used when a function is passed to another function with the former beeing needed only once.
+**Anonymous functions** (aka. lambdas) are functions which are not bound to an identifier and can be declared with this syntax: `(\x -> x * 4) :: Num a => a -> a`. They are often used when a function is passed to another function with the former beeing needed only once.
 
 The signature of **higher order functions** contains functions itself. For example `distributor :: (a -> b -> c) -> (a -> b) -> (a -> c)` takes two functions and returns a new one.
 
@@ -204,7 +204,7 @@ clip min max x
 
 **Binding** is the assignment of an argument to a parameter.
 
-## 8 Recursion
+# 8 Recursion
 A **recursive function** is defined in terms of itself. The **bottom case** ends the recursion, e.g. factorial of 0 is 1.
 
 In Haskell, **bottom** is a _non-value_ that is used to indicate that a function can not return a value. Possible reasons are errors, partial functions, or infinite recursion / loops.
@@ -218,7 +218,7 @@ dividedBy num denom = go num denom 0
           | otherwise = go (n - d) d (count + 1)
 ```
 
-## 9 Lists
+# 9 Lists
 
 In Haskell, lists are (1) a **collection of elements** of the same type, or (2) an **infinite series** of values (i.e. stream). 
 
@@ -233,7 +233,7 @@ of collection that isn’t the values contained therein. Calling the `length` fu
 
 Values in Haskell get reduced to **weak head normal form** by default. **Normal form** means that an expression is fully evaluated. Weak head normal form means the expression is only evaluated as far as is necessary to reach a data constructor. `"a" ++ "b"` is neither of both because the outermost component of the expression is a function.
 
-### 9.1 List Utilities
+## 9.1 List Utilities
  * **`take`** returns the **first _n_ elements** of a list. `take :: Int -> [a] -> [a]`
  * **`drop`** returns **all but the first _n_ elements** of a list. `drop :: Int -> [a] -> [a]`
  * **`takeWhile`** Iterates over the list and returns **all elements until the condition mismatches**. `takeWhile :: (a -> Bool) -> [a] -> [a]`
@@ -249,7 +249,7 @@ Values in Haskell get reduced to **weak head normal form** by default. **Normal 
  * **`unzip`** creates a tuple of **two lists out of a list of tuples**. `unzip :: [(a, b)] -> ([a], [b])`
  * **`zipWith`** combines **two lists into one** by subsequently applying a function to two elements. `zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]`
 
-## 10 Folding Lists
+# 10 Folding Lists
 Folding is the reduction of a structure. It happens at the two stages (1) traversal and (2) reduction. _Folds_ as a concept are also called **catamorphisms**, that is the unique homomorphism (structure preserving map) from an initial algebra into some other algebra.
 
 The right associative function **fold right**, `foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b`, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to the sequence of values, yielding one value as its result. The function folds a foldable type _with_ the function `f :: a -> b -> b`. When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the folable contains no value, e.g. en empty list `[]`.
@@ -258,7 +258,7 @@ The **left fold** is traversing the data structure in the same order as the righ
 
 **Scans** return a list of all intermediate values of a fold. `scanr :: (a -> b -> b) -> b -> [a] -> [b]` and `scanl` are the Haskell function for right fold and left fold respectively. `scanl` can for example be used to create an infinite list of Fibonacci numbers: `fibs = 1 : scanl (+) 1 fibs`. 
 
-## 11 Algebraic Datatypes
+# 11 Algebraic Datatypes
 **Type constructors** are used at the type level, in type signatures and typeclass declarations and instances. They are static and resolved at compile time. **Data constructors** construct values and can be interacted with at runtime. Type and data constructors with no arguments are **constants**, for instance `Bool`.
 
 The **arity** of a constructor is the number of parameters it has. A type or data constructor with no arguments are called _nullary_ and are _type constant_. Data constructors that take exactly one argument are called _unary_, with more than one they are called _products_.
@@ -267,7 +267,7 @@ A type constructor argument that does not occur at any value constructor is call
 
 The **record syntax** allows definition of types where the contained values have names. For example `data Person = Person { name :: String, age :: Int }`. The values can then be accessed by e.g. `name person`. 
 
-### 11.1 Kinds
+## 11.1 Kinds
 **Kinds** are the types of types. They can be queried in GHCi with `:kind`. For example the kind of `[]` is `* -> *` because it needs to be applied to a type (in order to yield `*`, which is _fully applied_).
 
 **Type constructing** is refering to the application of a type to a type constructor. 
@@ -280,7 +280,7 @@ f t@(a, _) = do
 ```
 
 
-### 11.2 Newtype
+## 11.2 Newtype
 **`type`** creates an alias (e.g. `type TwoBool = (Bool, Bool)`), **`data`** creates arbitrary data structures. **`newtype`** creates types with a single unary data constructor. Resulting from this, the cardinality of the new type equals the cardinality of the type it contains. A `newtype` can not be a product type, sum type, or contain a nullary value constructor. It has no runtime overhead, because it is reduced to the type it contains.
 
 An example of usage for `newtype`. The `Int` in `Goats` is wrapped and can therefore be processed differently by `tooMany`. 
@@ -309,14 +309,14 @@ instance TooMany Int where
 newtype Goats = Goats Int deriving (Eq, Show, TooMany)
 ```
 
-### 11.3 Cardinality
+## 11.3 Cardinality
 The **cardinality** of a type is the number of values it can possibly have. The cardinality _|A|_ of a type `A = A1 a11 ... a1n | ... | An an1 ... ann` is computed as _|A1|+...+|An|_, where _|Ai|=|ai1|×...×|ain|_. For example the cardinality of `Bool = False | True` is _1+1=2_.
 
 **Sum types** are _or_ connections of multiple types; e.g. `A = B | C`. **Product types** are _and_ connections and have e.g. the following shape: `A = B c d`. Here `B` contains `c` and `d`.
 
 The **number of possible behavioural patterns** of a function mapping from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
 
-## 12 Signaling Adversity
+# 12 Signaling Adversity
 In Haskell it is common to us so called _smart constructors_ [https://wiki.haskell.org/Smart_constructors](wiki.haskell.org). These constructors validate their arguments and return `Maybe`, i.e. either the desired object or `Nothing` (or throw an error). For more detailed information about the error, the return type may also `Either`, which holds a `Left` and a `Right` value. The former is commonly the error object.
 
 **Lifted** and **unlifted types** have different kinds, namely `*` and `#` respectively. Lifted types are much more common and differ from unlifted types by their property of being able to be inhabited by _bottom_.
@@ -325,7 +325,7 @@ The type construction `[Maybe]` is– invalid, because `[] :: * -> *` and `Maybe
 
 Opposed to folds, **unfolds** build up data structures from a single starting value (_anamorphism_). `iterate :: (a -> a) -> a -> [a]` does that infinitely, `unfoldr :: (b -> Maybe (a, b)) -> b -> [a]` (in `Data.List`) is the generalization which may terminate.
 
-## 13 Building Projects
+# 13 Building Projects
 Haskell **[Cabal](https://www.haskell.org/cabal/users-guide/)** (Common Architecture for Building Applications and Libraries) is a package manager. A package is a program that may have dependencies.
 
 **Stack** is a program for developing Haskell projects. It is built on top of Cabal. The command `stack build` builds a project and `stack setup` [...]. `stack ghci` starts GHCi in the context of a program, where functions can be executed. `stack new <project-name> simple` creates a new project.
@@ -356,7 +356,7 @@ With an **alias**, e.g. `import qualified Data.Bool as B`, `bool` is accessible 
 
 In GHCi the **`:browse <Module>`** command can be used to list all exported items of a module. `Prelude` can be disabled with the command `stack ghci --ghci-options -XNoImplicitPrelude`.
 
-### 13.1 Read CSV File
+## 13.1 Read CSV File
 Example snippet
 ```haskell
 module CSVReader 
@@ -374,7 +374,7 @@ readCsv = do
     parseCsv s = map (splitOn ",") (lines s)
 ```
 
-## 14 Testing
+# 14 Testing
 There are generally four recognized levels of tests.
 1. **Unit testing** tests small units of code, generally on function level or in object-oriented programming environments on class level.
 2. **Integration testing** verifies the interfaces between components against design. It ensures that the units (tested in 1.) are _wired up_ properly.
@@ -382,7 +382,7 @@ There are generally four recognized levels of tests.
 4. **System testing** tests a completely integrated system to verify that the system meets its requirements.
 
 A **property-based testing** framework runs the same test over and over with generated input.
-### 14.1 Hspec
+## 14.1 Hspec
 Hspec ([website](https://hspec.github.io/)) is a Haskell testing framework. In order to work with it, add the dependency `hspec` or install it manually (e.g. v2.4.3) with
 ```bash
 cabal install hspec
@@ -398,7 +398,7 @@ main = hspec $ do
       (1 + 1) > 1 `shouldBe` True
 ```
 
-### 14.2 QuickCheck
+## 14.2 QuickCheck
 QuickCheck ([website](http://www.cse.chalmers.se/~rjmh/QuickCheck/)) was the first library to offer what is today called property testing. The dependency is spelled `QuickCheck`.
 
 ```bash
@@ -427,8 +427,8 @@ genChar = elements ['a'..'z']
 
 `CoArbitrary` is used when random functions need to be generated.
 
-## 15 Monoid and Semigroup
-### 15.1 Monoid
+# 15 Monoid and Semigroup
+## 15.1 Monoid
 A **monoid** is a binary associative operation with an identity. In other words, it is an operator that takes two arguments that follow the rules associativity and identity.
 
 ```haskell
@@ -447,7 +447,7 @@ Much more extended functionality lies in the **package `Data.Monoid`**. Opposed 
 The **Abelian monoid** has the commutative property. An **orphan instance** is an instance that is defined for a datatype
 and typeclass, but not in the same module as either of them. If neither typeclass nor datatype were defined manually, the best workaround is to create a `newtype` which wraps the datatype.
 
-### 15.2 Semigroup
+## 15.2 Semigroup
 A **semigroup** (Haskell package `Data.Semigroup`) is a monoid without the identity property. That is an operation which takes two inputs and reduces them to one, and suffices the law of associativity. In code, that means the semigroup defines
 ```haskell
 class Semigroup a where
@@ -457,7 +457,7 @@ while satifying associativity, i.e. `(a <> b) <> c = a <> (b <> c)`.
 
 The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that contains one or more elements.
 
-## 16 Functor
+# 16 Functor
 A functor is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law `fmap (f . g) == fmap f . fmap g` holds. The infix operator for `fmap` is `<$>`.
 ```haskell
 class Functor (f :: * -> *) where
@@ -481,7 +481,7 @@ A **natural transformation** is changing the structure while preserving the cont
 type Nat f g = forall a . f a -> g a
 ```
 
-## 17 Applicative
+# 17 Applicative
 An **applicative** is a monoidal functor. Opposed to `fmap`, with `<*>` the function (that is applied to the enclosed values) is inside a functor itself. Intuitively this can be understood as _mapping a plurality of functions over a plurality of values_. The type info is the following:
 ```haskell
 class Functor f => Applicative (f :: * -> *) where
@@ -497,14 +497,14 @@ An `Applicative` satisfies the two following laws:
 3. Homomorphism (structure preserving): `pure f <*> pure x = pure (f x)`
 4. Interchange: `u <*> pure y = pure ($ y) <*> u`
 
-### 17.1 Examples
+## 17.1 Examples
 | Command | Result |
 | --- | --- |
 | `(,) <$> [1, 2] <*> [3, 4]` | `[(1,3),(1,4),(2,3),(2,4)]`|
 | `(+) <$> [1, 2] <*> [3, 5]` | `[4,6,5,7]` |
 | `liftA2 (+) [1, 2] [3, 5]` | `[4,6,5,7]` |
 
-### 17.2 Testing
+## 17.2 Testing
 Validating whether a data structure satisfies the mentioned laws can be done with the [checkers](https://github.com/conal/checkers) package. The following snippets validates an `Applicative`. Note that the value is not actually being used. Its purpose is to indicate which types to validate.
 ```haskell
 module ApplicativeTests where
@@ -519,7 +519,7 @@ main = do
   quickBatch $ applicative list
 ```
 
-### 17.3 Maybe
+## 17.3 Maybe
 [Source code](https://hackage.haskell.org/package/base-4.10.1.0/docs/src/GHC.Base.html)
 ```haskell
 -- | @since 2.01
@@ -537,7 +537,7 @@ instance Applicative Maybe where
 ```
 
 
-## 18 Monad
+# 18 Monad
 Monad is a typeclass reifying an abstraction that is commonly used in Haskell. Instead of an ordinary function of type a to b, it is functorially **applying a function which produces more structure itself** and **using join to reduce the nested structure** that results.
 
 ```haskell
@@ -587,10 +587,10 @@ The **Kleisli composition** (_fish_ operator: `>=>`) is about composing two func
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 ```
 
-## 19 Applying Structure
+# 19 Applying Structure
 The operators `*>`, `<*` and `>>` discard one of their arguments and are often used in combination with functions that emit side effects.
 
-### 19.1 JSON Parsing Example
+## 19.1 JSON Parsing Example
 The data is nested inside of the `Parser` monad so the value constructor `Payload` needs to be lifted.
 ```haskell
 parseJSON :: Value -> Parser a
@@ -606,11 +606,43 @@ instance FromJSON Payload where
   parseJSON v = typeMismatch "Payload" v
 ```
 
-Clarify why a function can be passed where a monad is required (PDF page 837).
+# 20 Foldable
+The foldable typeclass has the following definition:
+```haskell
+class Foldable (t :: * -> *) where
+  Data.Foldable.fold :: Monoid m => t m -> m
+  foldMap :: Monoid m => (a -> m) -> t a -> m
+  foldr :: (a -> b -> b) -> b -> t a -> b
+  Data.Foldable.foldr' :: (a -> b -> b) -> b -> t a -> b
+  foldl :: (b -> a -> b) -> b -> t a -> b
+  Data.Foldable.foldl' :: (b -> a -> b) -> b -> t a -> b
+  foldr1 :: (a -> a -> a) -> t a -> a
+  foldl1 :: (a -> a -> a) -> t a -> a
+  Data.Foldable.toList :: t a -> [a]
+  null :: t a -> Bool
+  length :: t a -> Int
+  elem :: Eq a => a -> t a -> Bool
+  maximum :: Ord a => t a -> a
+  minimum :: Ord a => t a -> a
+  sum :: Num a => t a -> a
+  product :: Num a => t a -> a
+  {-# MINIMAL foldMap | foldr #-}
+```
+
+For its definition it is sufficient to provide an implementation for either `foldMap` or `foldr`. All other functions can be deduced from that.
+
+`Monoid`s are related to the functions `foldr` and `foldMap`. The former uses the monoid definitions of elements inside of the foldable structure to combine them. The latter converts the elements to monoidal values and folds subsequently. In both cases the default-value is provided by the monoid identity.
+
+The **`null`** function returns `True` if the data structure is empty. Note, that e.g. `null (Left 1)` is `True`, because `Left` is considered empty whereas `Right` is not.
+
+Noteworthy are also **`toList`**, **`length`**, and **`elem`**. Both ignore the non-monoid values, for instance `length (1, 1)` is `1`.
+
+Both, `maximum` and `minimum` require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is being thrown).
+
 
 ---
 
-### Todo
+## Todo
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
 * Write Either with failure Monoid which does not store the same error twice.
 
