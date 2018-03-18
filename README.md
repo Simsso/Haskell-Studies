@@ -639,6 +639,7 @@ Noteworthy are also **`toList`**, **`length`**, and **`elem`**. Both ignore the 
 
 Both, `maximum` and `minimum` require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is being thrown).
 
+<<<<<<< HEAD
 # 21 Traversable
 **`Traversable`** allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to `Functor`, where function applications happen semantically in parallel. Return values of later function applications of `Traversable` can depend upon the earlier results. That can be seen as an __accumulation of applicative contexts__. The typeclass definition is the following:
 ```haskell
@@ -677,6 +678,8 @@ instance Traversable (Either a) where
 * `(sequence .) . fmap`
 * Naturality
 
+=======
+>>>>>>> 24e341da4853dd41c962f7810a3850cd7bc67d7a
 
 ---
 
