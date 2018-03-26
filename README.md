@@ -639,7 +639,6 @@ Noteworthy are also **`toList`**, **`length`**, and **`elem`**. Both ignore the 
 
 Both, `maximum` and `minimum` require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is being thrown).
 
-<<<<<<< HEAD
 # 21 Traversable
 **`Traversable`** allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to `Functor`, where function applications happen semantically in parallel. Return values of later function applications of `Traversable` can depend upon the earlier results. That can be seen as an __accumulation of applicative contexts__. The typeclass definition is the following:
 ```haskell
@@ -677,15 +676,46 @@ instance Traversable (Either a) where
 * Difference on page 878 bottom?
 * `(sequence .) . fmap`
 * Naturality
+* **"Why does `Traversable` _depend_ on `Foldable`?"** [Reddit](https://www.reddit.com/r/haskell/comments/7dmjh8/why_does_traversable_need_foldable/)
 
-=======
->>>>>>> 24e341da4853dd41c962f7810a3850cd7bc67d7a
+
+# 22 Reader
+
+The core problem that `Reader` solves is the application of an argument to many functions. It is inconvenient to have a similar signature across many functions. The `Reader` is wrapping a function which maps from `r` to `a`.
+
+```haskell
+newtype Reader r a = Reader { runReader :: r -> a }
+```
+
+The `Functor` instance of a function `(-> r)` is composition. The `Applicative` and `Monad` instances allow for the mapping of a function that expects an `a` over another function that expects an `a` as well. The result of the first function is fed into the second together with an `a` (see code snippet below).
+
+```haskell
+(<*>) :: (r -> a -> b) -> (r -> a) -> (r -> b)
+
+(<$->>) :: (a -> b) -> (r -> a) -> (r -> b)
+(<$->>) = (<$>)
+
+(<*->>) :: (r -> a -> b) -> (r -> a) -> (r -> b)
+(<*->>) = (<*>)
+```
+
+Here is the `Monad` instance with and without function:
+```haskell
+(>>=) :: Monad m => m a -> (a -> m b) -> m b
+(>>=) :: (r -> a) -> (a -> r -> b) -> (r -> b)
+```
+
+The function `fmap` can be used for **function composition**: Let `f` and `g` be two functions, than `f . g = fmap f g`.
+
+The extension `{-# LANGUAGE InstanceSigs #-}` allows for the explicit definition of function signatures of typeclasses. It is not necessary for any compilation purpose because the compiler knows the signatures anyways. However, it can be helpful for the sake of clarification.
+
 
 ---
 
 ## Todo
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
 * Write Either with failure Monoid which does not store the same error twice.
+* `tupled'`, `getDogReader`
 
 ## Quotes
 12. > As natural as any competitive bodybuilder  
@@ -698,3 +728,4 @@ instance Traversable (Either a) where
 18. > And putStrLn takes a String argument, performs I/O, and returns nothing interesting — parents of children with an allowance can sympathize.
     > Fail fast, like an overfunded startup
 21. > This is how you learn to play type Tetris with the pros.
+22. > The rest of the chapter will wait while you verify these things.

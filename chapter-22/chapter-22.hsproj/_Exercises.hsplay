@@ -1,0 +1,10 @@
+-- Haskell Playground 1.0
+composed "Julie"
+fmapped "Julie"
+fmapped "Chris"
+
+tupled "Timo"
+
+:t (>>=)
+
+tupled' "Timo"
