@@ -1,0 +1,15 @@
+-- Haskell Playground 1.0
+:t Moi
+
+runMoi get "curryIsAmaze"
+
+runMoi (put "blah") "woot"
+exec (put "wilma") "daphne"
+
+exec get "scooby papu"
+
+eval get "bunnicula"
+eval get "stake a bunny"
+
+runMoi (modify (+1)) 0
+runMoi (modify (+1) >> modify (+1)) 0

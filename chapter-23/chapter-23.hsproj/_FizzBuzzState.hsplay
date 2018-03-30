@@ -1,0 +1,8 @@
+-- Haskell Playground 1.0
+main
+
+:t execState
+
+-- mapM_ https://stackoverflow.com/questions/27609062/what-is-the-difference-between-mapm-and-mapm-in-haskell
+
+

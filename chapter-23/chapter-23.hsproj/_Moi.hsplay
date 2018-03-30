@@ -1,0 +1,5 @@
+-- Haskell Playground 1.0
+runMoi ((+1) <$> (Moi $ \s -> (0, s))) 0
+(1,0)
+
+type Reader r a = (->) r a

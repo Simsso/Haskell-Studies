@@ -710,6 +710,13 @@ The function `fmap` can be used for **function composition**: Let `f` and `g` be
 The extension `{-# LANGUAGE InstanceSigs #-}` allows for the explicit definition of function signatures of typeclasses. It is not necessary for any compilation purpose because the compiler knows the signatures anyways. However, it can be helpful for the sake of clarification.
 
 
+## 23 State
+Definition
+```haskell
+newtype State s a = State { runState :: s -> (a, s) }
+```
+
+
 ---
 
 ## Todo
@@ -729,3 +736,4 @@ The extension `{-# LANGUAGE InstanceSigs #-}` allows for the explicit definition
     > Fail fast, like an overfunded startup
 21. > This is how you learn to play type Tetris with the pros.
 22. > The rest of the chapter will wait while you verify these things.
+23. > Try it a couple of times to see what we mean. It seems unlikely that this will develop into a gambling addiction

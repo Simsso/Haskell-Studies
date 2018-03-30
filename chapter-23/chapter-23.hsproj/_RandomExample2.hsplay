@@ -1,0 +1,16 @@
+-- Haskell Playground 1.0
+evalState rollDieThreeTimes' (mkStdGen 0)
+evalState rollDieThreeTimes' (mkStdGen 1)
+
+take 6 $ evalState infiniteDie (mkStdGen 0)
+
+evalState (nDie 5) (mkStdGen 0)
+evalState (nDie 5) (mkStdGen 1)
+
+rollsToGetTwenty 20 (mkStdGen 0)
+
+((rollsToGetTwenty 20) . mkStdGen) <$> randomIO
+
+:t runState
+
+rollsCountLogged 100 (mkStdGen 0)
