@@ -1,0 +1,30 @@
+-- Haskell Playground 1.0
+
+:t char
+:t one
+:t eof
+:t parseString
+-- parseString :: Parser a -> Delta -> String -> Result a
+-- https://hackage.haskell.org/package/trifecta-1.7.1.1/docs/Text-Trifecta-Parser.html
+
+--testParse oneTwo'
+
+:t isA
+
+
+main
+
+parseString one mempty "1"
+
+parseString (string "abc") mempty "ab"
+
+abAccepted = char 'a' >> char 'b'
+abParser = parseString abAccepted mempty
+abParser "ab"
+abParser "a"
+abParser "abc"
+
+abParserStop = parseString (string "ab" >> eof) mempty
+abParserStop "a"
+abParserStop "ab"
+abParserStop "abc"

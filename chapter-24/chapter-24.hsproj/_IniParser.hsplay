@@ -1,0 +1,7 @@
+-- Haskell Playground 1.0
+:t Header <$> some letter
+
+-- while "Header <$> some letter" is polymorphic, the casting gives a concrete instance from trifecta
+let slp = Header <$> some letter :: Parser Header
+
+parseByteString parseIni mempty sectionEx

@@ -1,0 +1,17 @@
+-- Haskell Playground 1.0
+parseString parseDigit mempty "123"
+parseString parseDigit mempty "abc"
+parseString base10Integer mempty "123abc"
+parseString base10Integer mempty "abc"
+
+parseString base10Integer' mempty "-123abc"
+
+parseString base10Integer' mempty "152133abc"
+
+:t foldr
+:t foldl
+
+:t (<?>)
+
+parseString testParser mempty "--"
+parseString testParser mempty "-+"

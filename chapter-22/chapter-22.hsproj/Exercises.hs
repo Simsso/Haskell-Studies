@@ -24,7 +24,7 @@ tupled = do
     return (a,b)
     
 tupled' :: [Char] -> ([Char], [Char])
-tupled' = do cap >>= (\a -> rev >>= (\b -> return (a,b)))
+tupled' = cap >>= (\a -> rev >>= (\b -> return (a,b)))
   
 
 newtype Reader r a = Reader { runReader :: r -> a }

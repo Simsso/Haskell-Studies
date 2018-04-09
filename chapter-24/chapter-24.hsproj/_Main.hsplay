@@ -1,0 +1,50 @@
+-- Haskell Playground 1.0
+-- shoudl be "Success 123"
+numberParser "123"
+
+numberParser "123abc"
+
+print $ parseString parseNos mempty "123"
+print $ parseString parseNos mempty "\nabcdf"
+
+print $ parseString (some parseNos) mempty 
+  "\nabcdf\n123123\n42\ndj"
+  
+:t try
+
+:i Decimal
+
+
+print $ parseString parseDecimal mempty "1.5"
+print $ parseString parseFraction mempty "1/5"
+
+print $ parseString parseDecimalOrFraction mempty "1/5"
+
+print $ parseString parseMixed mempty "1"
+print $ parseString parseMixed mempty "1/5"
+
+
+
+
+-------
+parseString (some digit) mempty "123 456"
+parseString (some (some digit)) mempty "123 456"
+parseString (some integer) mempty "123 456"
+
+
+-- annotation
+trifP tryAnnot "13"
+
+
+-- valid bracket string
+-- valid
+parseString bracketParser mempty ""
+parseString bracketParser mempty "asdf(asdf)asdf"
+parseString bracketParser mempty "g(dfasdf())asdf(f)f"
+parseString bracketParser mempty "(())()"
+
+-- invalid
+parseString bracketParser mempty "(()"
+parseString bracketParser mempty "())"
+parseString bracketParser mempty "(((())())"
+parseString bracketParser mempty "((("

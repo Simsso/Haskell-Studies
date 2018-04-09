@@ -1,0 +1,7 @@
+-- Haskell Playground 1.0
+parseString parsePhone mempty "123-456-7890"
+parseString parsePhone mempty "1234567890"
+parseString parsePhone mempty "(123) 456-7890"
+parseString parsePhone mempty "1-123-456-7890"
+
+:t (count 10 even)

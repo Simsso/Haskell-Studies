@@ -716,8 +716,97 @@ Definition
 newtype State s a = State { runState :: s -> (a, s) }
 ```
 
+# 24 Parser Combinators
+A **parser** converts textual input into some data structure output. The textual input must be in conformance with a set of rules. A **parser combinator** is a higher order function which composes multiple parsers to yield a single parser.
+
+Using the parser module `trifeca` (`import Text.Trifecta`). Useful links:
+* [Text.Trifecta.Parser.Char](https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Char.html)
+* [Text.Trifecta.Parser.Combinators](https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Combinators.html) contains e.g. `eof`
+
+`trifecta` contains parsers and is used in combination with the `parsers` library with defines common parser classes which abstract over common kinds of things parsers do.
+
+It throws errors with the `unexpected` function.
+```haskell
+import Text.Trifecta
+
+stop :: Parser a
+stop = unexpected "stop"
+```
+
+The parser type is very similar to `State`. It takes a string, parses it and returns `Nothing` in case of failure. If parsing was successful, it returns a data structure and the remainder of the `String`.
+```haskell
+type Parser a = String -> Maybe (a, String)
+```
+
+`parseString :: Parser a -> Delta -> String -> Result a` is used to run a Trifecta parser. `Delta` may be `mempty`. The Attoparsec equivalent is `parseOnly`. Parsing functions of the most common libraries.
+```haskell
+trifP :: Show a => Parser a -> String -> IO ()
+trifP p i = print $ parseString p mempty i
+
+parsecP :: (Show a) => Parsec String () a -> String -> IO ()
+parsecP = parseTest
+
+attoP :: Show a => A.Parser a -> ByteString -> IO ()
+attoP p i = print $ parseOnly p i
+
+nobackParse :: (Monad f, CharParsing f) => f Char
+nobackParse = (char '1' >> char '2') <|> char '3'
+```
+
+In the following simple example, a parser accepts only the character sequence `ab`:
+```haskell
+abAccepted = char 'a' >> char 'b'
+abParser = parseString abAccepted mempty
+abParser "ab"
+-- Success 'b'
+abParser "a"
+-- Failure (ErrInfo {_errDoc = [1m(interactive)[0m:[1m1[0m:[1m2[0m: [91merror[0m: unexpected
+--    EOF, expected: "b"
+-- a[1m[94m<EOF>[0;1m[0m 
+--  [92m^[0m     , _errDeltas = [Columns 1 1]})
+```
+
+The parser above does not necessarily consume all its input. Given `"abc"` it would return `Success` as well. That can be changed using `eof`: `string "ab" >> eof`. Inputs such as `"abc"` would result in `Failure [...] expected: end of input [...]`. `eof = notFollowedBy anyChar`
+
+In most cases, a parser should not raise any error other than the parsing `Failure` that it may return. Other exceptions should be prevented from happening. The following example catches a division by zero error using `fail`.
+```haskell
+parseFraction :: Parser Rational
+parseFraction = do
+  numerator <- decimal
+  _ <- char '/'
+  denominator <- decimal
+  case denominator of
+    0 -> fail "Denominator most not be zero"
+    _ -> return (numerator % denominator)
+```
+
+**Parser libraries** in Haskell are `parsec`, `attoparsec`, `megaparsec`, and `trifecta`. `aeson` parses JSON, `cassava` parses CSV. Polymorphic parsers are written in a general manner an can be executed with any parser that implements the functions. The following is an example signature of a polymorphic parser.
+```haskell
+parseFraction :: (Monad m, TokenParsing m) => m Rational
+```
+
+Example for a parser which parses a number **or** a string:
+```haskell
+-- parse number or string
+type NumberOrString = Either Integer [Char]
+
+parseNos :: Parser NumberOrString
+parseNos =
+  skipMany (oneOf "\n ") >>
+  (Left <$> integer) <|> (Right <$> some letter)
+
+print $ parseString parseNos mempty "123"
+print $ parseString parseNos mempty "\nabcdf"
+```
+
+The `<?>` operator can be used to annotate branches of a parsing instruction. In the following example, `Tried 12` will be printed it the `12` branch was chosen instead of the `3`:
+```haskell
+tryAnnot :: (Monad f, CharParsing f) => f Char
+tryAnnot = (try (char '1' >> char '2') <?> "Tried 12") <|> (char '3' <?> "Tried 3")
+```
 
 ---
+
 
 ## Todo
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
@@ -737,3 +826,4 @@ newtype State s a = State { runState :: s -> (a, s) }
 21. > This is how you learn to play type Tetris with the pros.
 22. > The rest of the chapter will wait while you verify these things.
 23. > Try it a couple of times to see what we mean. It seems unlikely that this will develop into a gambling addiction
+24. > In reality, a modern and mature parser design in Haskell will often look about as familiar to you as the alien hellscape underneath the frozen crust of one of the moons of Jupiter.

@@ -1,0 +1,9 @@
+-- Haskell Playground 1.0
+parseString parseSemVer mempty "2.1.1"
+
+parseString parseSemVer mempty "1.0.0-x.7.z.92"
+
+SemVer 2 1 1 [] [] > SemVer 2 1 0 [] []
+
+:t (*>)
+:t (>>)
