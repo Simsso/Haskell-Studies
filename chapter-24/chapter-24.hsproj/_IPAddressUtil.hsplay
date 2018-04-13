@@ -1,7 +1,19 @@
 -- Haskell Playground 1.0
-parseString byteParser mempty "256"
-parseString byteParser mempty "255"
+parseString byte mempty "256"
+parseString byte mempty "255"
 
 :t foldl
 
-parseString ipv4Parser mempty <$> ["172.16.254.1", "204.120.0.15"]
+parseString ipv4Parser mempty <$> ["172.16.254.1", "0.0.0.0", "204.120.0.15", "123.213"]
+
+parseString ipv6Parser mempty "0:0:0:0:0:ffff:ac10:fe01"
+parseString ipv6Parser mempty "0:0:0:0:0:ffff:cc78:f"
+parseString ipv6Parser mempty "FE80:0000:0000:0000:0202:B3FF:FE1E:8329"
+parseString ipv6Parser mempty "2001:DB8::8:800:200C:417A"
+parseString ipv6Parser mempty "FE80::0202:B3FF:FE1E:8329"
+
+parseString hexByte mempty "fe01"
+
+:t length . filter
+:t length . filter (Zeros ==)
+:t foldr

@@ -68,5 +68,5 @@ bracketParser :: Parser ()
 bracketParser = try (go >> eof) <|> eof where
   go = let nbr = try $ skipMany (noneOf "()") <|> mempty
            rgo = try go <|> try nbr <|> mempty
-       in try (nbr >> char '(' >> rgo >> char ')' >> rgo)
+       in try $ nbr >> char '(' >> rgo >> char ')' >> rgo
 
