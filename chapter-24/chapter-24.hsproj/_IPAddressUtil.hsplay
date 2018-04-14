@@ -16,4 +16,9 @@ parseString hexByte mempty "fe01"
 
 :t length . filter
 :t length . filter (Zeros ==)
-:t foldr
+
+
+parseString (hexByte `sepBy` colon) mempty "a:b:4f"
+
+
+enumFromThen 0 8

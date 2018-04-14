@@ -2,15 +2,27 @@
 
 module IPAddressUtil (ipv4Parser, ipv6Parser) where
   
-import Control.Applicative (empty, (<|>))
-import Data.Bits (shiftL, (.|.))
+import Control.Applicative (empty)
+import Data.Bits (shiftL, (.|.), (.&.))
 import Data.Char (digitToInt)
 import Data.Word (Word8, Word16, Word32, Word64)
 import Text.Trifecta
-import Text.Parser.LookAhead
+import Data.List
 
 data IPAddress = IPAddress Word32
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
+  
+instance Show IPAddress where
+  show (IPAddress w) = intercalate "." $ showBytes w
+  
+showBytes :: Word32 -> [String]
+showBytes w = map show $ splitBytes w
+
+splitBytes :: Word32 -> [Word32]
+splitBytes w = undefined where
+  maskBytes :: Word32 -> [Word32]
+  maskBytes = undefined
+  byteIndices = enumFromThen 0 8
   
 ipv4Parser :: Parser IPAddress
 ipv4Parser = IPAddress . cast32 <$> (byte `sepBy` dot <* eof >>= lengthIs 4)
@@ -52,9 +64,15 @@ lengthAtMost n xs = if length xs <= n then return xs else empty
 
 
 data IPAddress6 = IPAddress6 Word64 Word64
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord)
   
-data IPAddress6Block = Values Word16 | Zeros deriving (Eq)
+instance Show IPAddress6 where
+  show (IPAddress6 w1 w0) = show val where
+    val = (toInteger w1) * twopow64 + (toInteger w0)
+    twopow64 :: Integer
+    twopow64 = foldr (*) 1 (take 64 $ repeat 2)
+    
+data IPAddress6Block = Values Word16 | Zeros deriving (Eq, Show)
   
 ipv6Parser :: Parser IPAddress6
 ipv6Parser = --some (try hexByte <* (try colon >> pure () <|> eof) <|> zeroShortcut)
@@ -79,8 +97,9 @@ unpackZerosShortcut blocks =
 hexByte :: Parser IPAddress6Block
 hexByte = let pchars = many hexChar >>= lengthAtMost 4
               pword8 = (fmap . fmap) (fromIntegral . digitToInt) pchars
-              countP = fmap length pword8
-          in  countP >>= (\n -> if n == 0 then return Zeros else Values . cast16 <$> pword8)
+              --countP = fmap length pword8
+          --in  countP >>= (\n -> if n == 0 then return Zeros else return (Values . cast16 <$> pword8))
+          in Values . cast16 <$> pword8
 
 hexChar :: Parser Char 
 hexChar = oneOf "0123456789abcdefABCDEF"
