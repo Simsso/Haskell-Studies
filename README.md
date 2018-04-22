@@ -805,6 +805,31 @@ tryAnnot :: (Monad f, CharParsing f) => f Char
 tryAnnot = (try (char '1' >> char '2') <?> "Tried 12") <|> (char '3' <?> "Tried 3")
 ```
 
+# 25 Monad Transformers
+A **monad transformer** is a type constructor that takes a monad as an argument.
+
+The following `newtype` constructs a datatype by **composing** datatype constructors. The kind is `Compose :: (* -> *) -> (* -> *) -> * -> *`, comparable to function composition `(.)`.
+```haskell
+newtype Compose f g a = Compose { getCompose :: f (g a) } 
+  deriving (Eq, Show)
+```
+
+The specialty of the `Monad` type is that cannot be implemented for the `Compose` `newtype` from above. That is the following function does not exist in a generic manner: `(>>=) :: Compose f g a -> (a -> Compose f g b) -> Compose f g b`, see ([Composing Monads](http://web.cecs.pdx.edu/~mpj/pubs/RR-1004.pdf)). This is where transformers come in, for instance `IdentityT`
+```haskell
+newtype IdentityT f a = IdentityT { runIdentityT :: f a }
+  deriving (Eq, Show)
+instance (Monad m) => Monad (IdentityT m) where
+  return = pure
+  (IdentityT ma) >>= f =
+    IdentityT $ ma >>= runIdentityT . f
+```
+where `IdentityT [...] runIdentityT . f` is required because the used `>>=` is the one of the `Monad m`, so `IdentityT` needs to be unpacked.
+
+Transformers have additional information on how to do the unpacking and subsequent boxing that is specific to the given monads, and cannot be generalized. Conversion from `f (g (f b))` to `f (f b)` in order to be able to bind and return `g (f b)`.  
+`m (T m b) -> m (m b) -> m b -> T m b`
+
+With two nested Functors, say List of Maybes, there is a guarantee that the nested data type is also a Functor. Same with Applicative. For Monad, this fact does not hold.
+
 ---
 
 
@@ -827,3 +852,4 @@ tryAnnot = (try (char '1' >> char '2') <?> "Tried 12") <|> (char '3' <?> "Tried 
 22. > The rest of the chapter will wait while you verify these things.
 23. > Try it a couple of times to see what we mean. It seems unlikely that this will develop into a gambling addiction
 24. > In reality, a modern and mature parser design in Haskell will often look about as familiar to you as the alien hellscape underneath the frozen crust of one of the moons of Jupiter.
+25. > In this chapter we will... ...work through an `Identity` crisis.
