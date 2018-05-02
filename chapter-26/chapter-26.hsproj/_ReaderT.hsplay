@@ -1,0 +1,9 @@
+-- Haskell Playground 1.0
+-- Hypothetical Exercise
+-- PDF page 1048
+
+f = \r -> Just 5
+rt = ReaderT f 
+--mt = MaybeT $ Reader f
+runReaderT rt 1
+--(runReader . runMaybeT $ mt) 1

@@ -1,8 +1,7 @@
 {-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE InstanceSigs #-}
 
-newtype Identity a = Identity { 
-  runIdentity :: a }
+newtype Identity a = Identity { runIdentity :: a }
   
 newtype Compose f g a =
   Compose { getCompose :: f (g a) }

@@ -1,0 +1,8 @@
+-- Haskell Playground 1.0
+:k MaybeT
+:k ExceptT
+:k ReaderT
+
+:t MaybeT
+:t Just
+:t pure

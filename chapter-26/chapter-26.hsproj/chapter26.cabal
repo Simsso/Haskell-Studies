@@ -1,0 +1,31 @@
+name: chapter26
+version: 1.0
+cabal-version: 1.22
+build-type: Simple
+license: AllRightsReserved
+stability: experimental
+x-ghc-framework-version: 8.0.2-8.9-3
+x-last-ide-version: HfM1.5.1
+Executable chapter26
+  main-is: Main.hs
+  buildable: True
+  build-depends:
+      mtl -any,
+      text -any,
+      random -any,
+      scotty -any,
+      transformers -any,
+      base -any,
+      containers -any
+  default-language: Haskell2010
+  other-modules:
+      ChapterExercises
+      EitherT
+      IdentityT
+      MorraCopied
+      StateT
+      Excite
+      MonadTrans
+      MaybeT
+      ReaderT
+      HitCounter

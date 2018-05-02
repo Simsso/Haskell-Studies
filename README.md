@@ -805,9 +805,7 @@ tryAnnot :: (Monad f, CharParsing f) => f Char
 tryAnnot = (try (char '1' >> char '2') <?> "Tried 12") <|> (char '3' <?> "Tried 3")
 ```
 
-# 25 Monad Transformers
-A **monad transformer** is a type constructor that takes a monad as an argument.
-
+# 25 Composing Types
 The following `newtype` constructs a datatype by **composing** datatype constructors. The kind is `Compose :: (* -> *) -> (* -> *) -> * -> *`, comparable to function composition `(.)`.
 ```haskell
 newtype Compose f g a = Compose { getCompose :: f (g a) } 
@@ -830,13 +828,81 @@ Transformers have additional information on how to do the unpacking and subseque
 
 With two nested Functors, say List of Maybes, there is a guarantee that the nested data type is also a Functor. Same with Applicative. For Monad, this fact does not hold.
 
----
+# 26 Monad Transformers
 
+A **monad transformer** is a type constructor that takes a monad as an argument. This monad is wrapped around another contained data type. The transformers themselfes are not generically monads, but implement the `Monad` typeclass logic. The inner type corresponds _commonly_ to the transformer, i.e. `MaybeT` is `m (Maybe a)`.
+
+`Identity` can be used as a `Monad` which converts transformers into their original types. For instance `type Maybe a = MaybeT Identity a`.
+
+The **[transformers](https://hackage.haskell.org/package/transformers) library** contains many implementations of transformers and should be preferred over own implementations if possible.
+
+The **base monad** is the outer-most monad, here it would be `m`: `StateT { runStateT :: s -> m (a, s) }`
+
+**Maybe Transformer `MaybeT`**
+```haskell
+newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
+```
+
+**State Transformer `StateT`**
+```haskell
+{-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE InstanceSigs #-}
+
+module StateT where
+  
+import Control.Arrow (first)
+
+newtype State s a = State { runState :: s -> (a, s) }
+
+-- Structure: StateT function > Monad > Tuple
+newtype StateT s m a = StateT { runStateT :: s -> m (a, s) }
+
+instance (Functor m) => Functor (StateT s m) where
+  fmap f (StateT a) = StateT $ \s -> first f <$> a s
+  
+instance (Monad m) => Applicative (StateT s m) where
+  pure a = StateT $ \s -> pure (a, s)
+  StateT g <*> StateT h = StateT $ \s -> do
+    (f, s') <- g s
+    (x, s'') <- h s'
+    return (f x, s'')
+    
+instance (Monad m) => Monad (StateT s m) where
+  return = pure
+  StateT sma >>= f = StateT $ \s -> sma s >>= \(a, s') -> runStateT (f a) s'
+```
+
+For **streaming**, it is generally not recommended to use `Writer`, `WriterT`, or `ListT` for performance reasons. Libraries such as [pipes](http://hackage.haskell.org/package/pipes) or [conduit](http://hackage.haskell.org/package/conduit) are better choices.
+
+
+**Lifting functions** exist with multiple different signatures but _should always_ do the same thing. The functions exist only for historical reasons.
+```haskell
+fmap  :: Functor f     => (a -> b) -> f a -> f b
+liftA :: Applicative f => (a -> b) -> f a -> f b
+liftM :: Monad m       => (a -> r) -> m a -> m r
+```
+
+**MonadTrans** is a typeclass with a lift method. Lifting means embedding an expression in a larger context by adding structure that doesn’t do anything.
+```haskell
+class MonadTrans t where
+  lift :: (Monad m) => m a -> t m a
+```
+
+
+**`MonadIO`** resides in `Control.Monad.IO.Class` and is intended to keep lifting an IO action until it is lifted over all structure that surrounds the outermost IO type. !!! (surrounds or embedded -- PDF page 1040)
+
+```haskell
+liftIO . return = return
+liftIO (m >>= f) = liftIO m >>= (liftIO . f)
+```
+
+---
 
 ## Todo
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
 * Write Either with failure Monoid which does not store the same error twice.
 * `tupled'`, `getDogReader`
+* Understand `MonadIO` (and the general idea behind it). [Potentially interesting](https://stackoverflow.com/questions/38212294/why-is-monadio-specific-to-io-rather-than-a-more-generic-monadtrans)
 
 ## Quotes
 12. > As natural as any competitive bodybuilder  
@@ -853,3 +919,4 @@ With two nested Functors, say List of Maybes, there is a guarantee that the nest
 23. > Try it a couple of times to see what we mean. It seems unlikely that this will develop into a gambling addiction
 24. > In reality, a modern and mature parser design in Haskell will often look about as familiar to you as the alien hellscape underneath the frozen crust of one of the moons of Jupiter.
 25. > In this chapter we will... ...work through an `Identity` crisis.
+26. > Keep in mind what these are doing, follow the types, lift till you drop.

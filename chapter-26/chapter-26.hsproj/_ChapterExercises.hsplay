@@ -1,0 +1,22 @@
+-- Haskell Playground 1.0
+runReader rDec 1
+fmap (runReader rDec) [1..10]
+
+runReader rDec' 1
+fmap (runReader rDec') [1..10]
+
+dec 5
+dec (-1)
+
+runReader rShow 1
+fmap (runReader rShow) [1..10]
+
+runReaderT rPrintAndInc 1
+
+traverse (runReaderT rPrintAndInc) [1..10]
+
+runStateT sPrintIncAccum 10
+mapM (runStateT sPrintIncAccum) [1..5]
+
+:t (*>)
+:t (>>)
