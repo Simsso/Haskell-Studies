@@ -100,7 +100,7 @@ Numbers are inheriting from the _typeclass_ `Num`.
 * **`Integer`**. An integral number that supports arbitrarily large or small numbers.
 * **`Float`**. Single-precision floating point number (size: 4 byte).
 * **`Double`**. Double-precision floating point number (size: 8 byte).
-* **`Rational`**. Represents a fraction of two integer numbers. The data type wraps two `Integer`s and is hence arbitrarilty precise.
+* **`Rational`**. Represents a fraction of two integer numbers. The data type wraps two `Integer`s and is hence arbitrarily precise.
 * **`Scientific`**. Floating point number with an `Integer` base and `Int` exponent. Therefore, the numbers can be arbitrarily large and precise. This data type is not part of GHC and must be installed separately (`stack install scientific`).
 
 The `Integer` type should be preferred over `Int`, and `Scientific` and `Rational` (typeclass `Fractional`) should be preferred over `Float` and `Double`, unless computational efficiency is a factor.
@@ -270,7 +270,7 @@ The **record syntax** allows definition of types where the contained values have
 ## 11.1 Kinds
 **Kinds** are the types of types. They can be queried in GHCi with `:kind`. For example the kind of `[]` is `* -> *` because it needs to be applied to a type (in order to yield `*`, which is _fully applied_).
 
-**Type constructing** is refering to the application of a type to a type constructor. 
+**Type constructing** is referring to the application of a type to a type constructor. 
 
 **As-patterns** are a way of unpacking an argument, still keeping a reference to the entire argument. The `@` sign is used for that:
 ```haskell
@@ -314,7 +314,7 @@ The **cardinality** of a type is the number of values it can possibly have. The 
 
 **Sum types** are _or_ connections of multiple types; e.g. `A = B | C`. **Product types** are _and_ connections and have e.g. the following shape: `A = B c d`. Here `B` contains `c` and `d`.
 
-The **number of possible behavioural patterns** of a function mapping from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
+The **number of possible behavioral patterns** of a function mapping from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
 
 # 12 Signaling Adversity
 In Haskell it is common to us so called _smart constructors_ [https://wiki.haskell.org/Smart_constructors](wiki.haskell.org). These constructors validate their arguments and return `Maybe`, i.e. either the desired object or `Nothing` (or throw an error). For more detailed information about the error, the return type may also `Either`, which holds a `Left` and a `Right` value. The former is commonly the error object.
@@ -896,6 +896,94 @@ liftIO . return = return
 liftIO (m >>= f) = liftIO m >>= (liftIO . f)
 ```
 
+# 27 Nonstrictness
+Evaluation can be _strict_, _nonstrict_. Haskell is nonstrict. Nonstrictness refers to semantics, that is how an expression is being evaluated. It means that expressions are evaluated outside-in. _Lazy_ refers to operational behavior, the way code is executed on a real computer, namely as late as possible. [SO answer](https://stackoverflow.com/a/7141537/3607984)
+
+In Haskell an expression does not need to be recomputed once it is evaluated. "Don't re-evaluate if you don't have to."
+
+The evaluation of an expression can be forced using the function `seq :: a -> b -> b`. It evaluates its first argument as soon as evaluation of the second argument is required.
+
+There are some compiler options available that allow for observation of the interpretation of the Haskell code (_core dump_). For instance `:set -ddump-simpl` or `:set -dsuppress-all`.
+
+The following snippet forces evaluation of `x` by tying it to `b`:
+```haskell
+discriminatory :: Bool -> Int
+discriminatory b =
+  let x = undefined
+  in case x `seq` b of
+    False -> 0
+    True -> 1
+```
+This translates to two nested `case` blocks:
+```haskell
+discriminatory =
+  \ b_a10D ->
+    let {
+      x_a10E
+      x_a10E = undefined } in
+    case
+      case x_a10E of _ {
+      __DEFAULT -> b_a10D
+    } of _ {
+      False -> I# 0;
+      True -> I# 1
+    }
+```
+
+This statement will not bottom out `case undefined of { _ -> False}` whereas `case undefined of { DEFAULT -> False }` cannot be simplified by the compiler and will result in an error.
+
+**Call strategies** are _call by value_, i.e. evaluation of an argument before passing it to a function, and _call by reference_ arguments are not necessarily evaluated. _Call by need_ ensures that expressions are only evaluated once.
+
+A **thunk** is used to reference suspended computations that might be performed or computed at a later point in your program.
+
+The `trace` function in `Debug.Tace` allows for logging at places, where the `IO` type is not present. That way, evaluation can be debugged. For instance `let a = trace "a" 1` would log `"a"`, as soon as `a` is being evaluated. Writing pointfree functions allows for caching, as can be seen in the following example:
+```haskell
+import Debug.Trace
+
+f :: Int -> Int
+f = trace "f called" (+) 1
+
+f' :: Int -> Int
+f' b = trace "f' called" 1 + b
+
+f 5
+f 6
+f' 5
+f' 6
+```
+which outputs
+```
+f 5
+f called
+f' 5
+f' called
+f' 6
+f' called
+```
+If `f` was, however, defined with the signature `f :: Num a => a -> a`, it would not be cached. That is because typeclass constraints will be resolved into additional arguments.
+
+Forcing a value **not to be shared** can be done by applying unit to it, as if it were a function. `let f x = (x ()) + (x ())`, where the signature is `f'' :: (() -> Int) -> Int`.
+
+`let` can be used to **force sharing**. Here, `(1 + 1) * (1 + 1)`, `1 + 1` would be computed twice. With `let` only once: `let x = 1 + 1 in x * x`.
+
+A function's pattern matching can be **refutable** (German: _widerlegbar_) or **irrefutable**. The former is for instance `f True = ...`, the latter `f _ = ...` or `f x = ...`. The terminology is not about the function but about a single pattern matching expression, i.e. one line.
+
+**Lazy pattern matches** can be implemented using the `~`. The first function will fail, when invoked with `undefined`, whereas the latter works. The latter also makes the pattern irrefutable though.
+```haskell
+strictPattern :: (a, b) -> Integer
+strictPattern (a,b) = const 1 a
+lazyPattern :: (a, b) -> Integer
+lazyPattern ~(a,b) = const 1 a
+```
+
+**Bang patterns** can be used to force evaluation of function parameters (see example below) or value contstructor parameters.
+```haskell
+banging :: Bool -> Int
+banging !b = 1
+```
+
+The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for expressions in the particular source code file. Thereby they avoid `seq`, `~`, and `!` noise if everything is supposed to be strict. The meaning of `~` is now inverted, i.e. it forces lazyness.
+
 ---
 
 ## Todo
@@ -920,3 +1008,4 @@ liftIO (m >>= f) = liftIO m >>= (liftIO . f)
 24. > In reality, a modern and mature parser design in Haskell will often look about as familiar to you as the alien hellscape underneath the frozen crust of one of the moons of Jupiter.
 25. > In this chapter we will... ...work through an `Identity` crisis.
 26. > Keep in mind what these are doing, follow the types, lift till you drop.
+27. > We will... ...live the Thunk Life

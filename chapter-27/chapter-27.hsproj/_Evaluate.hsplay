@@ -1,0 +1,37 @@
+-- Haskell Playground 1.0
+-- (1)
+const 1 undefined
+-- \_ -> 1
+-- \undefined -> 1
+-- 1
+-- (2)
+const undefined 1
+-- \_ -> undefined
+-- \1 -> undefined
+-- undefined-- (3)
+flip const undefined 1
+-- \_ b -> b
+-- \undefined b -> b
+-- \undefined 1 -> 1
+-- 1-- (4) 
+flip const 1 undefined
+-- ...
+-- (5)
+const undefined undefined
+-- \_ b -> b
+-- \_ undefined -> undefined
+-- undefined-- (6)
+foldr const 'z' ['a'..'e']
+:t foldr
+-- const 'a' $ foldr const 'z' ['b'..'e']
+-- ...
+-- const 'a' $ const 'b' $ ... $ foldr const 'z' []
+-- const 'a' $ const 'b' $ ... $ const 'e' 'z'
+-- const 'a' 'z'
+-- 'a'-- (7)
+foldr (flip const) 'z' ['a'..'e']
+-- flip const 'a' $ foldr (flip const) 'z' ['b'..'e']
+-- ...
+-- flip const 'a' $ flip const 'b' $ ... $ flip const 'e' 'z'
+-- flip const 'a' 'z'
+-- 'z'

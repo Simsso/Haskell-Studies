@@ -26,6 +26,7 @@ Executable chapter26
       StateT
       Excite
       MonadTrans
+      HitCounterSimple
       MaybeT
       ReaderT
       HitCounter

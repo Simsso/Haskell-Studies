@@ -1,0 +1,31 @@
+-- Haskell Playground 1.0
+memoized_fib 1
+memoized_fib 400
+memoized_fib 399
+
+
+h = (-) (f 10000)
+
+
+
+
+9
+h 5
+h 3
+
+\s -> [0..] !! s
+
+inc = (+) 1
+
+
+split x  = (,) x x
+split'   = (,) <$> inc <*> inc
+split''  = (,) <*> inc <$> inc
+split''' = (,) <*> inc
+
+split'   3
+split''  3
+split''' 3
+
+import Control.Applicative
+:t liftA2

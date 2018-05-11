@@ -1,0 +1,32 @@
+-- Haskell Playground 1.0
+-- What will :sprint output
+x1 = 1        -- _ (check)
+x2 = ['1']    -- ['1'] ("1")
+x3 = [1]      -- [_] (_)
+x4 = 1 :: Int -- 1 (check)
+f1 = \x -> x  -- _ (check)
+x5 = f1 1     -- _ (check)
+f2 :: Int -> Int; f2 = \x -> x -- _ (check)
+let x6 = f2 1 -- _ (check)
+
+
+-- Will these expressions result in bottom?
+snd (undefined, 1)
+x = undefined
+y' = let y = x `seq` 1 in snd (x, y)
+y'
+
+length $ [1..5] ++ undefined
+length $ [1..5] ++ [undefined]
+const 1 undefined
+const 1 (undefined `seq` 1)
+const undefined 1
+
+
+xa = undefined
+ya = xa `seq` "blah"
+main = do
+       print (snd (xa, ya))
+       
+main
+:t seq

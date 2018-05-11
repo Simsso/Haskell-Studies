@@ -1,0 +1,13 @@
+-- Haskell Playground 1.0
+let myList = [1, 2] :: [Integer]
+let myList2 = [1..] :: [Integer]
+
+add' 1 2
+
+add5 1
+
+
+take 100 $ map (**2) [1..]
+
+
+add5 . add4 $ 8

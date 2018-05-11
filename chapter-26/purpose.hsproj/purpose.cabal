@@ -1,0 +1,19 @@
+name: purpose
+version: 1.0
+cabal-version: 1.22
+build-type: Simple
+license: AllRightsReserved
+stability: experimental
+x-ghc-framework-version: 8.0.2-8.9-3
+x-last-ide-version: HfM1.5.1
+Executable purpose
+  main-is: PurposeState.hs
+  buildable: True
+  build-depends:
+      base -any,
+      random -any
+  default-language: Haskell2010
+  other-modules:
+      PurposeReader
+      PurposeStateT
+      PurposeReaderT

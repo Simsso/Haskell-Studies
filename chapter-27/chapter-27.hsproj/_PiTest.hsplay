@@ -1,0 +1,14 @@
+-- Haskell Playground 1.0
+import Data.Char
+
+x = take 100 $ map kthpi [0..]
+
+bbp 100
+
+x
+:t intToDigit
+
+map (intToDigit . fromIntegral) x
+
+
+kthpi 280
