@@ -19,14 +19,15 @@ Executable chapter26
       containers -any
   default-language: Haskell2010
   other-modules:
-      ChapterExercises
+      HitCounter
       EitherT
-      IdentityT
       MorraCopied
-      StateT
       Excite
       MonadTrans
       HitCounterSimple
       MaybeT
+      Light
+      IdentityT
+      StateT
       ReaderT
-      HitCounter
+      ChapterExercises

@@ -984,9 +984,88 @@ banging !b = 1
 
 The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for expressions in the particular source code file. Thereby they avoid `seq`, `~`, and `!` noise if everything is supposed to be strict. The meaning of `~` is now inverted, i.e. it forces lazyness.
 
+
+# 28 Basic Libraries
+## 28.1 Benchmarking and Profiling
+The library `criterion` can be used for benchmarking.
+* Import: `import Criterion.Main`
+* Compiler options: `stack ghc -- -O2 file.hs` (or without Stack: `ghc -O2 file.hs`). `-02` enables the highest level of optimization
+* Measures how long it takes (on average) to evluate a certain expression.
+* `whnf` (weak head normal form) evaluates until it reaches the first data constructor (_used most of the time_); `nf` (normal form) evaluates everything.
+
+The sample snippet
+```haskell
+main :: IO ()
+main = defaultMain
+  [ bench "test" $ whnf ([1..9999] !!) 9998 ]
+```
+could have this output:
+```
+benchmarking test
+time                 41.14 μs   (37.59 μs .. 46.23 μs)
+                     0.871 R²   (0.739 R² .. 0.992 R²)
+mean                 39.91 μs   (37.36 μs .. 46.33 μs)
+std dev              13.83 μs   (3.873 μs .. 25.74 μs)
+variance introduced by outliers: 98% (severely inflated)
+```
+
+[GHC user guide on profiling](https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html)
+
+**CAF**s (constant applicative forms) are expressions that have no free variables and are held in memory (pointfree top-level declarations). For instance (in the file profile.hs)
+```haskell
+memoizedFib :: Int -> Integer
+memoizedFib = (map fib [0 ..] !!)
+   where fib 0 = 0
+         fib 1 = 1
+         fib n = memoizedFib (n-2) + memoizedFib (n-1)
+
+main :: IO ()
+main = putStrLn . show $ memoizedFib 1000
+```
+the profiling
+```
+stack ghc -- -prof -fprof-auto > -rtsopts -O2 profile.hs
+./profile +RTS -P
+cat profile.prof
+```
+outputs (excerpt):
+```
+COST CENTRE     MODULE           SRC                       %time %alloc  ticks     bytes
+
+memoizedFib.fib Main             profile.hs:(3,10)-(5,54)  100.0   48.2      7    124200
+CAF             GHC.IO.Handle.FD <entire-module>             0.0   13.5      0     34704
+CAF             GHC.IO.Encoding  <entire-module>             0.0    1.1      0      2768
+main            Main             profile.hs:8:1-41           0.0    8.5      0     21800
+memoizedFib     Main             profile.hs:(2,1)-(5,54)     0.0   28.0      0     72120
+```
+
+## 28.2 Map
+Package: `Data.Map.Strict`  
+Access to values through their keys, access time _O(log n)_.
+
+## 28.3 Set
+Package: `Data.Set`  
+A set stores values (none must occur more than once). It can be seen as a map without values. Access time complexity: _O(log n)_.
+
+## 28.4 Sequence
+Package: `Data.Sequence`  
+While appending to a normal Haskell list has _O(n)_ complexity, appending to a sequence is as fast as prepending to a normal list, i.e. _O(1)_.
+
+## 28.5 Vector
+Package: `Data.Vector` ([https://hackage.haskell.org/package/vector](package))  
+A vector wraps an [array](http://hackage.haskell.org/package/array). Should be used when having high performance requirements, accessing elements by indexing with `Int`, slicing (partitioning) is done, or uniform access time is needed.
+
+## 28.6 Strings
+* `String`: Standard, slow, list of characters, possibly infinite.
+* `Text`: Text encoded as UTF-16, more efficient than `String` in terms of storage.
+* `ByteString`: Internally represented as a vector of `Word8` values (i.e. bytes), can contain non-text data. Easy to use via the `OverloadedStrings` extension.
+
 ---
 
 ## Todo
+* Write benchmark for `newtype DList a = DL { unDL :: [a] -> [a] }`
+* Pop fast
+* Make `slice' from len = take len . drop from` point-free
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
 * Write Either with failure Monoid which does not store the same error twice.
 * `tupled'`, `getDogReader`
@@ -1009,3 +1088,4 @@ The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for e
 25. > In this chapter we will... ...work through an `Identity` crisis.
 26. > Keep in mind what these are doing, follow the types, lift till you drop.
 27. > We will... ...live the Thunk Life
+29. > We have measured time; now we shall measure space. Well, memory anyway; we’re not astrophysicists.
