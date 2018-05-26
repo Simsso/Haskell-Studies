@@ -1,2 +1,37 @@
 -- Haskell Playground 1.0
+
+:t slice''
+
+import Control.Applicative
+:t liftA2
+
+
+:t take
+:t drop
+
+:t flip take
+:t (.) (flip drop)
+:t ((.) (flip drop)) . (flip take)
+
+f :: a -> b -> c -> d; f = undefined
+:t (.) ((flip) f)
+:t flip <$> f
+-- Dominik
+:t flip (.) f . flip flip
+
+-- Int -> Int -> [a] -> [a]
+
+
+--------
+
+:t flip $ (.)(.)(.) (flip take) drop
+
+
+:t (.)(.) take
+
+
+slice'' 0 2 [1, 2, 3, 4]
+
+------
+
 main

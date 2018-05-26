@@ -2,7 +2,7 @@
 
 module SimpleQueue where
   
-import Criterion.Main
+---import Criterion.Main
 
 -- From Okasaki's Purely
 -- Functional Data Structures

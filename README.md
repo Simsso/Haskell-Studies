@@ -1060,6 +1060,20 @@ A vector wraps an [array](http://hackage.haskell.org/package/array). Should be u
 * `Text`: Text encoded as UTF-16, more efficient than `String` in terms of storage.
 * `ByteString`: Internally represented as a vector of `Word8` values (i.e. bytes), can contain non-text data. Easy to use via the `OverloadedStrings` extension.
 
+
+# 29 IO
+> The IO Monad is just an instance of the ST monad, where the state is the real world.
+The `IO` `:info`:
+```haskell
+newtype IO a = IO (State# RealWorld -> (# State# RealWorld, a #))
+instance Applicative IO
+instance Functor IO
+instance Monad IO
+instance Monoid a => Monoid (IO a)
+```
+
+* `IO` disables the reordering of operations.
+* An expression is referentially transparent when it can be replaced with its value without changing the behavior of a program.
 ---
 
 ## Todo
