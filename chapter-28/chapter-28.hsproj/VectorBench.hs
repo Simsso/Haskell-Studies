@@ -9,8 +9,7 @@ slice' from len = take len . drop from
 slice'' :: Int -> Int -> [a] -> [a]
 slice'' = flip $ flip (.) ((.)(.)(.) (flip take) drop) . flip flip
 
-slice :: Int -> Int -> [a] -> [a]
-slice from len xs = take len (drop from xs)
+slice :: Int -> Int -> [a] -> [a]slice from len xs = take len (drop from xs)
 
 l :: [Int]
 l = [1..1000]

@@ -350,7 +350,7 @@ module ModuleName
 
 -- implementation of function1, constant 1, and possibly more
 ```
-The importing module can also choose what to **import**. This is dome similarly through a list of items, e.g. `import Data.Bool (bool)`.  
+The importing module can also choose what to **import**. This is dome similarly through a list of items, e.g. `import Data.Bool (bool)`. The other way around, certain things can be excluded: `import Database.SQLite.Simple hiding (close)`.  
 **Qualified imports** persist the fully qualified name of the imported items. That means with `import qualified Data.Bool` the function `bool` is only accessible through `Data.Bool.bool`.  
 With an **alias**, e.g. `import qualified Data.Bool as B`, `bool` is accessible through  `B.bool`.
 
@@ -1074,12 +1074,55 @@ instance Monoid a => Monoid (IO a)
 
 * `IO` disables the reordering of operations.
 * An expression is referentially transparent when it can be replaced with its value without changing the behavior of a program.
+
+# 30 Error Handling
+The `Exception` class resides in `GHC.Exception` and is defined as follows:
+```haskell
+class (Typeable e, Show e) => Exception e where
+  toException :: e -> SomeException
+  fromException :: SomeException -> Maybe e
+  displayException :: e -> String
+instance Exception SomeException
+instance Exception ErrorCall
+instance Exception ArithException
+```
+
+Some types that have an instance of the `Exception` class are `IOException`, `ErrorCall`, `AssertionFailed`, and `ArithException`. The latter contains several values, namely `Overflow`, `Underflow`, `LossOfPrecision`, `DivideByZero`, `Denormal`, and `RatioZeroDenominator`.
+
+Existential quantification allows for the definition of an exception type that represents a variety of values, some of which may have been unknown at the type the exception type was defined. `SomeException` works that way and is defined as follows:
+```haskell
+data SomeException where
+  SomeException :: Exception e => e -> SomeException
+```
+
+Exceptions occur most commonly in `IO`, because the function calls depend on the _outside world_. For a simple `writeFile` call, exception handling may look like that:
+```haskell
+import Control.Exception
+import Data.Typeable
+
+handler :: SomeException -> IO ()
+handler (SomeException e) = do
+  print (typeOf e)
+  putStrLn show e
+
+main :: IO ()
+main = writeFile "file.txt" "content" `catch` handler
+```
+
+A main function can be called with _command line arguments_ from within REPL using the command `:main -arg -arg2`.
+
+Both, `trow` and `throwIO` allow for **raising** an exception. Generally, `throwIO` is being used.
+
+A sum type is a convenient way of **grouping several exceptions** which can be caught collectively.
+
+**Asynchronous exceptions** a exceptions raised in a thread other than the one which will handle the exception.
+
 ---
 
 ## Todo
-* Write benchmark for `newtype DList a = DL { unDL :: [a] -> [a] }`
-* Pop fast
-* Make `slice' from len = take len . drop from` point-free
+* ~~Write benchmark for `newtype DList a = DL { unDL :: [a] -> [a] }`~~
+* ~~Pop fast~~
+* ~~Make `slice' from len = take len . drop from` point-free~~
 * Play around with `CoArbitrary`, try to pass a number and see whether the `Gen` is reduced to a single value.
 * Write Either with failure Monoid which does not store the same error twice.
 * `tupled'`, `getDogReader`
@@ -1103,3 +1146,4 @@ instance Monoid a => Monoid (IO a)
 26. > Keep in mind what these are doing, follow the types, lift till you drop.
 27. > We will... ...live the Thunk Life
 29. > We have measured time; now we shall measure space. Well, memory anyway; we’re not astrophysicists.
+30. > Preserve context and try to make it so somebody could understand the problem you’re solving from the types. If necessary. On a desert island. With a lot of rum. And sea turtles.
