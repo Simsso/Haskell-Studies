@@ -27,6 +27,7 @@ Executable chapter26
       HitCounterSimple
       MaybeT
       Light
+      Light2
       IdentityT
       StateT
       ReaderT
