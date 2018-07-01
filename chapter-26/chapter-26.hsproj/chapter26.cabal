@@ -4,31 +4,32 @@ cabal-version: 1.22
 build-type: Simple
 license: AllRightsReserved
 stability: experimental
-x-ghc-framework-version: 8.0.2-8.9-3
-x-last-ide-version: HfM1.5.1
-Executable chapter26
-  main-is: Main.hs
-  buildable: True
-  build-depends:
-      mtl -any,
-      text -any,
-      random -any,
-      scotty -any,
-      transformers -any,
-      base -any,
-      containers -any
-  default-language: Haskell2010
-  other-modules:
-      HitCounter
-      EitherT
-      MorraCopied
-      Excite
-      MonadTrans
-      HitCounterSimple
-      MaybeT
-      Light
-      Light2
-      IdentityT
-      StateT
-      ReaderT
-      ChapterExercises
+x-ghc-framework-version: 8.0.2-9.6-1
+x-last-ide-version: HfM1.6.0
+
+executable chapter26
+    main-is: Main.hs
+    build-depends:
+        mtl -any,
+        text -any,
+        random -any,
+        scotty -any,
+        transformers -any,
+        base -any,
+        containers -any
+    default-language: Haskell2010
+    other-modules:
+        HitCounter
+        EitherT
+        MorraCopied
+        Excite
+        MonadTrans
+        HitCounterSimple
+        MaybeT
+        Light
+        Light2
+        IdentityT
+        StateT
+        ReaderT
+        ChapterExercises
+
