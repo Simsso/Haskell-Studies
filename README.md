@@ -1,15 +1,15 @@
 # Haskell Programming Book Notes
 
 # 1 Introduction
-A **function** maps from its _domain_ to its _image_ (which is a subset of the _codomain_). Each input is invariably mapped to exactly one output.
+A **function** maps from its _domain_ to its _image_ (which is a subset of the _co-domain_). Each input is invariably mapped to exactly one output.
 
 In **lambda calculus** an _abstraction_ is an anonymous function. It consists of _head_ and _body_, for example _λx.x_. The head binds the parameter(s) to the body of the function. 
 
 The lambdas _λx.x_ and _λy.y_ are **alpha equivalent**.
 
-**Beta reduction** is the process of replacing all occurences of a parameter with a value or a function; for example _(λx.x+x)1_ becomes _1_ or _(λx.x)(λa.2a)_ turns into _(λa.2a)_. 
+**Beta reduction** is the process of replacing all occurrences of a parameter with a value or a function; for example _(λx.x+x)1_ becomes _1_ or _(λx.x)(λa.2a)_ turns into _(λa.2a)_. 
 
-If a variable occurs in a function's body but not in the head it is refered to as a **free variable**. Lambdas with multiple arguments such as _λxy.xy_ are a shorthand for multiple nested lambdas _λx.(λy.xy)_.
+If a variable occurs in a function's body, but not in the head, it is referred to as a **free variable**. Lambdas with multiple arguments such as _λxy.xy_ are a shorthand for multiple nested lambdas _λx.(λy.xy)_.
 
 **Combinators** are lambda terms with no free variables. 
 
