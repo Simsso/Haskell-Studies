@@ -35,17 +35,18 @@ The GHCi command `:type` prints the type of a variable / expression. `a :: b` me
 
 `String` is a type alias for `[Char]`, i.e. a list of characters.
 
-For outputting variables `print` can be used. `putStr` and `putStrLn` are also printing, however, they are restricted to the type `String`.
+For outputting variables, `print` can be used. `putStr` and `putStrLn` are also printing, however, they are restricted to the type `String`.
 
-The `do` syntax allows sequencing of actions, as shown below.
+The `do` syntax allows for sequencing of actions, as shown below.
 ```haskell
 a :: String  -- declaration with type
 a = "a"  -- value assignment
 
+main :: IO ()
 main = do
   putStr a
   putStrLn "b"
-````
+```
 
 Strings can be **concatenated** with the infix operator `++` or the `concat` function (e.g. `concat ["a", "b"]`).
 
@@ -59,8 +60,9 @@ The `:` operator builds a list: `'a' : "bc"`. The functions `head` and `tail` ca
 
 ```haskell
 -- sub list with length l of list x starting at index s
-sublst :: Int -> Int -> [a] -> [a]
-sublst s l x = take l (drop s x)
+-- pointfree version: https://timodenk.com/blog/making-slice-pointfree/
+slice :: Int -> Int -> [a] -> [a]
+slice s l x = take l (drop s x)
 ```
 
 # 4 Basic Data Types
