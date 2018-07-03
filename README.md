@@ -18,17 +18,17 @@ Lambda terms can **diverge** if _evaluation_ does not terminate. For example _λ
 Notes on syntax: _λab.a(b)_ means that _b_ will be applied to _a_ on evaluation (if possible). However, _(λa.λb.a)b_ evaluates to _λb.b'_.
 
 # 2 Getting Started
-**Prelude** is a library of standard types, classes, and functions, such as `pi`, `Bool`, `Monad`, `map`. Haskell files can be loaded to GHCi REPL using `:load file.hs`. All compiler warning can be enabled with `-Wall` (or equivalently `{-# OPTIONS_GHC -Wall #-}`). 
+**Prelude** is a library of standard types, classes, and functions, such as `pi`, `Bool`, `Monad`, `map`. Haskell files can be loaded to GHCi REPL using `:load file.hs`. All compiler warnings can be enabled with `-Wall` (or equivalently `{-# OPTIONS_GHC -Wall #-}`). 
 
 An _expression_ is in **normal form**, or **irreducible**, when there are no more evaluations steps that can be taken.
 
-Every **Haskell function** is an expression that takes one argument. They always return a result. A **definition** may look like that: `piTimesSquare x = pi * (x ^ 2)`. A function **parameter** stands for a value, while an **argument** is an actual value. Functions are in _prefix_ style by default.
+Every **Haskell function** is an expression that takes one argument. They always return a result. A **definition** may look like that: `piTimesSquare x = pi * (x ^ 2)`. A function **parameter** stands for a value, while an **argument** is an actual value that is being passed on to the function. Functions are in _prefix_ style by default.
 
-_Infix_ operators are functions that can be used in prefix fashion by wrapping them in parantheses: `(+) 1 2`. The `$` operator has the lowest possible precedence (0). The following example explains its usage: `(5 *) $ 1 + 1` equals `5 * (1 + 1)`. The GHCi command info` provides signature and precedence information about functions.
+_Infix_ operators are functions that can be used in prefix fashion by wrapping them in parentheses: `(+) 1 2`. The `$` operator has the lowest possible precedence (0). The following example explains its usage: `(5 *) $ 1 + 1` equals `5 * (1 + 1)`. The GHCi command `info` provides signature and precedence information about functions.
 
 An **expression** is a combination of symbols that conforms to syntactic rules and can be evaluated to some result. 
 
-A **value** is an expression that can not be evaluated any further. Haskell uses **lazy evaluation**, i.e. it only evaluates an expression when it is forced to by other terms which refer to the expession.
+A **value** is an expression that can not be evaluated any further. Haskell uses **lazy evaluation**, i.e. it only evaluates an expression when it is forced to by other terms which refer to the expression.
 
 # 3 Strings
 The GHCi command `:type` prints the type of a variable / expression. `a :: b` means that `a` has the type `b`.
