@@ -127,7 +127,7 @@ The **`n`-th element** of a list can be accessed with the `!!` operator (`n` is 
 # 5 Types
 Type systems have been defined to enforce correctness. In Haskell, typing is _static_ and typechecking occurs at _compile time_. A **data type declaration** defines a _type constructor_ and _data constructors_. Haskell functions are created from the function type constructor `->` and the function is a _value_.
 
-A function signature may have **multiple typeclass constraints** `(Num a, Num b) => a -> b -> b`. In the example, `a` could be an `Integer` and both `b` could be `Double`s. However, different types for the second argument and the return type would not be possible. 
+A function signature may have **multiple typeclass constraints** `(Num a, Num b) => a -> b -> b`. In the example, `a` could be an `Integer` and both `b`s could be `Double`s. However, different types for the second argument and the return type would not be possible. 
 
 The `=>` is called **typeclass arrow**. The right associative **type constructor for functions** `->` realizes currying: `f :: a -> a -> a` is read as `f :: a -> (a -> a)`. Due to currying, functions can be partially applied. Infix operators can be partially applied to a first or second parameter, e.g. `(2^)` or `(^2)`.
 
