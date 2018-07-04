@@ -207,7 +207,7 @@ clip min max x
 **Binding** is the assignment of an argument to a parameter.
 
 # 8 Recursion
-A **recursive function** is defined in terms of itself. The **bottom case** ends the recursion, e.g. factorial of 0 is 1.
+A **recursive function** is defined in terms of itself. The **base case** ends the recursion, e.g. factorial of 0 is 1.
 
 In Haskell, **bottom** is a _non-value_ that is used to indicate that a function can not return a value. Possible reasons are errors, partial functions, or infinite recursion / loops.
 
