@@ -127,7 +127,7 @@ The **`n`-th element** of a list can be accessed with the `!!` operator (`n` is 
 # 5 Types
 Type systems have been defined to enforce correctness. In Haskell, typing is _static_ and typechecking occurs at _compile time_. A **data type declaration** defines a _type constructor_ and _data constructors_. Haskell functions are created from the function type constructor `->` and the function is a _value_.
 
-A function signature may have **multiple typeclass constraints** `(Num a, Num b) => a -> b -> b`. In the example, `a` could be an `Integer` and both `b`s could be `Double`s. However, different types for the second argument and the return type would not be possible. 
+A function signature may have multiple **typeclass constraints** `(Num a, Num b) => a -> b -> b`. In the example, `a` could be an `Integer` and both `b`s could be `Double`s. However, different types for the second argument and the return type would not be possible with this definition. 
 
 The `=>` is called **typeclass arrow**. The right associative **type constructor for functions** `->` realizes currying: `f :: a -> a -> a` is read as `f :: a -> (a -> a)`. Due to currying, functions can be partially applied. Infix operators can be partially applied to a first or second parameter, e.g. `(2^)` or `(^2)`.
 
@@ -137,7 +137,7 @@ The `=>` is called **typeclass arrow**. The right associative **type constructor
 
 
 # 6 Typeclasses
-**Typeclasses** generalize over a set of types in terms of comsumption or usage in computation. After declaring a data type with the `data Typename` keyword, typeclasses can be assigned with e.g. `instance Typeclass Typename`. Typeclasses can **inherit** from a _superclass_ (e.g. `class Num a => Fractional a`).
+**Typeclasses** generalize over a set of types in terms of consumption or usage in computation. After declaring a data type with the `data Typename` keyword, typeclasses can be assigned with e.g. `instance Typeclass Typename`. Typeclasses can **inherit** from a _superclass_ (e.g. `class Num a => Fractional a`).
 
 A typeclass can be defined with the `class` keyword. The `Num` typeclass for example is defined as follows.
 ```haskell
@@ -150,12 +150,12 @@ class Num a where
   signum :: a -> a
   fromInteger :: Integer -> a
 ```
-Types which implement the `Integral` type are required to also implement `Real` and `Enum`.
+Types which implement the `Integral` type are also required to implement `Real` and `Enum`.
 ```haskell
 class (Real a, Enum a) => Integral a
 ```
 
-A typeclass is implemented in a type with `instance`. The implementation is called **instance** and might look as follows.
+A typeclass is implemented for a type with `instance`. The implementation is called **instance** and might look as follows.
 ```haskell
 data Suit = Spade | Diamond | Club | Heart
 instance Eq Suit where
@@ -176,7 +176,7 @@ Typeclasses **default** to certain types. `Num` defaults to `Integer` for exampl
 The following typeclasses can be automatically derived. That means they can be automatically instantiated for a given type, based on how it is defined.
 
  * **`Bounded`**. Types that have an upper and lower bound.
- * **`Enum`**. The type's values can be enumerated. Provides methods such as `succ` (successor), `pred` (predecessor), `enumFromTo`, and `enumFromThenTo` (which uses a step size based on the second argument). 
+ * **`Enum`**. The type's values can be enumerated. Provides methods such as `succ` (successor; comparable to incrementing), `pred` (predecessor), `enumFromTo`, and `enumFromThenTo` (which uses a step size based on the second argument). 
  * **`Eq`**. The type's values can be tested for equality.
  * **`Ord`**. The type's values can be put into sequential order. Implies `Eq` and can be implemented by defining the `compare` method which returns `EQ`, `LT`, or `GT`.
  * **`Read`**. Values can be parsed from strings. It is often a _partial_ function as it does not return a proper value for all possible inputs.
