@@ -183,13 +183,13 @@ The following typeclasses can be automatically derived. That means they can be a
  * **`Show`**. Values can be converted to strings (e.g. for output). Enforces implementation of `showsPrec`, `show`, and `showList`. Printing things is possible in Haskell, even though it is purely functional, because the `print` method invokes `IO` which has the _side effect_ of outputting text. It returns the unit `()` because it has no relevant return value.
 
 ## 6.2 Typeclass Inheritance
- Inheritance structure of common typeclasses. `Ord` inherits from `Eq`. `Real` inherits from `Ord` and `Num`. `Fractional` inherits from `Num`. `Integral` inherits from `Real`, `Fractional`, and `Enum`.
+Inheritance structure of common typeclasses. `Ord` inherits from `Eq`. `Real` inherits from `Ord` and `Num`. `Fractional` inherits from `Num`. `Integral` inherits from `Real`, `Fractional`, and `Enum`.
 
 
 # 7 Functional Patterns
 Inner variables can _shadow_ outer variables, as can bee seen in the following function which always returns `5`: `func x = let x = 5 in x`.
 
-**Anonymous functions** (aka. lambdas) are functions which are not bound to an identifier and can be declared with this syntax: `(\x -> x * 4) :: Num a => a -> a`. They are often used when a function is passed to another function with the former beeing needed only once.
+**Anonymous functions** (aka. lambdas) are functions which are not bound to an identifier and can be declared with this syntax: `(\x -> x * 4) :: Num a => a -> a`. They are often used if a function is passed to another function with the former being needed only once. The signature can be omitted. 
 
 The signature of **higher order functions** contains functions itself. For example `distributor :: (a -> b -> c) -> (a -> b) -> (a -> c)` takes two functions and returns a new one.
 
@@ -202,7 +202,7 @@ clip min max x
   | otherwise = x
 ```
 
-**Pointfree** versions of functions drop arguments for the sake of readability. For example, `print a = (putStrLn . show) a` becomes `print = putStrLn . show`.
+**Pointfree** versions of functions drop arguments for the sake of readability and performance. For example, `print a = (putStrLn . show) a` becomes `print = putStrLn . show`.
 
 **Binding** is the assignment of an argument to a parameter.
 
