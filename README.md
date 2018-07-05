@@ -252,11 +252,13 @@ Values in Haskell get reduced to **weak head normal form** by default. **Normal 
  * **`zipWith`** combines **two lists into one** by subsequently applying a function to two elements. `zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]`
 
 # 10 Folding Lists
-Folding is the reduction of a structure. It happens at the two stages (1) traversal and (2) reduction. _Folds_ as a concept are also called **catamorphisms**, that is the unique homomorphism (structure preserving map) from an initial algebra into some other algebra.
+Folding is the reduction of a structure. It happens at two stages, namely (1) traversal and (2) reduction. _Folding_, as a concept, is also refered to as **catamorphism**, that is the unique homomorphism (structure preserving map) from an initial algebra into some other algebra.
 
-The right associative function **fold right**, `foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b`, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to the sequence of values, yielding one value as its result. The function folds a foldable type _with_ the function `f :: a -> b -> b`. When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the folable contains no value, e.g. en empty list `[]`.
+The right associative function **fold right**, `foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b`, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to a sequence of values, yielding one value as its final result. The function folds a foldable type _with_ the function `f :: a -> b -> b`.
 
-The **left fold** is traversing the data structure in the same order as the right fold, however it is left associative. It is inappropriate to use in combinations with very long lists or infinite lists. `foldl'` is the strict version of `foldl`. The relationship between `foldl` and `foldr` is (for finite lists `xs`) `foldr f z xs = foldl (flip f) z (reverse xs)`.
+When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the folable data structure contains no value, e.g. an empty list `[]`.
+
+The **left fold** is traversing the data structure in the same order as the right fold, however it is left associative. It is inappropriate to use in combinations with very long lists or impossible with infinite lists. `foldl'` is the strict version of `foldl`. The relationship between `foldl` and `foldr` is (for finite lists `xs`) `foldr f z xs = foldl (flip f) z (reverse xs)`.
 
 **Scans** return a list of all intermediate values of a fold. `scanr :: (a -> b -> b) -> b -> [a] -> [b]` and `scanl` are the Haskell function for right fold and left fold respectively. `scanl` can for example be used to create an infinite list of Fibonacci numbers: `fibs = 1 : scanl (+) 1 fibs`. 
 
