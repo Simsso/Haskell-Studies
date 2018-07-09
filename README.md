@@ -256,38 +256,37 @@ Folding is the reduction of a structure. It happens at two stages, namely (1) tr
 
 The right associative function **fold right**, `foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b`, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to a sequence of values, yielding one value as its final result. The function folds a foldable type _with_ the function `f :: a -> b -> b`.
 
-When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the folable data structure contains no value, e.g. an empty list `[]`.
+When computing the product of all values of a foldable, the base value (identity) is _1_; for sums it would be _0_. The identity is also returned, if the foldable data structure contains no value, e.g. an empty list `[]`.
 
 The **left fold** is traversing the data structure in the same order as the right fold, however it is left associative. It is inappropriate to use in combinations with very long lists or impossible with infinite lists. `foldl'` is the strict version of `foldl`. The relationship between `foldl` and `foldr` is (for finite lists `xs`) `foldr f z xs = foldl (flip f) z (reverse xs)`.
 
 **Scans** return a list of all intermediate values of a fold. `scanr :: (a -> b -> b) -> b -> [a] -> [b]` and `scanl` are the Haskell function for right fold and left fold respectively. `scanl` can for example be used to create an infinite list of Fibonacci numbers: `fibs = 1 : scanl (+) 1 fibs`. 
 
-# 11 Algebraic Datatypes
-**Type constructors** are used at the type level, in type signatures and typeclass declarations and instances. They are static and resolved at compile time. **Data constructors** construct values and can be interacted with at runtime. Type and data constructors with no arguments are **constants**, for instance `Bool`.
+# 11 Algebraic Data Types
+**Type constructors** are used at the type level, in type signatures, typeclass declarations, and instances. They are static and resolved at compile time. **Data constructors** construct values and can be interacted with at runtime. Type and data constructors with no arguments are **constants**, for instance `Bool`.
 
-The **arity** of a constructor is the number of parameters it has. A type or data constructor with no arguments are called _nullary_ and are _type constant_. Data constructors that take exactly one argument are called _unary_, with more than one they are called _products_.
+The **arity** of a constructor is the number of parameters it takes. A type or data constructor with no arguments are called _nullary_ and are _type constant_. Data constructors that take exactly one argument are called _unary_, with more than one they are referred to as _products_.
 
-A type constructor argument that does not occur at any value constructor is called **phantom**. For example `a` is a phantom in the declaration `data Type a = Value`.
+A type constructor argument that does not occur alongside with any value constructor is called **phantom**. For example `a` is a phantom in the declaration `data Type a = Value`.
 
-The **record syntax** allows definition of types where the contained values have names. For example `data Person = Person { name :: String, age :: Int }`. The values can then be accessed by e.g. `name person`. 
+The **record syntax** allows for the definition of types, where the contained values have names. For example `data Person = Person { name :: String, age :: Int }`. The values can then be accessed by e.g. `name person`.
 
 ## 11.1 Kinds
-**Kinds** are the types of types. They can be queried in GHCi with `:kind`. For example the kind of `[]` is `* -> *` because it needs to be applied to a type (in order to yield `*`, which is _fully applied_).
+**Kinds** are the types of types. They can be queried in GHCi with `:kind`. For example the kind of `[]` is `* -> *` because it needs to be applied to one type (in order to yield `*`, which is _fully applied_).
 
 **Type constructing** is referring to the application of a type to a type constructor. 
 
-**As-patterns** are a way of unpacking an argument, still keeping a reference to the entire argument. The `@` sign is used for that:
+**As-patterns** are a way of unpacking an argument, still keeping a reference to the entire argument. The `@`-sign is used for that:
 ```haskell
 f t@(a, _) = do
   print a
   return t
 ```
 
-
 ## 11.2 Newtype
-**`type`** creates an alias (e.g. `type TwoBool = (Bool, Bool)`), **`data`** creates arbitrary data structures. **`newtype`** creates types with a single unary data constructor. Resulting from this, the cardinality of the new type equals the cardinality of the type it contains. A `newtype` can not be a product type, sum type, or contain a nullary value constructor. It has no runtime overhead, because it is reduced to the type it contains.
+**`type`** creates an alias (e.g. `type TwoBool = (Bool, Bool)`), while **`data`** creates arbitrary data structures. **`newtype`** creates types with a single unary data constructor. Resulting from this, the cardinality of the new type equals the cardinality of the type it contains. A `newtype` cannot be a product type, sum type, or contain a nullary value constructor. It has no runtime overhead, because it is reduced to the type it contains.
 
-An example of usage for `newtype`. The `Int` in `Goats` is wrapped and can therefore be processed differently by `tooMany`. 
+An example of usage for `newtype`. The `Int` in `B` is wrapped and can therefore be processed differently by `tooMany`. 
 ```haskell
 class TooMany a where
   tooMany :: a -> Bool
@@ -295,13 +294,12 @@ class TooMany a where
 instance TooMany Int where
   tooMany n = n > 42
 
-newtype Goats =
-  Goats Int deriving (Eq, Show)
-instance TooMany Goats where
-  tooMany (Goats n) = n > 100
+newtype B = B Int deriving (Eq, Show)
+instance TooMany B where
+  tooMany (B n) = n > 100
 ```
 
-If `Goats` shall fall back on the default `tooMany` implementation, the `deriving` keyword can be used in combination with a compiler pragma:
+If `B` shall fall back on the default `tooMany` implementation, the `deriving` keyword can be used in combination with a compiler pragma:
 ```haskell
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
@@ -310,15 +308,15 @@ class TooMany a where
 instance TooMany Int where
   tooMany n = n > 42
 
-newtype Goats = Goats Int deriving (Eq, Show, TooMany)
+newtype B = B Int deriving (Eq, Show, TooMany)
 ```
 
 ## 11.3 Cardinality
-The **cardinality** of a type is the number of values it can possibly have. The cardinality _|A|_ of a type `A = A1 a11 ... a1n | ... | An an1 ... ann` is computed as _|A1|+...+|An|_, where _|Ai|=|ai1|×...×|ain|_. For example the cardinality of `Bool = False | True` is _1+1=2_.
+The **cardinality** of a type is the number of values it can possibly have. The cardinality _|A|_ of a type `A = A1 a11 ... a1n | ... | An an1 ... ann` is given by _|A1|+...+|An|_, where _|Ai|=|ai1|×...×|ain|_. For instance, the cardinality of `Bool = False | True` is _1+1=2_.
 
-**Sum types** are _or_ connections of multiple types; e.g. `A = B | C`. **Product types** are _and_ connections and have e.g. the following shape: `A = B c d`. Here `B` contains `c` and `d`.
+**Sum types** are _or connections_ of multiple types; e.g. `A = B | C`. **Product types** are _and connections_ and have e.g. the following shape: `A = B c d`. Here `B` contains `c` and `d`.
 
-The **number of possible behavioral patterns** of a function mapping from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
+The **number of possible input-output-mappings** of a function from `a` to `b` is computed by _|b|^|a|_. `a -> b -> c` gives _|c|^(|b|×|a|)_.
 
 # 12 Signaling Adversity
 In Haskell it is common to us so called _smart constructors_ [https://wiki.haskell.org/Smart_constructors](wiki.haskell.org). These constructors validate their arguments and return `Maybe`, i.e. either the desired object or `Nothing` (or throw an error). For more detailed information about the error, the return type may also `Either`, which holds a `Left` and a `Right` value. The former is commonly the error object.
