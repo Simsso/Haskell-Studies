@@ -330,9 +330,9 @@ Opposed to folds, **unfolds** build up data structures from a single starting va
 # 13 Building Projects
 Haskell **[Cabal](https://www.haskell.org/cabal/users-guide/)** (Common Architecture for Building Applications and Libraries) is a package manager. A package is a program that may have dependencies.
 
-**Stack** is a program for developing Haskell projects. It is built on top of Cabal. The command `stack build` builds a project and `stack setup` [...]. `stack ghci` starts GHCi in the context of a program, where functions can be executed. `stack new <project-name> simple` creates a new project.
+**Stack** is a program for developing Haskell projects. It is built on top of Cabal. The command `stack build` builds a project and `stack setup` [...]. `stack ghci` starts GHCi in the context of a program, where functions can be executed. `stack new <project-name> simple` creates a new project using the [template](https://github.com/commercialhaskell/stack-templates) "simple".
 
-The **.cabal** file contains information about the project. For example whether it is a library or an executable.
+The **.cabal** file (located in a project's root folder) contains information about the project. For example whether it is a library or an executable.
 ```cabal
 library | executable program-name
   hs-source-dirs:      src
@@ -342,7 +342,9 @@ library | executable program-name
   build-depends:       base >= 4.7 && < 5
 ```
 
-A program can be **start**ed with `stack exec <program-name>` from every directory. However, the program executable is only present if the `.cabal` file that was built before contains the line `executable <program-name>`.
+However, with Stack projects, there is also a `stack.yaml` file, which contains dependencies. It should be preferred over the Cabal file.
+
+A program can be **start**ed with `stack exec <program-name>` from every directory. However, the program executable is only present if the `.cabal` file that was built before contains the line `executable <program-name>` and if the program was built.
 
 By default a module **export**s all its content. This can be changed by adding a list of exported items:
 ```haskell
@@ -352,18 +354,16 @@ module ModuleName
 
 -- implementation of function1, constant 1, and possibly more
 ```
-The importing module can also choose what to **import**. This is dome similarly through a list of items, e.g. `import Data.Bool (bool)`. The other way around, certain things can be excluded: `import Database.SQLite.Simple hiding (close)`.  
+The importing module can also choose what to **import**. This is dome similarly, through a list of items, e.g. `import Data.Bool (bool)`. The other way around, certain things can be excluded from an import: `import Database.SQLite.Simple hiding (close)`.  
 **Qualified imports** persist the fully qualified name of the imported items. That means with `import qualified Data.Bool` the function `bool` is only accessible through `Data.Bool.bool`.  
 With an **alias**, e.g. `import qualified Data.Bool as B`, `bool` is accessible through  `B.bool`.
 
-In GHCi the **`:browse <Module>`** command can be used to list all exported items of a module. `Prelude` can be disabled with the command `stack ghci --ghci-options -XNoImplicitPrelude`.
+In GHCi the **`:browse <Module>`** command lists all items exported by a module. `Prelude` can be disabled with the command `stack ghci --ghci-options -XNoImplicitPrelude`.
 
 ## 13.1 Read CSV File
-Example snippet
+Example snippet that reads the file "data.csv":
 ```haskell
-module CSVReader 
-  (readCsv)
-  where
+module CSVReader (readCsv) where
 
 import Data.List.Split (splitOn)
 
