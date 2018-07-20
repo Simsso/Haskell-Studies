@@ -656,8 +656,9 @@ Noteworthy are also **`toList`**, **`length`**, and **`elem`**. All three ignore
 
 Both, `maximum` and `minimum`, require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is thrown).
 
+
 # 21 Traversable
-**`Traversable`** allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to `Functor`, where function applications happen semantically in parallel. Return values of later function applications of `Traversable` can depend upon the earlier results. That can be seen as an __accumulation of applicative contexts__. The typeclass definition is the following:
+**`Traversable`** allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to `Functor`, where function applications happen semantically in parallel. Return values of later function applications of `Traversable` can depend upon the earlier results. That can be seen as an _accumulation of applicative contexts_. The typeclass definition is the following:
 ```haskell
 class (Functor t, Foldable t) => Traversable (t :: * -> *) where
   traverse :: Applicative f => (a -> f b) -> t a -> f (t b)
@@ -669,7 +670,7 @@ class (Functor t, Foldable t) => Traversable (t :: * -> *) where
 
 The typeclass satisfies the following rules:
 1. Naturality: `t . traverse f = traverse (t . f)`
-2. Identity: `traverse Identity = Identity`. Traversable instances cannot inject any additional structure.
+2. Identity: `traverse Identity = Identity`. That is `Traversable` instances cannot inject any additional structure.
 3. Composition: `traverse (Compose . fmap g . f) = Compose . fmap (traverse g) . traverse f`. Multiple traversals can be collapsed into a single traversal using `Compose` (which combines structure).
 
 `traverse` and `sequenceA` can be defined in terms of each other: `traverse f = sequenceA . fmap f` and 
@@ -680,7 +681,7 @@ sequenceA = traverse id
 
 The function `catMaybes` from `Data.Maybe` converts a `Traversable` of `Maybe` values into a `Traversable` with all `Just` values. For instance `catMaybes [Just 1, Just 2, Nothing]` is `[1,2]`.
 
-The function **`traverse`** applies a function `(a -> f b)` onto values inside a data structure `t a` and flips the result by returning `f (t b)`.
+The function **`traverse`** applies a function `(a -> f b)` to values inside a data structure `t a` and **flips the result** by returning `f (t b)`.
 
 `Traverable` implementation for `Either`: 
 ```haskell
@@ -689,11 +690,7 @@ instance Traversable (Either a) where
   traverse f (Right y) = Right <$> f y
 ```
 
-
-* Difference on page 878 bottom?
-* `(sequence .) . fmap`
-* Naturality
-* **"Why does `Traversable` _depend_ on `Foldable`?"** [Reddit](https://www.reddit.com/r/haskell/comments/7dmjh8/why_does_traversable_need_foldable/)
+`Traversable` requires `Foldable` because it is proven that any `Traversable` can also implement `Foldable`. The constraint is just there to enforce that there must be an instance ([source](https://www.reddit.com/r/haskell/comments/7dmjh8/why_does_traversable_need_foldable/)).
 
 
 # 22 Reader
