@@ -507,11 +507,11 @@ class Functor f => Applicative (f :: * -> *) where
 
 The function **`pure`** can be though of as _embedding a value into any structure (functor)_. For example `pure 1 :: [Int]` gives `[1]`.
 
-An `Applicative` satisfies the two following laws:
+An `Applicative` satisfies the following four laws:
 1. Identity: `pure id <*> v = v`
 2. Composition: `pure (.) <*> u <*> v <*> w = u <*> (v <*> w)`
 3. Homomorphism (structure preserving): `pure f <*> pure x = pure (f x)`
-4. Interchange: `u <*> pure y = pure ($ y) <*> u`
+4. Interchangeability: `u <*> pure y = pure ($ y) <*> u`
 
 ## 17.1 Examples
 | Command | Result |
@@ -536,7 +536,7 @@ main = do
 ```
 
 ## 17.3 Maybe
-[Source code](https://hackage.haskell.org/package/base-4.10.1.0/docs/src/GHC.Base.html)
+Haskell Prelude implementation of `Maybe`'s `Applicative` instance ([source](https://hackage.haskell.org/package/base-4.10.1.0/docs/src/GHC.Base.html)).
 ```haskell
 -- | @since 2.01
 instance Applicative Maybe where
