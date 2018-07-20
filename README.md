@@ -474,15 +474,15 @@ while satifying associativity, i.e. `(a <> b) <> c == a <> (b <> c)`.
 The **`NonEmpty`** datatype resides in `Data.List.NonEmpty`. It is a list that contains one or more elements.
 
 # 16 Functor
-A functor is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law `fmap (f . g) == fmap f . fmap g` holds. The infix operator for `fmap` is `<$>`.
+A **functor** is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law `fmap (f . g) == fmap f . fmap g` holds. The infix operator for `fmap` is `<$>`.
 ```haskell
 class Functor (f :: * -> *) where
   fmap :: (a -> b) -> f a -> f b
 ```
 
-Applying a function to a values that is inside a structure is refered to as **lifting**.
+Applying a function to a value that is inside of a structure is refered to as **lifting**.
 
-For nested **functor application**, e.g. when applying a function to characters which are stored in a list of `String`s, `(fmap . fmap) strFn dataStruct` can be used.
+For nested **functor application**, e.g. when applying a function to characters which are stored in a list of `String`s, a syntax such as `(fmap . fmap) strFn dataStruct` can be used.
 
 In order to use a higher kinded Type, e.g. `* -> * -> *`, as a `Functor`, one of the type parameters has to be applied. This can either be done with a concrete type such as `Integer` or with a type variable `a`, and results in the kind `* -> *`. Sample snippet:
 ```haskell
