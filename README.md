@@ -604,7 +604,7 @@ The **Kleisli composition** (_fish_ operator: `>=>`) is about composing two func
 ```
 
 # 19 Applying Structure
-The operators `*>`, `<*` and `>>` discard one of their arguments and are often used in combination with functions that emit side effects.
+The operators `*>`, `<*`, and `>>` discard one of their arguments and are often used in combination with functions that emit side effects.
 
 ## 19.1 JSON Parsing Example
 The data is nested inside of the `Parser` monad so the value constructor `Payload` needs to be lifted.
@@ -621,6 +621,7 @@ instance FromJSON Payload where
       <*> v .: "offset_seconds"
   parseJSON v = typeMismatch "Payload" v
 ```
+
 
 # 20 Foldable
 The foldable typeclass has the following definition:
@@ -647,13 +648,13 @@ class Foldable (t :: * -> *) where
 
 For its definition it is sufficient to provide an implementation for either `foldMap` or `foldr`. All other functions can be deduced from that.
 
-`Monoid`s are related to the functions `foldr` and `foldMap`. The former uses the monoid definitions of elements inside of the foldable structure to combine them. The latter converts the elements to monoidal values and folds subsequently. In both cases the default-value is provided by the monoid identity.
+`Monoid`s are related to the functions `foldr` and `foldMap`. The former uses the monoid definitions of elements inside of the foldable structure to combine them. The latter converts the elements to monoidal values and folds subsequently. In both cases the default value is provided by the monoid identity.
 
 The **`null`** function returns `True` if the data structure is empty. Note, that e.g. `null (Left 1)` is `True`, because `Left` is considered empty whereas `Right` is not.
 
-Noteworthy are also **`toList`**, **`length`**, and **`elem`**. Both ignore the non-monoid values, for instance `length (1, 1)` is `1`.
+Noteworthy are also **`toList`**, **`length`**, and **`elem`**. All three ignore the non-monoid values, for instance `length (1, 1)` is `1`.
 
-Both, `maximum` and `minimum` require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is being thrown).
+Both, `maximum` and `minimum`, require the contained types to be `Ord` and **return the maximum and minimum** value respectively. They cannot be applied to empty structures (otherwise an exception is thrown).
 
 # 21 Traversable
 **`Traversable`** allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to `Functor`, where function applications happen semantically in parallel. Return values of later function applications of `Traversable` can depend upon the earlier results. That can be seen as an __accumulation of applicative contexts__. The typeclass definition is the following:
