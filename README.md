@@ -746,13 +746,13 @@ A random number generator serves as a good example of usage: It requires some se
 # 24 Parser Combinators
 A **parser** converts textual input into some data structure output. The textual input must be in conformance with a set of rules. A **parser combinator** is a higher order function which composes multiple parsers to yield a single parser.
 
-Using the parser module `trifeca` (`import Text.Trifecta`). Useful links:
+The chapter uses the parser module `trifeca` (`import Text.Trifecta`), however, it seems to be common to use [Megaparsec](!!! add link). Links:
 * [Text.Trifecta.Parser.Char](https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Char.html)
-* [Text.Trifecta.Parser.Combinators](https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Combinators.html) contains e.g. `eof`
+* [Text.Trifecta.Parser.Combinators](https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Combinators.html) contains e.g. `eof` (end of file)
 
-`trifecta` contains parsers and is used in combination with the `parsers` library with defines common parser classes which abstract over common kinds of things parsers do.
+`trifecta` contains parsers and is used in combination with the `parsers` library with defines common parser classes, abstracting over common things parsers do.
 
-It throws errors with the `unexpected` function.
+Parsers can thrown an error with the `unexpected` function.
 ```haskell
 import Text.Trifecta
 
@@ -760,7 +760,7 @@ stop :: Parser a
 stop = unexpected "stop"
 ```
 
-The parser type is very similar to `State`. It takes a string, parses it and returns `Nothing` in case of failure. If parsing was successful, it returns a data structure and the remainder of the `String`.
+The parser type is very similar to `State`. It takes a string, parses it, and returns `Nothing` in case of failure. If parsing was successful, it returns a data structure and the remainder of the `String`.
 ```haskell
 type Parser a = String -> Maybe (a, String)
 ```
@@ -793,7 +793,7 @@ abParser "a"
 --  [92m^[0m     , _errDeltas = [Columns 1 1]})
 ```
 
-The parser above does not necessarily consume all its input. Given `"abc"` it would return `Success` as well. That can be changed using `eof`: `string "ab" >> eof`. Inputs such as `"abc"` would result in `Failure [...] expected: end of input [...]`. `eof = notFollowedBy anyChar`
+The parser above does not necessarily consume all given input. For instance, for `"abc"` it would return `Success` as well. That can be changed using `eof`: `string "ab" >> eof`. Inputs such as `"abc"` would then result in `Failure [...] expected: end of input [...]`. `eof = notFollowedBy anyChar`
 
 In most cases, a parser should not raise any error other than the parsing `Failure` that it may return. Other exceptions should be prevented from happening. The following example catches a division by zero error using `fail`.
 ```haskell
@@ -826,11 +826,13 @@ print $ parseString parseNos mempty "123"
 print $ parseString parseNos mempty "\nabcdf"
 ```
 
-The `<?>` operator can be used to annotate branches of a parsing instruction. In the following example, `Tried 12` will be printed it the `12` branch was chosen instead of the `3`:
+The `<?>` operator can be used to annotate branches of a parsing instruction. In the following example, `Tried 12` will be printed if the `12` branch was chosen instead of the `3`:
 ```haskell
 tryAnnot :: (Monad f, CharParsing f) => f Char
 tryAnnot = (try (char '1' >> char '2') <?> "Tried 12") <|> (char '3' <?> "Tried 3")
 ```
+
+My [BNF-Parser](https://github.com/Simsso/BNF-Parser) project (using Megaparsec).
 
 # 25 Composing Types
 The following `newtype` constructs a datatype by **composing** datatype constructors. The kind is `Compose :: (* -> *) -> (* -> *) -> * -> *`, comparable to function composition `(.)`.
