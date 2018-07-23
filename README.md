@@ -603,6 +603,16 @@ The **Kleisli composition** (_fish_ operator: `>=>`) is about composing two func
 (>=>) :: Monad m => (a -> m b) -> (b -> m c) -> a -> m c
 ```
 
+Given a `Monad` instance, the instances for `Functor` and `Applicative` can be implemented automatically, as shown in the following snippet.
+```haskell
+instance Functor (State s) where
+  fmap = Control.Monad.liftM
+
+instance Applicative (State s) where
+  pure = return
+  (<*>) = Control.Monad.ap
+```
+
 # 19 Applying Structure
 The operators `*>`, `<*`, and `>>` discard one of their arguments and are often used in combination with functions that emit side effects.
 
@@ -725,10 +735,13 @@ The extension `{-# LANGUAGE InstanceSigs #-}` allows for the explicit definition
 
 
 ## 23 State
-Definition
+The **state** type is rather a state processor. It takes a _state_, outputs a new state, and thereby emits something. The `newtype` definition is
 ```haskell
 newtype State s a = State { runState :: s -> (a, s) }
 ```
+
+A random number generator serves as a good example of usage: It requires some seed in order to generate a number and outputs a new seed which may be fed into the generator the next time.
+
 
 # 24 Parser Combinators
 A **parser** converts textual input into some data structure output. The textual input must be in conformance with a set of rules. A **parser combinator** is a higher order function which composes multiple parsers to yield a single parser.
