@@ -841,7 +841,7 @@ newtype Compose f g a = Compose { getCompose :: f (g a) }
   deriving (Eq, Show)
 ```
 
-The specialty of the `Monad` type is that cannot be implemented for the `Compose` `newtype` from above. That is the following function does not exist in a generic manner: `(>>=) :: Compose f g a -> (a -> Compose f g b) -> Compose f g b`, see ([Composing Monads](http://web.cecs.pdx.edu/~mpj/pubs/RR-1004.pdf)). This is where transformers come in, for instance `IdentityT`
+The specialty of the `Monad` type is that it _cannot_ be implemented for the `Compose` `newtype` from above. That is, the following function does not exist in a generic manner: `(>>=) :: Compose f g a -> (a -> Compose f g b) -> Compose f g b`, see ([!!! cite properly; Composing Monads](http://web.cecs.pdx.edu/~mpj/pubs/RR-1004.pdf)). This is where transformers come in, for instance `IdentityT`
 ```haskell
 newtype IdentityT f a = IdentityT { runIdentityT :: f a }
   deriving (Eq, Show)
@@ -852,10 +852,10 @@ instance (Monad m) => Monad (IdentityT m) where
 ```
 where `IdentityT [...] runIdentityT . f` is required because the used `>>=` is the one of the `Monad m`, so `IdentityT` needs to be unpacked.
 
-Transformers have additional information on how to do the unpacking and subsequent boxing that is specific to the given monads, and cannot be generalized. Conversion from `f (g (f b))` to `f (f b)` in order to be able to bind and return `g (f b)`.  
+Transformers have additional information on how to do the unpacking and subsequent boxing that is specific to the given monads and cannot be generalized. Conversion from `f (g (f b))` to `f (f b)` in order to be able to bind and return `g (f b)`. Binding means converting `f (f b)` to `f b`, which is possible since `f` is a `Monad`.   
 `m (T m b) -> m (m b) -> m b -> T m b`
 
-With two nested Functors, say List of Maybes, there is a guarantee that the nested data type is also a Functor. Same with Applicative. For Monad, this fact does not hold.
+With two nested Functors, say a `List` of `Maybe`s, there is a guarantee that the nested data type is also a `Functor`. The same applies to `Applicative`. For Monad, this does not hold.
 
 # 26 Monad Transformers
 
