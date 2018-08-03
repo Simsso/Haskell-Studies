@@ -859,13 +859,13 @@ With two nested Functors, say a `List` of `Maybe`s, there is a guarantee that th
 
 # 26 Monad Transformers
 
-A **monad transformer** is a type constructor that takes a monad as an argument. This monad is wrapped around another contained data type. The transformers themselfes are not generically monads, but implement the `Monad` typeclass logic. The inner type corresponds _commonly_ to the transformer, i.e. `MaybeT` is `m (Maybe a)`.
+A **monad transformer** is a type constructor that takes a monad as an argument. This monad is wrapped around another contained data type. The transformers themselfes are not generically monads, but implement the `Monad` typeclass logic. The inner type corresponds _commonly_ to the transformer, i.e. the maybe-transformer `MaybeT` is `m (Maybe a)`.
+
+The **[transformers](https://hackage.haskell.org/package/transformers) library** contains many implementations of transformers and should be preferred over own implementations, if possible.
 
 `Identity` can be used as a `Monad` which converts transformers into their original types. For instance `type Maybe a = MaybeT Identity a`.
 
-The **[transformers](https://hackage.haskell.org/package/transformers) library** contains many implementations of transformers and should be preferred over own implementations if possible.
-
-The **base monad** is the outer-most monad, here it would be `m`: `StateT { runStateT :: s -> m (a, s) }`
+The **base monad** is the outer-most monad. Here it would be `m`: `StateT { runStateT :: s -> m (a, s) }`
 
 **Maybe Transformer `MaybeT`**
 ```haskell
@@ -901,9 +901,6 @@ instance (Monad m) => Monad (StateT s m) where
   StateT sma >>= f = StateT $ \s -> sma s >>= \(a, s') -> runStateT (f a) s'
 ```
 
-For **streaming**, it is generally not recommended to use `Writer`, `WriterT`, or `ListT` for performance reasons. Libraries such as [pipes](http://hackage.haskell.org/package/pipes) or [conduit](http://hackage.haskell.org/package/conduit) are better choices.
-
-
 **Lifting functions** exist with multiple different signatures but _should always_ do the same thing. The functions exist only for historical reasons.
 ```haskell
 fmap  :: Functor f     => (a -> b) -> f a -> f b
@@ -911,19 +908,21 @@ liftA :: Applicative f => (a -> b) -> f a -> f b
 liftM :: Monad m       => (a -> r) -> m a -> m r
 ```
 
-**MonadTrans** is a typeclass with a lift method. Lifting means embedding an expression in a larger context by adding structure that doesn’t do anything.
+**MonadTrans** is a typeclass with a lift method. Lifting means embedding an expression in a larger context by adding structure that does not do anything.
 ```haskell
 class MonadTrans t where
   lift :: (Monad m) => m a -> t m a
 ```
 
-
-**`MonadIO`** resides in `Control.Monad.IO.Class` and is intended to keep lifting an IO action until it is lifted over all structure that surrounds the outermost IO type. !!! (surrounds or embedded -- PDF page 1040)
+**`MonadIO`** resides in `Control.Monad.IO.Class` and is intended to keep lifting an IO action until it is lifted over all structure that surrounds the outermost IO type.
 
 ```haskell
 liftIO . return = return
 liftIO (m >>= f) = liftIO m >>= (liftIO . f)
 ```
+
+For **streaming** it is generally not recommended to use `Writer`, `WriterT`, or `ListT` for performance reasons. Libraries such as [pipes](http://hackage.haskell.org/package/pipes) or [conduit](http://hackage.haskell.org/package/conduit) are better choices.
+
 
 # 27 Nonstrictness
 Evaluation can be _strict_, _nonstrict_. Haskell is nonstrict. Nonstrictness refers to semantics, that is how an expression is being evaluated. It means that expressions are evaluated outside-in. _Lazy_ refers to operational behavior, the way code is executed on a real computer, namely as late as possible. [SO answer](https://stackoverflow.com/a/7141537/3607984)
