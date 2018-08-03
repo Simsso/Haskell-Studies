@@ -925,13 +925,11 @@ For **streaming** it is generally not recommended to use `Writer`, `WriterT`, or
 
 
 # 27 Nonstrictness
-Evaluation can be _strict_, _nonstrict_. Haskell is nonstrict. Nonstrictness refers to semantics, that is how an expression is being evaluated. It means that expressions are evaluated outside-in. _Lazy_ refers to operational behavior, the way code is executed on a real computer, namely as late as possible. [SO answer](https://stackoverflow.com/a/7141537/3607984)
+Evaluation can be _strict_ or _nonstrict_. Haskell is nonstrict. Nonstrictness refers to semantics, that is how an expression is being evaluated. It means that expressions are evaluated outside-in. _Lazy_ refers to operational behavior, the way code is executed on a real computer, namely as late as possible. [SO answer on the differences](https://stackoverflow.com/a/7141537/3607984).
 
-In Haskell an expression does not need to be recomputed once it is evaluated. "Don't re-evaluate if you don't have to."
+In Haskell an expression does not need to be recomputed, once it is evaluated. "Don't re-evaluate if you don't have to."
 
 The evaluation of an expression can be forced using the function `seq :: a -> b -> b`. It evaluates its first argument as soon as evaluation of the second argument is required.
-
-There are some compiler options available that allow for observation of the interpretation of the Haskell code (_core dump_). For instance `:set -ddump-simpl` or `:set -dsuppress-all`.
 
 The following snippet forces evaluation of `x` by tying it to `b`:
 ```haskell
@@ -960,11 +958,15 @@ discriminatory =
 
 This statement will not bottom out `case undefined of { _ -> False}` whereas `case undefined of { DEFAULT -> False }` cannot be simplified by the compiler and will result in an error.
 
+There are some compiler options available that allow for observation of the interpretation of the Haskell code (_core dump_). For instance `:set -ddump-simpl` or `:set -dsuppress-all`.
+
 **Call strategies** are _call by value_, i.e. evaluation of an argument before passing it to a function, and _call by reference_ arguments are not necessarily evaluated. _Call by need_ ensures that expressions are only evaluated once.
 
-A **thunk** is used to reference suspended computations that might be performed or computed at a later point in your program.
+A **thunk** is used to reference suspended computations that might be performed or computed at a later point in a program.
 
-The `trace` function in `Debug.Tace` allows for logging at places, where the `IO` type is not present. That way, evaluation can be debugged. For instance `let a = trace "a" 1` would log `"a"`, as soon as `a` is being evaluated. Writing pointfree functions allows for caching, as can be seen in the following example:
+The `trace` function in `Debug.Tace` allows for logging at places, where the `IO` type is not present. That way, evaluation can be debugged. For instance `let a = trace "a" 1` would log `"a"`, as soon as `a` is being evaluated.
+
+**Writing pointfree functions allows for caching**, as can be seen in the following example:
 ```haskell
 import Debug.Trace
 
@@ -990,11 +992,11 @@ f' called
 ```
 If `f` was, however, defined with the signature `f :: Num a => a -> a`, it would not be cached. That is because typeclass constraints will be resolved into additional arguments.
 
-Forcing a value **not to be shared** can be done by applying unit to it, as if it were a function. `let f x = (x ()) + (x ())`, where the signature is `f'' :: (() -> Int) -> Int`.
+Forcing a value **not to be shared** can be done by applying unit to it, as if it was a function. `let f x = (x ()) + (x ())`, where the signature is `f'' :: (() -> Int) -> Int`.
 
 `let` can be used to **force sharing**. Here, `(1 + 1) * (1 + 1)`, `1 + 1` would be computed twice. With `let` only once: `let x = 1 + 1 in x * x`.
 
-A function's pattern matching can be **refutable** (German: _widerlegbar_) or **irrefutable**. The former is for instance `f True = ...`, the latter `f _ = ...` or `f x = ...`. The terminology is not about the function but about a single pattern matching expression, i.e. one line.
+A function's pattern matching can be **refutable** (German: _widerlegbar_) or **irrefutable**. The former is for instance `f True = ...`, the latter `f _ = ...` or `f x = ...` (always matching). The terminology is not about the function, but about a single pattern matching expression, i.e. one line.
 
 **Lazy pattern matches** can be implemented using the `~`. The first function will fail, when invoked with `undefined`, whereas the latter works. The latter also makes the pattern irrefutable though.
 ```haskell
@@ -1010,7 +1012,7 @@ banging :: Bool -> Int
 banging !b = 1
 ```
 
-The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for expressions in the particular source code file. Thereby they avoid `seq`, `~`, and `!` noise if everything is supposed to be strict. The meaning of `~` is now inverted, i.e. it forces lazyness.
+The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for expressions in the particular source code file. Thereby, they avoid `seq`, `~`, and `!` being all over the place, if everything is supposed to be strict. The meaning of `~` is then inverted, i.e. it forces lazyness.
 
 
 # 28 Basic Libraries
