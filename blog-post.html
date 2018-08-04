@@ -1,0 +1,1015 @@
+From November, 13th 2017 to June, 9th 2018, a friend and I were working our way through the 1285 pages of <a href="http://haskellbook.com/">"Haskell Programming - from first principles"</a> by Christopher Allen and Julie Moronuki. That's more than six pages per day! While reading and discussing, I took a few notes here and there, which I want to publish in this post. Some of the sentences are directly taken from the book, which I highly recommend to anyone who wants to learn Haskell, by the way.<!--more-->
+<h4>Table of Contents</h4>
+<ol>
+ 	<li><a href="#1introduction">Introduction</a></li>
+ 	<li><a href="#2gettingstarted">Getting Started</a></li>
+ 	<li><a href="#3strings">Strings</a></li>
+ 	<li><a href="#4basicdatatypes">Basic Data Types</a></li>
+ 	<li><a href="#5types">Types</a></li>
+ 	<li><a href="#6typeclasses">Typeclasses</a></li>
+ 	<li><a href="#7functionalpatterns">Functional Patterns</a></li>
+ 	<li><a href="#8recursion">Recursion</a></li>
+ 	<li><a href="#9lists">Lists</a></li>
+ 	<li><a href="#10foldinglists">Folding Lists</a></li>
+ 	<li><a href="#11algebraicdatatypes">Algebraic Data Types</a></li>
+ 	<li><a href="#12signalingadversity">Signaling Adversity</a></li>
+ 	<li><a href="#13buildingprojects">Building Projects</a></li>
+ 	<li><a href="#14testing">Testing</a></li>
+ 	<li><a href="#15monoidandsemigroup">Monoid and Semigroup</a></li>
+ 	<li><a href="#16functor">Functor</a></li>
+ 	<li><a href="#17applicative">Applicative</a></li>
+ 	<li><a href="#18monad">Monad</a></li>
+ 	<li><a href="#19applyingstructure">Applying Structure</a></li>
+ 	<li><a href="#20foldable">Foldable</a></li>
+ 	<li><a href="#21traversable">Traversable</a></li>
+ 	<li><a href="#22reader">Reader</a></li>
+ 	<li><a href="#23state">State</a></li>
+ 	<li><a href="#24parsercombinators">Parser Combinators</a></li>
+ 	<li><a href="#25composingtypes">Composing Types</a></li>
+ 	<li><a href="#26monadtransformers">Monad Transformers</a></li>
+ 	<li><a href="#27nonstrictness">Nonstrictness</a></li>
+ 	<li><a href="#28basiclibraries">Basic Libraries</a></li>
+ 	<li><a href="#29io">IO</a></li>
+ 	<li><a href="#30errorhandling">Error Handling</a></li>
+        <li><a href="#quotes">Quotes</a></li>
+</ol>
+<h2 id="1introduction">1 Introduction</h2>
+A <strong>function</strong> maps from its <em>domain</em> to its <em>image</em> (which is a subset of the <em>co-domain</em>). Each input is invariably mapped to exactly one output.
+
+In <strong>lambda calculus</strong> an <em>abstraction</em> is an anonymous function. It consists of <em>head</em> and <em>body</em>, for example <em>λx.x</em>. The head binds the parameter(s) to the body of the function.
+
+The lambdas <em>λx.x</em> and <em>λy.y</em> are <strong>alpha equivalent</strong>.
+
+<strong>Beta reduction</strong> is the process of replacing all occurrences of a parameter with a value or a function; for example <em>(λx.x+x)1</em> becomes <em>1</em> or <em>(λx.x)(λa.2a)</em> turns into <em>(λa.2a)</em>.
+
+If a variable occurs in a function's body, but not in the head, it is referred to as a <strong>free variable</strong>. Lambdas with multiple arguments such as <em>λxy.xy</em> are a shorthand for multiple nested lambdas <em>λx.(λy.xy)</em>.
+
+<strong>Combinators</strong> are lambda terms with no free variables.
+
+Lambda terms can <strong>diverge</strong> if <em>evaluation</em> does not terminate. For example <em>λx.xx</em> diverges if applied to itself. Evaluation happens in <em>normal order</em>, i.e. outer-most and left-most terms get evaluated first.
+
+Notes on syntax: <em>λab.a(b)</em> means that <em>b</em> will be applied to <em>a</em> on evaluation (if possible). However, <em>(λa.λb.a)b</em> evaluates to <em>λb.b'</em>.
+<h2 id="2gettingstarted">2 Getting Started</h2>
+<strong>Prelude</strong> is a library of standard types, classes, and functions, such as <code>pi</code>, <code>Bool</code>, <code>Monad</code>, <code>map</code>. Haskell files can be loaded to GHCi REPL using <code>:load file.hs</code>. All compiler warnings can be enabled with <code>-Wall</code> (or equivalently <code>{-# OPTIONS_GHC -Wall #-}</code>).
+
+An <em>expression</em> is in <strong>normal form</strong>, or <strong>irreducible</strong>, when there are no more evaluations steps that can be taken.
+
+Every <strong>Haskell function</strong> is an expression that takes one argument. They always return a result. A <strong>definition</strong> may look like that: <code>piTimesSquare x = pi * (x ^ 2)</code>. A function <strong>parameter</strong> stands for a value, while an <strong>argument</strong> is an actual value that is being passed on to the function. Functions are in <em>prefix</em> style by default.
+
+<em>Infix</em> operators are functions that can be used in prefix fashion by wrapping them in parentheses: <code>(+) 1 2</code>. The <code>$</code> operator has the lowest possible precedence (0). The following example explains its usage: <code>(5 *) $ 1 + 1</code> equals <code>5 * (1 + 1)</code>. The GHCi command <code>info</code> provides signature and precedence information about functions.
+
+An <strong>expression</strong> is a combination of symbols that conforms to syntactic rules and can be evaluated to some result.
+
+A <strong>value</strong> is an expression that can not be evaluated any further. Haskell uses <strong>lazy evaluation</strong>, i.e. it only evaluates an expression when it is forced to by other terms which refer to the expression.
+<h2 id="3strings">3 Strings</h2>
+The GHCi command <code>:type</code> prints the type of a variable / expression. <code>a :: b</code> means that <code>a</code> has the type <code>b</code>.
+
+<code>String</code> is a type alias for <code>[Char]</code>, i.e. a list of characters.
+
+For outputting variables, <code>print</code> can be used. <code>putStr</code> and <code>putStrLn</code> are also printing, however, they are restricted to the type <code>String</code>.
+
+The <code>do</code> syntax allows for sequencing of actions, as shown below.
+<pre class="haskell language-haskell">a :: String  -- declaration with type
+a = "a"  -- value assignment
+
+main :: IO ()
+main = do
+  putStr a
+  putStrLn "b"
+</pre>
+Strings can be <strong>concatenated</strong> with the infix operator <code>++</code> or the <code>concat</code> function (e.g. <code>concat ["a", "b"]</code>).
+
+Functions and types can be defined globally (<strong>top level definitions</strong>) or locally (<strong>local definition</strong>); the <em>scope</em> is different. The <code>were</code> and <code>let</code> clauses are key to defining local functions or variables, as can be seen in the example below.
+<pre class="haskell language-haskell">area d = pi * (r * r)  -- top level
+  where r = d / 2  -- local
+</pre>
+The <code>:</code> operator builds a list: <code>'a' : "bc"</code>. The functions <code>head</code> and <code>tail</code> can be applied to strings in order to retrieve the first character (<strong>head</strong>) or everything but the first character (<strong>tail</strong>). A <strong>substring</strong> starting at index 0 can be retrieved using <code>take</code>: <code>take n string</code>. It will return a list containing the first <code>n</code> elements of the list (which can be a <code>String</code>). Contrary, <code>drop</code> removes the first <code>n</code> elements from a list.
+<pre class="haskell language-haskell">-- sub list with length l of list x starting at index s
+-- pointfree version: https://timodenk.com/blog/making-slice-pointfree/
+slice :: Int -&gt; Int -&gt; [a] -&gt; [a]
+slice s l x = take l (drop s x)
+</pre>
+<h2 id="4basicdatatypes">4 Basic Data Types</h2>
+A <strong>data type</strong> is a set of <em>values</em> with an abstract commonality. A <strong>data declaration</strong> defines a new data type. For example, the data type <code>Bool</code> is defined with the following <em>data declaration</em>.
+<pre class="haskell language-haskell">data Bool = False | True
+</pre>
+<strong>Pattern matching</strong> is a feature of Haskell that allows multiple implementations of the same function. When calling the function, the implementation will be chosen depending on the argument. <code>_</code> is called <em>catch-all</em> and will match any argument value.
+
+<strong>Typeclasses</strong> is a polymorphic type that adds functionality (i.e. faculties or interfaces) to types that is reusable across all inheriting types. A <strong>type alias</strong> is a way of making a type available through a different name: <code>type Name = Integer</code>.
+
+The <strong>ordering typeclass</strong> <code>Ord</code> enforces implementation of the following operators.
+<pre class="haskell language-haskell">compare :: a -&gt; a -&gt; Ordering
+(&lt;) :: a -&gt; a -&gt; Bool
+(&lt;=) :: a -&gt; a -&gt; Bool
+(&gt;) :: a -&gt; a -&gt; Bool
+(&gt;=) :: a -&gt; a -&gt; Bool
+max :: a -&gt; a -&gt; a
+min :: a -&gt; a -&gt; a
+</pre>
+Haskell's inequality symbol is <code>/=</code>. The <strong>equality typeclass</strong> <code>Eq</code> requires the following.
+<pre class="haskell language-haskell">(==) :: a -&gt; a -&gt; Bool
+(/=) :: a -&gt; a -&gt; Bool
+</pre>
+A <strong>typeclass constraint</strong> can be made for parameters with the following syntax (here for the function equality operator which requires both operands to implement <code>Eq</code>): <code>(==) :: Eq a =&gt; a -&gt; a -&gt; Bool</code>.
+
+Variables in type signatures are commonly named according to the following rules: (1) Type variables are called <code>a</code>, <code>b</code>, ...; (2) function variables are called <code>f</code>, <code>g</code>, ... (3) Arguments to functions are often called <code>x</code>, <code>y</code>, and <code>z</code>. (4) Lists of <code>x</code> values are called <code>xs</code>. (5) All names can also occur with numbers or the prime symbol appended to them, e.g. <code>x1</code> or <code>f'</code>.
+<h3 id="41numbers">4.1 Numbers</h3>
+Numbers are inheriting from the <em>typeclass</em> <code>Num</code>.
+<ul>
+ 	<li><strong><code>Int</code></strong>. An integral number (aka. integer) with a fixed precision, that is it has upper and lower bound (size: 8 byte). <code>GHC.Int</code> adds the integer types <code>Int8</code>, <code>Int16</code>, <code>Int32</code>, and <code>Int64</code>, with the number indicating the number of bits used to store the value. The value range of <code>Int</code> is <em>[-9223372036854775808, 9223372036854775807]</em>.</li>
+ 	<li><strong><code>Integer</code></strong>. An integral number that supports arbitrarily large or small numbers.</li>
+ 	<li><strong><code>Float</code></strong>. Single-precision floating point number (size: 4 byte).</li>
+ 	<li><strong><code>Double</code></strong>. Double-precision floating point number (size: 8 byte).</li>
+ 	<li><strong><code>Rational</code></strong>. Represents a fraction of two integer numbers. The data type wraps two <code>Integer</code>s and is hence arbitrarily precise.</li>
+ 	<li><strong><code>Scientific</code></strong>. Floating point number with an <code>Integer</code> base and <code>Int</code> exponent. Therefore, the numbers can be arbitrarily large and precise. This data type is not part of GHC and must be installed separately (<code>stack install scientific</code>).</li>
+</ul>
+The <code>Integer</code> type should be preferred over <code>Int</code>, and <code>Scientific</code> and <code>Rational</code> (typeclass <code>Fractional</code>) should be preferred over <code>Float</code> and <code>Double</code>, unless computational efficiency matters.
+<h3 id="42boolean">4.2 Boolean</h3>
+The boolean data type can either be <code>True</code> or <code>False</code> and is defined as <code>data Bool = False | True</code>. Operators for booleans are <code>&amp;&amp;</code> for <strong>and</strong>, <code>||</code> for <strong>or</strong>, and the function <code>not</code> for <strong>inversion</strong>.
+
+Haskell features <strong>if expressions</strong> with the following syntax: <code>if &lt;condition&gt; then &lt;a&gt; else &lt;b&gt;</code>. The entire if expression evaluates to either <code>&lt;a&gt;</code> or <code>&lt;b&gt;</code>, depending on the condition.
+<h3 id="43tuples">4.3 Tuples</h3>
+<strong>Tuples</strong> are types that store a fixed number <em>n</em> of constituents which may have different types themselves. <em>n</em> is referred to as <em>arity</em> (number of parameters that a function takes). A tuple can be created with its constructor, <code>(,,) x1 x2 x3</code>, here with <em>n=3</em>. Tuples with <em>n=1</em> must not exist, however, <em>n=0</em> is possible and called <em>unit</em> <code>()</code>.
+
+For convenience, the first element in a tuple can be accessed using <code>fst :: (a, b) -&gt; a</code>; <code>snd</code> serves equally for the second value. <code>Data.Tuple</code> contains the tuple manipulation functions <code>curry</code>, <code>uncurry</code>, and <code>swap</code>.
+
+A tuple can be unpacked when passed to a function with the following syntax: <code>tupleSum (a, b) = a + b</code>
+<h3 id="44lists">4.4 Lists</h3>
+The <strong>list</strong> data type stores <em>n</em> values of equal type, where <em>n</em> can be changed dynamically.
+
+The <strong><code>n</code>-th element</strong> of a list can be accessed with the <code>!!</code> operator (<code>n</code> is zero based): <code>"abc" !! n</code>.
+<h2 id="5types">5 Types</h2>
+Type systems have been defined to enforce correctness. In Haskell, typing is <em>static</em> and typechecking occurs at <em>compile time</em>. A <strong>data type declaration</strong> defines a <em>type constructor</em> and <em>data constructors</em>. Haskell functions are created from the function type constructor <code>-&gt;</code> and the function is a <em>value</em>.
+
+A function signature may have multiple <strong>typeclass constraints</strong> <code>(Num a, Num b) =&gt; a -&gt; b -&gt; b</code>. In the example, <code>a</code> could be an <code>Integer</code> and both <code>b</code>s could be <code>Double</code>s. However, different types for the second argument and the return type would not be possible with this definition.
+
+The <code>=&gt;</code> is called <strong>typeclass arrow</strong>. The right associative <strong>type constructor for functions</strong> <code>-&gt;</code> realizes currying: <code>f :: a -&gt; a -&gt; a</code> is read as <code>f :: a -&gt; (a -&gt; a)</code>. Due to currying, functions can be partially applied. Infix operators can be partially applied to a first or second parameter, e.g. <code>(2^)</code> or <code>(^2)</code>.
+
+<strong>Polymorphism</strong> is the provision of a single interface to entities of different types. In Haskell it is either <em>parametric</em> or <em>constrained</em> (aka. <em>bounded</em>, <em>ad-hoc</em>). The former is polymorphism that accepts any type, whereas the latter accepts only some types. Multiple class constrains must be wrapped in parentheses: <code>f :: (Eq a, Num b) =&gt; a -&gt; b</code>. The opposite of polymorphism is <em>monomorphism</em>, in Haskell called <em>concrete</em>. Applied to variables, polymorphism is a property of variables which may refer to more than one concrete type.
+
+<strong>Type inference</strong> is the process of determining a variables <em>principle type</em> by looking at the way it is being used. The <strong>principle type</strong> is the most generic type that can be assigned to a variable.
+<h2 id="6typeclasses">6 Typeclasses</h2>
+<strong>Typeclasses</strong> generalize over a set of types in terms of consumption or usage in computation. After declaring a data type with the <code>data Typename</code> keyword, typeclasses can be assigned with e.g. <code>instance Typeclass Typename</code>. Typeclasses can <strong>inherit</strong> from a <em>superclass</em> (e.g. <code>class Num a =&gt; Fractional a</code>).
+
+A typeclass can be defined with the <code>class</code> keyword. The <code>Num</code> typeclass for example is defined as follows.
+<pre class="haskell language-haskell">class Num a where
+  (+) :: a -&gt; a -&gt; a
+  (*) :: a -&gt; a -&gt; a
+  (-) :: a -&gt; a -&gt; a
+  negate :: a -&gt; a
+  abs :: a -&gt; a
+  signum :: a -&gt; a
+  fromInteger :: Integer -&gt; a
+</pre>
+Types which implement the <code>Integral</code> type are also required to implement <code>Real</code> and <code>Enum</code>.
+<pre class="haskell language-haskell">class (Real a, Enum a) =&gt; Integral a
+</pre>
+A typeclass is implemented for a type with <code>instance</code>. The implementation is called <strong>instance</strong> and might look as follows.
+<pre class="haskell language-haskell">data Suit = Spade | Diamond | Club | Heart
+instance Eq Suit where
+  (==) Spade Spade = True
+  (==) Diamond Diamond = True
+  (==) Club Club = True
+  (==) Heart Heart = True
+  (==) _ _ = False
+</pre>
+Typeclasses <strong>default</strong> to certain types. <code>Num</code> defaults to <code>Integer</code> for example <code>default Num Integer</code>. This can be better explained given an example: When entering a <code>5</code> into GHCi, a show method must be called. <code>:t 5</code> however gives <code>Num</code> so it is left to Haskell to choose a <code>show</code> method from the inheriting types. In this case <code>Integer</code> is chosen by default.
+
+<strong>Typeclass instances</strong> are unique pairings of a typeclass and a type.
+
+<strong>Effects</strong> are observable actions programs may take, such as writing to a file or printing to the console. <code>IO</code> is the type for values whose evaluation bears the possibility of causing side effects.
+<h3 id="61derivabletypeclasses">6.1 Derivable Typeclasses</h3>
+The following typeclasses can be automatically derived. That means they can be automatically instantiated for a given type, based on how it is defined.
+<ul>
+ 	<li><strong><code>Bounded</code></strong>. Types that have an upper and lower bound.</li>
+ 	<li><strong><code>Enum</code></strong>. The type's values can be enumerated. Provides methods such as <code>succ</code> (successor; comparable to incrementing), <code>pred</code> (predecessor), <code>enumFromTo</code>, and <code>enumFromThenTo</code> (which uses a step size based on the second argument).</li>
+ 	<li><strong><code>Eq</code></strong>. The type's values can be tested for equality.</li>
+ 	<li><strong><code>Ord</code></strong>. The type's values can be put into sequential order. Implies <code>Eq</code> and can be implemented by defining the <code>compare</code> method which returns <code>EQ</code>, <code>LT</code>, or <code>GT</code>.</li>
+ 	<li><strong><code>Read</code></strong>. Values can be parsed from strings. It is often a <em>partial</em> function as it does not return a proper value for all possible inputs.</li>
+ 	<li><strong><code>Show</code></strong>. Values can be converted to strings (e.g. for output). Enforces implementation of <code>showsPrec</code>, <code>show</code>, and <code>showList</code>. Printing things is possible in Haskell, even though it is purely functional, because the <code>print</code> method invokes <code>IO</code> which has the <em>side effect</em> of outputting text. It returns the unit <code>()</code> because it has no relevant return value.</li>
+</ul>
+<h3 id="62typeclassinheritance">6.2 Typeclass Inheritance</h3>
+Inheritance structure of common typeclasses. <code>Ord</code> inherits from <code>Eq</code>. <code>Real</code> inherits from <code>Ord</code> and <code>Num</code>. <code>Fractional</code> inherits from <code>Num</code>. <code>Integral</code> inherits from <code>Real</code>, <code>Fractional</code>, and <code>Enum</code>.
+<h2 id="7functionalpatterns">7 Functional Patterns</h2>
+Inner variables can <em>shadow</em> outer variables, as can bee seen in the following function which always returns <code>5</code>: <code>func x = let x = 5 in x</code>.
+
+<strong>Anonymous functions</strong> (aka. lambdas) are functions which are not bound to an identifier and can be declared with this syntax: <code>(\x -&gt; x * 4) :: Num a =&gt; a -&gt; a</code>. They are often used if a function is passed to another function with the former being needed only once. The signature can be omitted.
+
+The signature of <strong>higher order functions</strong> contains functions itself. For example <code>distributor :: (a -&gt; b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)</code> takes two functions and returns a new one.
+
+The <strong>guard syntax</strong> of Haskell allows to write compact functions with multiple outcomes depending on boolean conditions. Each line behind a pipe is called <em>guard case</em>. <code>otherwise</code> is a constant that equals <code>True</code>, i.e. the catch-all case.
+<pre class="haskell language-haskell">clip :: (Num a, Ord a) =&gt; a -&gt; a -&gt; a -&gt; a
+clip min max x
+  | x &lt; min   = min
+  | x &gt; max   = max
+  | otherwise = x
+</pre>
+<strong>Pointfree</strong> versions of functions drop arguments for the sake of readability and performance. For example, <code>print a = (putStrLn . show) a</code> becomes <code>print = putStrLn . show</code>.
+
+<strong>Binding</strong> is the assignment of an argument to a parameter.
+<h2 id="8recursion">8 Recursion</h2>
+A <strong>recursive function</strong> is defined in terms of itself. The <strong>base case</strong> ends the recursion, e.g. factorial of 0 is 1.
+
+In Haskell, <strong>bottom</strong> is a <em>non-value</em> that is used to indicate that a function can not return a value. Possible reasons are errors, partial functions, or infinite recursion / loops.
+
+An example for an elegantly formulated recursive function, performing an integral division:
+<pre class="haskell language-haskell">dividedBy :: Integral a =&gt; a -&gt; a -&gt; (a, a)
+dividedBy num denom = go num denom 0
+  where go n d count
+          | n &lt; d = (count, n)
+          | otherwise = go (n - d) d (count + 1)
+</pre>
+<h2 id="9lists">9 Lists</h2>
+In Haskell, lists are (1) a <strong>collection of elements</strong> of the same type, or (2) an <strong>infinite series</strong> of values (i.e. stream).
+
+The list <strong>definition</strong> is <code>data [] a = [] | a : [a]</code>.
+
+The <strong>initialization</strong> <code>[1, 2, 3] ++ [4]</code> is <em>syntactic sugar</em> for <code>(1 : 2 : 3 : []) ++ 4 : []</code>. The <strong>range</strong> syntax allows for the definition of sequences from <em>n</em> to <em>m</em> with <code>[n..m]</code> and a step size of <em>1</em>. It uses <code>enumFromTo</code> behind the scenes; and <code>enumFromThenTo</code> works for variable step sizes.
+
+<strong>List comprehension</strong>s are a means of generating a new list from an existing list (or multiple lists). For instance <code>[sqrt x | x &lt;- [0..10], sqrt x &lt; 3]</code> generates a list of square roots of the numbers from <em>0</em> to <em>10</em>, for the cases where the square root is smaller than <em>3</em>. <code>x &lt;- [0..10]</code> is called <em>generator</em>. Multiple generators can be used to create a new list, e.g. <code>[x*y | x &lt;- [0..10], y &lt;- [10..12]]</code>. In such a case, each element of the first list will be processed with every element of the second, and so forth.
+
+In the case of a list, the <strong>spine</strong> is a linear succession of one <em>cons cell</em> wrapping another cons cell (<code>1 : 2 : 3 : []</code>). Spines are evaluated independently of values. Here, the spine is the structure of a collection, i.e. not the values contained therein. Calling the <code>length</code> function with a list does not necessarily lead to an evaluation of all values. The <code>sprint</code> command (which is a GHCi feature, not part of the Haskell language) allows you to see how much of a value has been evaluated at this point (https://stackoverflow.com/a/35200329/3607984).
+
+Values in Haskell get reduced to <strong>weak head normal form</strong> by default. <strong>Normal form</strong> means that an expression is fully evaluated. Weak head normal form means the expression is only evaluated as far as is necessary to reach a data constructor. <code>"a" ++ "b"</code> is neither of both because the outermost component of the expression is a function.
+<h3 id="91listutilityfunctions">9.1 List Utility Functions</h3>
+<ul>
+ 	<li><strong><code>!!</code></strong> returns the <strong><em>n</em>th element</strong></li>
+ 	<li><strong><code>take</code></strong> returns the <strong>first <em>n</em> elements</strong> of a list. <code>take :: Int -&gt; [a] -&gt; [a]</code></li>
+ 	<li><strong><code>drop</code></strong> returns <strong>all but the first <em>n</em> elements</strong> of a list. <code>drop :: Int -&gt; [a] -&gt; [a]</code></li>
+ 	<li><strong><code>takeWhile</code></strong> iterates over the list and returns <strong>all elements until the condition mismatches</strong>. <code>takeWhile :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code></li>
+ 	<li><strong><code>dropWhile</code></strong> iterates over the list and <strong>discards all elements until the condition mismatches</strong>. <code>dropWhile :: (a -&gt; Bool) -&gt; [a] -&gt; [a]</code></li>
+ 	<li><strong><code>splitAt</code></strong> returns a <strong>tuple containing the first <em>n</em> and the remaining elements</strong> of the list. <code>splitAt :: Int -&gt; [a] -&gt; ([a], [a])</code></li>
+ 	<li><strong><code>head</code></strong> returns the <strong>first element</strong> of a list. If the list is empty, and exception is thrown.</li>
+ 	<li><strong><code>last</code></strong> returns the <strong>last element</strong> of a list. Throws an exception if the list is empty.</li>
+ 	<li><strong><code>tail</code></strong> returns <strong>all elements but the first</strong> (head). If the list is empty, an exception is thrown.</li>
+ 	<li><strong><code>init</code></strong> returns <strong>all elements but the last</strong>. Throws an exception if the list is empty.</li>
+ 	<li><strong><code>elem</code></strong> checks whether an <strong>element is in a list</strong> or not. <code>elem :: (Eq a, Foldable t) =&gt; a -&gt; t a -&gt; Bool</code></li>
+ 	<li><strong><code>map</code></strong> <strong>applies a function to all elements</strong>. <code>map :: (a -&gt; b) -&gt; [a] -&gt; [b]</code></li>
+ 	<li><strong><code>zip</code></strong> creates a <strong>list of tuples</strong> out of two lists. It stops as soon as one list runs out of values. <code>zip :: [a] -&gt; [b] -&gt; [(a, b)]</code></li>
+ 	<li><strong><code>unzip</code></strong> creates a tuple of <strong>two lists out of a list of tuples</strong>. <code>unzip :: [(a, b)] -&gt; ([a], [b])</code></li>
+ 	<li><strong><code>zipWith</code></strong> combines <strong>two lists into one</strong> by subsequently applying a function to two elements. <code>zipWith :: (a -&gt; b -&gt; c) -&gt; [a] -&gt; [b] -&gt; [c]</code></li>
+</ul>
+<h2 id="10foldinglists">10 Folding Lists</h2>
+Folding is the reduction of a structure. It happens at two stages, namely (1) traversal and (2) reduction. <em>Folding</em>, as a concept, is also refered to as <strong>catamorphism</strong>, that is the unique homomorphism (structure preserving map) from an initial algebra into some other algebra.
+
+The right associative function <strong>fold right</strong>, <code>foldr :: Foldable t =&gt; (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b</code>, applies a base value and the last value of a foldable type to a function, takes the result and recursively applies the function to a sequence of values, yielding one value as its final result. The function folds a foldable type <em>with</em> the function <code>f :: a -&gt; b -&gt; b</code>.
+
+When computing the product of all values of a foldable, the base value (identity) is <em>1</em>; for sums it would be <em>0</em>. The identity is also returned, if the foldable data structure contains no value, e.g. an empty list <code>[]</code>.
+
+The <strong>left fold</strong> is traversing the data structure in the same order as the right fold, however it is left associative. It is inappropriate to use in combinations with very long lists or impossible with infinite lists. <code>foldl'</code> is the strict version of <code>foldl</code>. The relationship between <code>foldl</code> and <code>foldr</code> is (for finite lists <code>xs</code>) <code>foldr f z xs = foldl (flip f) z (reverse xs)</code>.
+
+<strong>Scans</strong> return a list of all intermediate values of a fold. <code>scanr :: (a -&gt; b -&gt; b) -&gt; b -&gt; [a] -&gt; [b]</code> and <code>scanl</code> are the Haskell function for right fold and left fold respectively. <code>scanl</code> can for example be used to create an infinite list of Fibonacci numbers: <code>fibs = 1 : scanl (+) 1 fibs</code>.
+<h2 id="11algebraicdatatypes">11 Algebraic Data Types</h2>
+<strong>Type constructors</strong> are used at the type level, in type signatures, typeclass declarations, and instances. They are static and resolved at compile time. <strong>Data constructors</strong> construct values and can be interacted with at runtime. Type and data constructors with no arguments are <strong>constants</strong>, for instance <code>Bool</code>.
+
+The <strong>arity</strong> of a constructor is the number of parameters it takes. A type or data constructor with no arguments are called <em>nullary</em> and are <em>type constant</em>. Data constructors that take exactly one argument are called <em>unary</em>, with more than one they are referred to as <em>products</em>.
+
+A type constructor argument that does not occur alongside with any value constructor is called <strong>phantom</strong>. For example <code>a</code> is a phantom in the declaration <code>data Type a = Value</code>.
+
+The <strong>record syntax</strong> allows for the definition of types, where the contained values have names. For example <code>data Person = Person { name :: String, age :: Int }</code>. The values can then be accessed by e.g. <code>name person</code>.
+<h3 id="111kinds">11.1 Kinds</h3>
+<strong>Kinds</strong> are the types of types. They can be queried in GHCi with <code>:kind</code>. For example the kind of <code>[]</code> is <code>* -&gt; *</code> because it needs to be applied to one type (in order to yield <code>*</code>, which is <em>fully applied</em>).
+
+<strong>Type constructing</strong> is referring to the application of a type to a type constructor.
+
+<strong>As-patterns</strong> are a way of unpacking an argument, still keeping a reference to the entire argument. The <code>@</code>-sign is used for that:
+<pre class="haskell language-haskell">f t@(a, _) = do
+  print a
+  return t
+</pre>
+<h3 id="112newtype">11.2 Newtype</h3>
+<strong><code>type</code></strong> creates an alias (e.g. <code>type TwoBool = (Bool, Bool)</code>), while <strong><code>data</code></strong> creates arbitrary data structures. <strong><code>newtype</code></strong> creates types with a single unary data constructor. Resulting from this, the cardinality of the new type equals the cardinality of the type it contains. A <code>newtype</code> cannot be a product type, sum type, or contain a nullary value constructor. It has no runtime overhead, because it is reduced to the type it contains.
+
+An example of usage for <code>newtype</code>. The <code>Int</code> in <code>B</code> is wrapped and can therefore be processed differently by <code>tooMany</code>.
+<pre class="haskell language-haskell">class TooMany a where
+  tooMany :: a -&gt; Bool
+
+instance TooMany Int where
+  tooMany n = n &gt; 42
+
+newtype B = B Int deriving (Eq, Show)
+instance TooMany B where
+  tooMany (B n) = n &gt; 100
+</pre>
+If <code>B</code> shall fall back on the default <code>tooMany</code> implementation, the <code>deriving</code> keyword can be used in combination with a compiler pragma:
+<pre class="haskell language-haskell">{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+
+class TooMany a where
+  tooMany :: a -&gt; Bool
+instance TooMany Int where
+  tooMany n = n &gt; 42
+
+newtype B = B Int deriving (Eq, Show, TooMany)
+</pre>
+<h3 id="113cardinality">11.3 Cardinality</h3>
+The <strong>cardinality</strong> of a type is the number of values it can possibly have. The cardinality <em>|A|</em> of a type <code>A = A1 a11 ... a1n | ... | An an1 ... ann</code> is given by <em>|A1|+...+|An|</em>, where <em>|Ai|=|ai1|×...×|ain|</em>. For instance, the cardinality of <code>Bool = False | True</code> is <em>1+1=2</em>.
+
+<strong>Sum types</strong> are <em>or connections</em> of multiple types; e.g. <code>A = B | C</code>. <strong>Product types</strong> are <em>and connections</em> and have e.g. the following shape: <code>A = B c d</code>. Here <code>B</code> contains <code>c</code> and <code>d</code>.
+
+The <strong>number of possible input-output-mappings</strong> of a function from <code>a</code> to <code>b</code> is computed by <em>|b|^|a|</em>. <code>a -&gt; b -&gt; c</code> gives <em>|c|^(|b|×|a|)</em>.
+<h2 id="12signalingadversity">12 Signaling Adversity</h2>
+In Haskell it is common to use so called <em>smart constructors</em> <a href="wiki.haskell.org">https://wiki.haskell.org/Smart_constructors</a>. These constructors validate their arguments and return <code>Maybe</code>, i.e. either the desired object or <code>Nothing</code> (or throw an error). For more detailed information about the error, the return type may also be <code>Either</code>, which holds a <code>Left</code> and a <code>Right</code> value. The former is commonly the error object.
+
+<strong>Lifted</strong> and <strong>unlifted types</strong> have different kinds, namely <code>*</code> and <code>#</code> respectively. Lifted types are much more common and differ from unlifted types by their property of being able to be inhabited by <em>bottom</em>.
+
+The type construction <code>[Maybe]</code> is invalid, because <code>[] :: * -&gt; *</code> and <code>Maybe</code> is not <code>*</code> but <code>* -&gt; *</code> itself.
+
+Opposed to folds, <strong>unfolds</strong> build up data structures from a single starting value (<em>anamorphism</em>). <code>iterate :: (a -&gt; a) -&gt; a -&gt; [a]</code> does that infinitely, <code>unfoldr :: (b -&gt; Maybe (a, b)) -&gt; b -&gt; [a]</code> (in <code>Data.List</code>) is the generalization which may terminate.
+<h2 id="13buildingprojects">13 Building Projects</h2>
+Haskell <strong><a href="https://www.haskell.org/cabal/users-guide/">Cabal</a></strong> (Common Architecture for Building Applications and Libraries) is a package manager. A package is a program that may have dependencies.
+
+<strong>Stack</strong> is a program for developing Haskell projects. It is built on top of Cabal. The command <code>stack build</code> builds a project and <code>stack setup</code> [...]. <code>stack ghci</code> starts GHCi in the context of a program, where functions can be executed. <code>stack new &lt;project-name&gt; simple</code> creates a new project using the <a href="https://github.com/commercialhaskell/stack-templates">template</a> "simple".
+
+The <strong>.cabal</strong> file (located in a project's root folder) contains information about the project. For example whether it is a library or an executable.
+<pre class="cabal language-cabal">library | executable program-name
+  hs-source-dirs:      src
+ [exposed-modules:     Module1, Module2]  -- for libraries
+ [main-is:             Main.hs]  -- for executables
+  default-language:    Haskell2010
+  build-depends:       base &gt;= 4.7 &amp;&amp; &lt; 5
+</pre>
+However, with Stack projects, there is also a <code>stack.yaml</code> file, which contains dependencies. It should be preferred over the Cabal file.
+
+A program can be <strong>start</strong>ed with <code>stack exec &lt;program-name&gt;</code> from every directory. However, the program executable is only present if the <code>.cabal</code> file that was built before contains the line <code>executable &lt;program-name&gt;</code> and if the program was built.
+
+By default a module <strong>export</strong>s all its content. This can be changed by adding a list of exported items:
+<pre class="haskell language-haskell">module ModuleName
+  (function1, constant1)
+  where
+
+-- implementation of function1, constant 1, and possibly more
+</pre>
+The importing module can also choose what to <strong>import</strong>. This is dome similarly, through a list of items, e.g. <code>import Data.Bool (bool)</code>. The other way around, certain things can be excluded from an import: <code>import Database.SQLite.Simple hiding (close)</code>.
+<strong>Qualified imports</strong> persist the fully qualified name of the imported items. That means with <code>import qualified Data.Bool</code> the function <code>bool</code> is only accessible through <code>Data.Bool.bool</code>.
+With an <strong>alias</strong>, e.g. <code>import qualified Data.Bool as B</code>, <code>bool</code> is accessible through <code>B.bool</code>.
+
+In GHCi the <strong><code>:browse &lt;Module&gt;</code></strong> command lists all items exported by a module. <code>Prelude</code> can be disabled with the command <code>stack ghci --ghci-options -XNoImplicitPrelude</code>.
+<h3 id="131readcsvfile">13.1 Read CSV File</h3>
+Example snippet that reads the file "data.csv":
+<pre class="haskell language-haskell">module CSVReader (readCsv) where
+
+import Data.List.Split (splitOn)
+
+readCsv :: IO [[String]]
+readCsv = do
+  raw &lt;- readFile "data.csv"
+  return $ parseCsv raw
+  where
+    parseCsv :: String -&gt; [[String]]
+    parseCsv s = map (splitOn ",") (lines s)
+</pre>
+<h2 id="14testing">14 Testing</h2>
+There are generally four recognized levels of tests:
+<ol>
+ 	<li><strong>Unit testing</strong> tests small units of code, generally on function level, or in object-oriented programming environments on class level.</li>
+ 	<li><strong>Integration testing</strong> verifies the interfaces between components against design specifications. It ensures that the units (tested in 1.) are <em>wired up</em> properly.</li>
+ 	<li><strong>Component interface testing</strong> controls the data that is passed between units. The data is commonly logged. Unusual data values in an interface can help explain unexpected performance in the next unit.</li>
+ 	<li><strong>System testing</strong> (aka. end-to-end testing) tests a completely integrated system to verify that the system meets its requirements.</li>
+</ol>
+A <strong>property-based testing</strong> framework runs the same test over and over with generated input.
+<h3 id="141hspec">14.1 Hspec</h3>
+Hspec (<a href="https://hspec.github.io/">website</a>) is a Haskell testing framework. In order to work with it, the dependency <code>hspec</code> must be added or it can be installed manually.
+<pre class="bash language-bash">cabal install hspec
+</pre>
+Sample snippet
+<pre class="haskell language-haskell">import Test.Hspec
+
+main :: IO ()
+main = hspec $ do
+  describe "Addition" $ do
+    it "1 + 1 is greater than 1" $ do
+      (1 + 1) &gt; 1 `shouldBe` True
+</pre>
+<h3 id="142quickcheck">14.2 QuickCheck</h3>
+QuickCheck (<a href="http://www.cse.chalmers.se/~rjmh/QuickCheck/">website</a>) was the first library to offer what is today called property testing. The dependency is spelled <code>QuickCheck</code>.
+<pre class="bash language-bash">cabal install QuickCheck
+</pre>
+Sample snippet which uses QuickCheck in combination with hspec. QuickCheck itself does not provide the <code>describe</code> and <code>it</code> methods.
+<pre class="haskell language-haskell">import Test.Hspec
+import Test.QuickCheck
+
+main :: IO ()
+main = hspec $ do
+  describe "Addition" $ do
+    it "x + 1 is always greater than x" $ do
+      property $ \x -&gt; x + 1 &gt; (x :: Int)
+</pre>
+Another workflow is calling <code>quickCheck (fn :: signature)</code>.
+
+QuickCheck validates the property by plugging in random values and edge cases. These are generated in this manner: <code>sample (arbitrary :: Gen Int)</code>.
+
+Generators select values from a list, e.g. lowercase characters.
+<pre class="haskell language-haskell">genChar :: Gen Char
+genChar = elements ['a'..'z']
+</pre>
+This generator is more sophisticated and capable of generating lists of <em>n</em> elements of type <code>a</code>, where <em>n</em> is randomly chosen within an upper and lower bound.
+<pre class="haskell language-haskell">arbitraryList :: (Arbitrary a) =&gt; (Int, Int) -&gt; Gen [a]
+arbitraryList = flip genList arbitrary
+
+genList :: (Int, Int) -&gt; Gen a -&gt; Gen [a]
+genList (minL, maxL) g = sized $ \n -&gt; do
+  k &lt;- choose (minL, min (max minL n) maxL)
+  sequence [ g | _ &lt;- [1..k] ]
+</pre>
+<code>CoArbitrary</code> is used when random functions need to be generated.
+<h2 id="15monoidandsemigroup">15 Monoid and Semigroup</h2>
+<h3 id="151monoid">15.1 Monoid</h3>
+A <strong>monoid</strong> is a binary associative operation with an identity. In other words, it is an operator that takes two arguments that follow the rules associativity and identity.
+<pre class="haskell language-haskell">class Monoid a where
+  mempty :: a
+  mappend :: a -&gt; a -&gt; a
+  mconcat :: [a] -&gt; a
+  {-# MINIMAL mempty, mappend #-}
+</pre>
+Monoids are all types that let you join values together through the <code>mappend</code> function, in accordance with associativity. A <code>mempty</code> value exists for which the <code>mappend</code> becomes the identity.
+
+Much more extended functionality lies in the <strong>package <code>Data.Monoid</code></strong>. Opposed to many other Haskell typeclasses, monoids do often have multiple implementations per type. That is realized by wrapping the type with <code>newtype</code>. For example the <code>newtype</code> <code>Sum</code>, which wraps <code>Num</code>s and determines to use the addition monoid for the wrapped value. Calling <code>mappend</code> with two <code>Product</code> values, however, would multiply them. The resulting type wraps the sum or the product. The actual number can be retrieved through <code>getSum</code> and <code>getProduct</code> respectively. Similarly, the <code>Bool</code> monoid is wrapped in either <code>Any</code> (boolean disjuction) or <code>All</code> (boolean conjunction).
+
+<strong><code>mconcat</code></strong> applies <code>mappend</code> to an arbitrary number of values. For the empty list it returns <code>mempty</code>, for a list with one entry it is the identity.
+
+The <strong>Abelian monoid</strong> has the commutative property, i.e. for all <em>x</em>, <em>y</em>, <code>mappend x y == mappend y x</code> holds.
+
+An <strong>orphan instance</strong> is an instance that is defined for a datatype and a typeclass, but not in the same module as either of them. If neither typeclass nor datatype were defined manually, the best workaround is to create a <code>newtype</code> which wraps the datatype.
+<h3 id="152semigroup">15.2 Semigroup</h3>
+A <strong>semigroup</strong> (Haskell package <code>Data.Semigroup</code>) is a monoid without the identity property. That is an operation which takes two inputs and reduces them to one, and suffices the law of associativity. In code, that means the semigroup defines
+<pre class="haskell language-haskell">class Semigroup a where
+  (&lt;&gt;) :: a -&gt; a -&gt; a
+</pre>
+while satifying associativity, i.e. <code>(a &lt;&gt; b) &lt;&gt; c == a &lt;&gt; (b &lt;&gt; c)</code>.
+
+The <strong><code>NonEmpty</code></strong> datatype resides in <code>Data.List.NonEmpty</code>. It is a list that contains one or more elements.
+<h2 id="16functor">16 Functor</h2>
+A <strong>functor</strong> is a structure preserving mapping. Such a mapping requires a function that is applied to each of the values that the wrapping type encloses. A functor satisfies that for an identity mapping, the values remain the same, also the composition law <code>fmap (f . g) == fmap f . fmap g</code> holds. The infix operator for <code>fmap</code> is <code>&lt;$&gt;</code>.
+<pre class="haskell language-haskell">class Functor (f :: * -&gt; *) where
+  fmap :: (a -&gt; b) -&gt; f a -&gt; f b
+</pre>
+Applying a function to a value that is inside of a structure is refered to as <strong>lifting</strong>.
+
+For nested <strong>functor application</strong>, e.g. when applying a function to characters which are stored in a list of <code>String</code>s, a syntax such as <code>(fmap . fmap) strFn dataStruct</code> can be used.
+
+In order to use a higher kinded Type, e.g. <code>* -&gt; * -&gt; *</code>, as a <code>Functor</code>, one of the type parameters has to be applied. This can either be done with a concrete type such as <code>Integer</code> or with a type variable <code>a</code>, and results in the kind <code>* -&gt; *</code>. Sample snippet:
+<pre class="haskell language-haskell">data Two a b = Two a b deriving (Eq, Show)
+instance Functor (Two a) where
+  fmap f (Two a b) = Two a (f b)
+</pre>
+A <strong>natural transformation</strong> is changing the structure while preserving the content.
+<pre class="haskell language-haskell">{-# LANGUAGE RankNTypes #-}
+type Nat f g = forall a . f a -&gt; g a
+</pre>
+<h2 id="17applicative">17 Applicative</h2>
+An <strong>applicative</strong> is a monoidal functor. Opposed to <code>fmap</code>, with <code>&lt;*&gt;</code> the function (that is applied to the enclosed values) is inside a functor itself. Intuitively this can be understood as <em>mapping a plurality of functions over a plurality of values</em>. The type info is the following:
+<pre class="haskell language-haskell">class Functor f =&gt; Applicative (f :: * -&gt; *) where
+  pure :: a -&gt; f a
+  (&lt;*&gt;) :: f (a -&gt; b) -&gt; f a -&gt; f b
+</pre>
+The function <strong><code>pure</code></strong> can be though of as <em>embedding a value into any structure (functor)</em>. For example <code>pure 1 :: [Int]</code> gives <code>[1]</code>.
+
+An <code>Applicative</code> satisfies the following four laws:
+<ol>
+ 	<li>Identity: <code>pure id &lt;*&gt; v = v</code></li>
+ 	<li>Composition: <code>pure (.) &lt;*&gt; u &lt;*&gt; v &lt;*&gt; w = u &lt;*&gt; (v &lt;*&gt; w)</code></li>
+ 	<li>Homomorphism (structure preserving): <code>pure f &lt;*&gt; pure x = pure (f x)</code></li>
+ 	<li>Interchangeability: <code>u &lt;*&gt; pure y = pure ($ y) &lt;*&gt; u</code></li>
+</ol>
+<h3 id="171examples">17.1 Examples</h3>
+| Command | Result |
+| --- | --- |
+| <code>(,) &lt;$&gt; [1, 2] &lt;*&gt; [3, 4]</code> | <code>[(1,3),(1,4),(2,3),(2,4)]</code>|
+| <code>(+) &lt;$&gt; [1, 2] &lt;*&gt; [3, 5]</code> | <code>[4,6,5,7]</code> |
+| <code>liftA2 (+) [1, 2] [3, 5]</code> | <code>[4,6,5,7]</code> |
+<h3 id="172testing">17.2 Testing</h3>
+Validating whether a data structure satisfies the mentioned laws can be done with the <a href="https://github.com/conal/checkers">checkers</a> package. The following snippets validates an <code>Applicative</code>. Note that the value is not actually being used. Its purpose is to indicate which types to validate.
+<pre class="haskell language-haskell">module ApplicativeTests where
+
+import Test.QuickCheck
+import Test.QuickCheck.Checkers
+import Test.QuickCheck.Classes
+
+list = [("b", "w", 1)]
+
+main = do
+  quickBatch $ applicative list
+</pre>
+<h3 id="173maybe">17.3 Maybe</h3>
+Haskell Prelude implementation of <code>Maybe</code>'s <code>Applicative</code> instance (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/src/GHC.Base.html">source</a>).
+<pre class="haskell language-haskell">-- | @since 2.01
+instance Applicative Maybe where
+  pure = Just
+
+  Just f  &lt;*&gt; m       = fmap f m
+  Nothing &lt;*&gt; _m      = Nothing
+
+  liftA2 f (Just x) (Just y) = Just (f x y)
+  liftA2 _ _ _ = Nothing
+
+  Just _m1 *&gt; m2      = m2
+  Nothing  *&gt; _m2     = Nothing
+</pre>
+<h2 id="18monad">18 Monad</h2>
+Monad is a typeclass reifying an abstraction that is commonly used in Haskell. Instead of an ordinary function of type <code>a</code> to <code>b</code>, it is functorially <strong>applying a function which produces more structure itself</strong> and <strong>using join to reduce the nested structure</strong> that results. In other words, it is the process of taking a function that converts a value of type <code>a</code> into another type (<code>b</code>), wrapped within a third type <code>c</code>. This function is applied to a value (of type <code>a</code>) wrapped within <code>c</code>. The resulting structure is then reduced from <code>c c b</code> to <code>c b</code>.
+<pre class="haskell language-haskell">class Applicative m =&gt; Monad (m :: * -&gt; *) where
+  (&gt;&gt;=) :: m a -&gt; (a -&gt; m b) -&gt; m b
+  (&gt;&gt;) :: m a -&gt; m b -&gt; m b
+  return :: a -&gt; m a
+  fail :: String -&gt; m a
+  {-# MINIMAL (&gt;&gt;=) #-}
+</pre>
+<code>&gt;&gt;=</code> is called <em>bind</em> operator. Intuitively it can be understood as given a couple of wrapped values and a function that can be applied to these, the bind operator applies the function to each of the values. Special about it is (compared to <code>fmap</code>) that the argument order is flipped and the mapping function returns a monad itself which is joined to make sure the output is not nested. The application to the list monad clarifies what that means: <code>(&gt;&gt;=) :: [a] -&gt; (a -&gt; [b]) -&gt; [b]</code>.
+
+<code>*&gt;</code> for <code>Applicative</code> corresponds to <code>&gt;&gt;</code> for <code>Monad</code>. The <code>do</code> syntax is converted into each line being <em>concatenated</em> with the following line using one of the two operators. Variable assignments <code>&lt;-</code> are converted to <code>&gt;&gt;=</code>, for example
+<pre class="haskell language-haskell">do
+  name &lt;- getLine
+  putStrLn name
+</pre>
+becomes the following:
+<pre class="haskell language-haskell">getLine &gt;&gt;= \name -&gt; putStrLn name
+</pre>
+<code>Control.Monad</code> contains a <strong><code>join</code></strong> function. The book introduced it with the example <code>join $ putStrLn &lt;$&gt; getLine</code>, which would, without <code>join</code>, fail because of nested <code>IO</code>s.
+
+Example of using the <code>do</code> syntax in combination with the <code>List</code> monad:
+<pre class="haskell language-haskell">twiceWhenEven :: [Integer] -&gt; [Integer]
+twiceWhenEven xs = do
+  x &lt;- xs
+  if even x
+    then [x*x, x*x]
+    else [x*x]
+</pre>
+The Monad <strong>laws</strong> are
+<ul>
+ 	<li>Right identity <code>m &gt;&gt;= return = m</code>. Applying <code>return</code> leaves the data untouched.</li>
+ 	<li>Left identity <code>return x &gt;&gt;= f = f x</code>. Applying <code>return</code> leaves the data untouched.</li>
+ 	<li>Associativity <code>(m &gt;&gt;= f) &gt;&gt;= g = m &gt;&gt;= (\x -&gt; f x &gt;&gt;= g)</code>. Regrouping the functions should not have any impact on the final result.</li>
+</ul>
+Using Checkers (as in 17.2) with <code>quickBatch (monad [(a, b, c)])</code> where <code>a</code>, <code>b</code>, and <code>c</code> are three values which indicate the type to be used.
+
+The <strong>Kleisli composition</strong> (<em>fish</em> operator: <code>&gt;=&gt;</code>) is about composing two functions which both return monads. It can be imported with <code>import Control.Monad ((&gt;=&gt;))</code> and has the following signature (in comparison to normal function composition):
+<pre class="haskell language-haskell">(.)   ::            (b -&gt;   c) -&gt; (a -&gt;   b) -&gt; a -&gt;   c
+(&gt;=&gt;) :: Monad m =&gt; (a -&gt; m b) -&gt; (b -&gt; m c) -&gt; a -&gt; m c
+</pre>
+Given a <code>Monad</code> instance, the instances for <code>Functor</code> and <code>Applicative</code> can be implemented automatically, as shown in the following snippet.
+<pre class="haskell language-haskell">instance Functor (State s) where
+  fmap = Control.Monad.liftM
+
+instance Applicative (State s) where
+  pure = return
+  (&lt;*&gt;) = Control.Monad.ap
+</pre>
+<h2 id="19applyingstructure">19 Applying Structure</h2>
+The operators <code>*&gt;</code>, <code>&lt;*</code>, and <code>&gt;&gt;</code> discard one of their arguments and are often used in combination with functions that emit side effects.
+<h3 id="191jsonparsingexample">19.1 JSON Parsing Example</h3>
+The data is nested inside of the <code>Parser</code> monad so the value constructor <code>Payload</code> needs to be lifted.
+<pre class="haskell language-haskell">parseJSON :: Value -&gt; Parser a
+(.:)      :: FromJSON a =&gt; Object -&gt; Text -&gt; Parser a
+
+instance FromJSON Payload where
+  parseJSON (Object v) =
+    Payload &lt;$&gt; v .: "from"
+      &lt;*&gt; v .: "to"
+      &lt;*&gt; v .: "subject"
+      &lt;*&gt; v .: "body"
+      &lt;*&gt; v .: "offset_seconds"
+  parseJSON v = typeMismatch "Payload" v
+</pre>
+<h2 id="20foldable">20 Foldable</h2>
+The foldable typeclass has the following definition:
+<pre class="haskell language-haskell">class Foldable (t :: * -&gt; *) where
+  Data.Foldable.fold :: Monoid m =&gt; t m -&gt; m
+  foldMap :: Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m
+  foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+  Data.Foldable.foldr' :: (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b
+  foldl :: (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+  Data.Foldable.foldl' :: (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+  foldr1 :: (a -&gt; a -&gt; a) -&gt; t a -&gt; a
+  foldl1 :: (a -&gt; a -&gt; a) -&gt; t a -&gt; a
+  Data.Foldable.toList :: t a -&gt; [a]
+  null :: t a -&gt; Bool
+  length :: t a -&gt; Int
+  elem :: Eq a =&gt; a -&gt; t a -&gt; Bool
+  maximum :: Ord a =&gt; t a -&gt; a
+  minimum :: Ord a =&gt; t a -&gt; a
+  sum :: Num a =&gt; t a -&gt; a
+  product :: Num a =&gt; t a -&gt; a
+  {-# MINIMAL foldMap | foldr #-}
+</pre>
+For its definition it is sufficient to provide an implementation for either <code>foldMap</code> or <code>foldr</code>. All other functions can be deduced from that.
+
+<code>Monoid</code>s are related to the functions <code>foldr</code> and <code>foldMap</code>. The former uses the monoid definitions of elements inside of the foldable structure to combine them. The latter converts the elements to monoidal values and folds subsequently. In both cases the default value is provided by the monoid identity.
+
+The <strong><code>null</code></strong> function returns <code>True</code> if the data structure is empty. Note, that e.g. <code>null (Left 1)</code> is <code>True</code>, because <code>Left</code> is considered empty whereas <code>Right</code> is not.
+
+Noteworthy are also <strong><code>toList</code></strong>, <strong><code>length</code></strong>, and <strong><code>elem</code></strong>. All three ignore the non-monoid values, for instance <code>length (1, 1)</code> is <code>1</code>.
+
+Both, <code>maximum</code> and <code>minimum</code>, require the contained types to be <code>Ord</code> and <strong>return the maximum and minimum</strong> value respectively. They cannot be applied to empty structures (otherwise an exception is thrown).
+<h2 id="21traversable">21 Traversable</h2>
+<strong><code>Traversable</code></strong> allows for the processing of values inside a data structure as if they were in sequencial order. Opposed to <code>Functor</code>, where function applications happen semantically in parallel. Return values of later function applications of <code>Traversable</code> can depend upon the earlier results. That can be seen as an <em>accumulation of applicative contexts</em>. The typeclass definition is the following:
+<pre class="haskell language-haskell">class (Functor t, Foldable t) =&gt; Traversable (t :: * -&gt; *) where
+  traverse :: Applicative f =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+  sequenceA :: Applicative f =&gt; t (f a) -&gt; f (t a)
+  mapM :: Monad m =&gt; (a -&gt; m b) -&gt; t a -&gt; m (t b)
+  sequence :: Monad m =&gt; t (m a) -&gt; m (t a)
+  {-# MINIMAL traverse | sequenceA #-}
+</pre>
+The typeclass satisfies the following rules:
+<ol>
+ 	<li>Naturality: <code>t . traverse f = traverse (t . f)</code></li>
+ 	<li>Identity: <code>traverse Identity = Identity</code>. That is <code>Traversable</code> instances cannot inject any additional structure.</li>
+ 	<li>Composition: <code>traverse (Compose . fmap g . f) = Compose . fmap (traverse g) . traverse f</code>. Multiple traversals can be collapsed into a single traversal using <code>Compose</code> (which combines structure).</li>
+</ol>
+<code>traverse</code> and <code>sequenceA</code> can be defined in terms of each other: <code>traverse f = sequenceA . fmap f</code> and
+<pre class="haskell language-haskell">sequenceA :: Applicative f =&gt; t (f a) -&gt; f (t a)
+sequenceA = traverse id
+</pre>
+The function <code>catMaybes</code> from <code>Data.Maybe</code> converts a <code>Traversable</code> of <code>Maybe</code> values into a <code>Traversable</code> with all <code>Just</code> values. For instance <code>catMaybes [Just 1, Just 2, Nothing]</code> is <code>[1,2]</code>.
+
+The function <strong><code>traverse</code></strong> applies a function <code>(a -&gt; f b)</code> to values inside a data structure <code>t a</code> and <strong>flips the result</strong> by returning <code>f (t b)</code>.
+
+<code>Traverable</code> implementation for <code>Either</code>:
+<pre class="haskell language-haskell">instance Traversable (Either a) where
+  traverse _ (Left x) = pure (Left x)
+  traverse f (Right y) = Right &lt;$&gt; f y
+</pre>
+<code>Traversable</code> requires <code>Foldable</code> because it is proven that any <code>Traversable</code> can also implement <code>Foldable</code>. The constraint is just there to enforce that there must be an instance (<a href="https://www.reddit.com/r/haskell/comments/7dmjh8/why_does_traversable_need_foldable/">source</a>).
+<h2 id="22reader">22 Reader</h2>
+The core problem that <code>Reader</code> solves is the application of an argument to many functions. It is inconvenient to have a similar signature across many functions. The <code>Reader</code> is wrapping a function which maps from <code>r</code> to <code>a</code>.
+<pre class="haskell language-haskell">newtype Reader r a = Reader { runReader :: r -&gt; a }
+</pre>
+The <code>Functor</code> instance of a function <code>(-&gt; r)</code> is composition. The <code>Applicative</code> and <code>Monad</code> instances allow for the mapping of a function that expects an <code>a</code> over another function that expects an <code>a</code> as well. The result of the first function is fed into the second together with an <code>a</code> (see code snippet below).
+<pre class="haskell language-haskell">(&lt;*&gt;) :: (r -&gt; a -&gt; b) -&gt; (r -&gt; a) -&gt; (r -&gt; b)
+
+(&lt;$-&gt;&gt;) :: (a -&gt; b) -&gt; (r -&gt; a) -&gt; (r -&gt; b)
+(&lt;$-&gt;&gt;) = (&lt;$&gt;)
+
+(&lt;*-&gt;&gt;) :: (r -&gt; a -&gt; b) -&gt; (r -&gt; a) -&gt; (r -&gt; b)
+(&lt;*-&gt;&gt;) = (&lt;*&gt;)
+</pre>
+Here is the <code>Monad</code> instance with and without function:
+<pre class="haskell language-haskell">(&gt;&gt;=) :: Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+(&gt;&gt;=) :: (r -&gt; a) -&gt; (a -&gt; r -&gt; b) -&gt; (r -&gt; b)
+</pre>
+The function <code>fmap</code> can be used for <strong>function composition</strong>: Let <code>f</code> and <code>g</code> be two functions, than <code>f . g = fmap f g</code>.
+
+The extension <code>{-# LANGUAGE InstanceSigs #-}</code> allows for the explicit definition of function signatures of typeclasses. It is not necessary for any compilation purpose because the compiler knows the signatures anyways. However, it can be helpful for the sake of clarification.
+<h2 id="23state">23 State</h2>
+The <strong>state</strong> type is rather a state processor. It takes a <em>state</em>, outputs a new state, and thereby emits something. The <code>newtype</code> definition is
+<pre class="haskell language-haskell">newtype State s a = State { runState :: s -&gt; (a, s) }
+</pre>
+A random number generator serves as a good example of usage: It requires some seed in order to generate a number and outputs a new seed which may be fed into the generator the next time.
+<h2 id="24parsercombinators">24 Parser Combinators</h2>
+A <strong>parser</strong> converts textual input into some data structure output. The textual input must be in conformance with a set of rules. A <strong>parser combinator</strong> is a higher order function which composes multiple parsers to yield a single parser.
+
+The chapter uses the parser module <code>trifeca</code> (<code>import Text.Trifecta</code>), however, it seems to be common to use <a href="https://hackage.haskell.org/package/megaparsec-6.5.0/docs/">Megaparsec</a>. Links:
+<ul>
+ 	<li><a href="https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Char.html">Text.Trifecta.Parser.Char</a></li>
+ 	<li><a href="https://hackage.haskell.org/package/trifecta-0.44/docs/Text-Trifecta-Parser-Combinators.html">Text.Trifecta.Parser.Combinators</a> contains e.g. <code>eof</code> (end of file)</li>
+</ul>
+<code>trifecta</code> contains parsers and is used in combination with the <code>parsers</code> library with defines common parser classes, abstracting over common things parsers do.
+
+Parsers can thrown an error with the <code>unexpected</code> function.
+<pre class="haskell language-haskell">import Text.Trifecta
+
+stop :: Parser a
+stop = unexpected "stop"
+</pre>
+The parser type is very similar to <code>State</code>. It takes a string, parses it, and returns <code>Nothing</code> in case of failure. If parsing was successful, it returns a data structure and the remainder of the <code>String</code>.
+<pre class="haskell language-haskell">type Parser a = String -&gt; Maybe (a, String)
+</pre>
+<code>parseString :: Parser a -&gt; Delta -&gt; String -&gt; Result a</code> is used to run a Trifecta parser. <code>Delta</code> may be <code>mempty</code>. The Attoparsec equivalent is <code>parseOnly</code>. Parsing functions of the most common libraries.
+<pre class="haskell language-haskell">trifP :: Show a =&gt; Parser a -&gt; String -&gt; IO ()
+trifP p i = print $ parseString p mempty i
+
+parsecP :: (Show a) =&gt; Parsec String () a -&gt; String -&gt; IO ()
+parsecP = parseTest
+
+attoP :: Show a =&gt; A.Parser a -&gt; ByteString -&gt; IO ()
+attoP p i = print $ parseOnly p i
+
+nobackParse :: (Monad f, CharParsing f) =&gt; f Char
+nobackParse = (char '1' &gt;&gt; char '2') &lt;|&gt; char '3'
+</pre>
+In the following simple example, a parser accepts only the character sequence <code>ab</code>:
+<pre class="haskell language-haskell">abAccepted = char 'a' &gt;&gt; char 'b'
+abParser = parseString abAccepted mempty
+abParser "ab"
+-- Success 'b'
+abParser "a"
+-- Failure (ErrInfo {_errDoc = [1m(interactive)[0m:[1m1[0m:[1m2[0m: [91merror[0m: unexpected
+--    EOF, expected: "b"
+-- a[1m[94m&lt;EOF&gt;[0;1m[0m 
+--  [92m^[0m     , _errDeltas = [Columns 1 1]})
+</pre>
+The parser above does not necessarily consume all given input. For instance, for <code>"abc"</code> it would return <code>Success</code> as well. That can be changed using <code>eof</code>: <code>string "ab" &gt;&gt; eof</code>. Inputs such as <code>"abc"</code> would then result in <code>Failure [...] expected: end of input [...]</code>. <code>eof = notFollowedBy anyChar</code>
+
+In most cases, a parser should not raise any error other than the parsing <code>Failure</code> that it may return. Other exceptions should be prevented from happening. The following example catches a division by zero error using <code>fail</code>.
+<pre class="haskell language-haskell">parseFraction :: Parser Rational
+parseFraction = do
+  numerator &lt;- decimal
+  _ &lt;- char '/'
+  denominator &lt;- decimal
+  case denominator of
+    0 -&gt; fail "Denominator most not be zero"
+    _ -&gt; return (numerator % denominator)
+</pre>
+<strong>Parser libraries</strong> in Haskell are <code>parsec</code>, <code>attoparsec</code>, <code>megaparsec</code>, and <code>trifecta</code>. <code>aeson</code> parses JSON, <code>cassava</code> parses CSV. Polymorphic parsers are written in a general manner an can be executed with any parser that implements the functions. The following is an example signature of a polymorphic parser.
+<pre class="haskell language-haskell">parseFraction :: (Monad m, TokenParsing m) =&gt; m Rational
+</pre>
+Example for a parser which parses a number <strong>or</strong> a string:
+<pre class="haskell language-haskell">-- parse number or string
+type NumberOrString = Either Integer [Char]
+
+parseNos :: Parser NumberOrString
+parseNos =
+  skipMany (oneOf "\n ") &gt;&gt;
+  (Left &lt;$&gt; integer) &lt;|&gt; (Right &lt;$&gt; some letter)
+
+print $ parseString parseNos mempty "123"
+print $ parseString parseNos mempty "\nabcdf"
+</pre>
+The <code>&lt;?&gt;</code> operator can be used to annotate branches of a parsing instruction. In the following example, <code>Tried 12</code> will be printed if the <code>12</code> branch was chosen instead of the <code>3</code>:
+<pre class="haskell language-haskell">tryAnnot :: (Monad f, CharParsing f) =&gt; f Char
+tryAnnot = (try (char '1' &gt;&gt; char '2') &lt;?&gt; "Tried 12") &lt;|&gt; (char '3' &lt;?&gt; "Tried 3")
+</pre>
+My <a href="https://github.com/Simsso/BNF-Parser">BNF-Parser</a> project (using Megaparsec).
+<h2 id="25composingtypes">25 Composing Types</h2>
+The following <code>newtype</code> constructs a datatype by <strong>composing</strong> datatype constructors. The kind is <code>Compose :: (* -&gt; *) -&gt; (* -&gt; *) -&gt; * -&gt; *</code>, comparable to function composition <code>(.)</code>.
+<pre class="haskell language-haskell">newtype Compose f g a = Compose { getCompose :: f (g a) } 
+  deriving (Eq, Show)
+</pre>
+The specialty of the <code>Monad</code> type is that it <em>cannot</em> be implemented for the <code>Compose</code> <code>newtype</code> from above. That is, the following function does not exist in a generic manner: <code>(&gt;&gt;=) :: Compose f g a -&gt; (a -&gt; Compose f g b) -&gt; Compose f g b</code>, see (<a href="http://web.cecs.pdx.edu/~mpj/pubs/RR-1004.pdf">Mark P. Jones and Luc Duponcheel (1993), "Composing Monads"</a>). This is where transformers come in, for instance <code>IdentityT</code>
+<pre class="haskell language-haskell">newtype IdentityT f a = IdentityT { runIdentityT :: f a }
+  deriving (Eq, Show)
+instance (Monad m) =&gt; Monad (IdentityT m) where
+  return = pure
+  (IdentityT ma) &gt;&gt;= f =
+    IdentityT $ ma &gt;&gt;= runIdentityT . f
+</pre>
+where <code>IdentityT [...] runIdentityT . f</code> is required because the used <code>&gt;&gt;=</code> is the one of the <code>Monad m</code>, so <code>IdentityT</code> needs to be unpacked.
+
+Transformers have additional information on how to do the unpacking and subsequent boxing that is specific to the given monads and cannot be generalized. Conversion from <code>f (g (f b))</code> to <code>f (f b)</code> in order to be able to bind and return <code>g (f b)</code>. Binding means converting <code>f (f b)</code> to <code>f b</code>, which is possible since <code>f</code> is a <code>Monad</code>.
+<code>m (T m b) -&gt; m (m b) -&gt; m b -&gt; T m b</code>
+
+With two nested Functors, say a <code>List</code> of <code>Maybe</code>s, there is a guarantee that the nested data type is also a <code>Functor</code>. The same applies to <code>Applicative</code>. For Monad, this does not hold.
+<h2 id="26monadtransformers">26 Monad Transformers</h2>
+A <strong>monad transformer</strong> is a type constructor that takes a monad as an argument. This monad is wrapped around another contained data type. The transformers themselfes are not generically monads, but implement the <code>Monad</code> typeclass logic. The inner type corresponds <em>commonly</em> to the transformer, i.e. the maybe-transformer <code>MaybeT</code> is <code>m (Maybe a)</code>.
+
+The <strong><a href="https://hackage.haskell.org/package/transformers">transformers</a> library</strong> contains many implementations of transformers and should be preferred over own implementations, if possible.
+
+<code>Identity</code> can be used as a <code>Monad</code> which converts transformers into their original types. For instance <code>type Maybe a = MaybeT Identity a</code>.
+
+The <strong>base monad</strong> is the outer-most monad. Here it would be <code>m</code>: <code>StateT { runStateT :: s -&gt; m (a, s) }</code>
+
+<strong>Maybe Transformer <code>MaybeT</code></strong>
+<pre class="haskell language-haskell">newtype MaybeT m a = MaybeT { runMaybeT :: m (Maybe a) }
+</pre>
+<strong>State Transformer <code>StateT</code></strong>
+<pre class="haskell language-haskell">{-# OPTIONS_GHC -Wall #-}
+{-# LANGUAGE InstanceSigs #-}
+
+module StateT where
+
+import Control.Arrow (first)
+
+newtype State s a = State { runState :: s -&gt; (a, s) }
+
+-- Structure: StateT function &gt; Monad &gt; Tuple
+newtype StateT s m a = StateT { runStateT :: s -&gt; m (a, s) }
+
+instance (Functor m) =&gt; Functor (StateT s m) where
+  fmap f (StateT a) = StateT $ \s -&gt; first f &lt;$&gt; a s
+
+instance (Monad m) =&gt; Applicative (StateT s m) where
+  pure a = StateT $ \s -&gt; pure (a, s)
+  StateT g &lt;*&gt; StateT h = StateT $ \s -&gt; do
+    (f, s') &lt;- g s
+    (x, s'') &lt;- h s'
+    return (f x, s'')
+
+instance (Monad m) =&gt; Monad (StateT s m) where
+  return = pure
+  StateT sma &gt;&gt;= f = StateT $ \s -&gt; sma s &gt;&gt;= \(a, s') -&gt; runStateT (f a) s'
+</pre>
+<strong>Lifting functions</strong> exist with multiple different signatures but <em>should always</em> do the same thing. The functions exist only for historical reasons.
+<pre class="haskell language-haskell">fmap  :: Functor f     =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+liftA :: Applicative f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+liftM :: Monad m       =&gt; (a -&gt; r) -&gt; m a -&gt; m r
+</pre>
+<strong>MonadTrans</strong> is a typeclass with a lift method. Lifting means embedding an expression in a larger context by adding structure that does not do anything.
+<pre class="haskell language-haskell">class MonadTrans t where
+  lift :: (Monad m) =&gt; m a -&gt; t m a
+</pre>
+<strong><code>MonadIO</code></strong> resides in <code>Control.Monad.IO.Class</code> and is intended to keep lifting an IO action until it is lifted over all structure that surrounds the outermost IO type.
+<pre class="haskell language-haskell">liftIO . return = return
+liftIO (m &gt;&gt;= f) = liftIO m &gt;&gt;= (liftIO . f)
+</pre>
+For <strong>streaming</strong> it is generally not recommended to use <code>Writer</code>, <code>WriterT</code>, or <code>ListT</code> for performance reasons. Libraries such as <a href="http://hackage.haskell.org/package/pipes">pipes</a> or <a href="http://hackage.haskell.org/package/conduit">conduit</a> are better choices.
+<h2 id="27nonstrictness">27 Nonstrictness</h2>
+Evaluation can be <em>strict</em> or <em>nonstrict</em>. Haskell is nonstrict. Nonstrictness refers to semantics, that is how an expression is being evaluated. It means that expressions are evaluated outside-in. <em>Lazy</em> refers to operational behavior, the way code is executed on a real computer, namely as late as possible. <a href="https://stackoverflow.com/a/7141537/3607984">SO answer on the differences</a>.
+
+In Haskell an expression does not need to be recomputed, once it is evaluated. "Don't re-evaluate if you don't have to."
+
+The evaluation of an expression can be forced using the function <code>seq :: a -&gt; b -&gt; b</code>. It evaluates its first argument as soon as evaluation of the second argument is required.
+
+The following snippet forces evaluation of <code>x</code> by tying it to <code>b</code>:
+<pre class="haskell language-haskell">discriminatory :: Bool -&gt; Int
+discriminatory b =
+  let x = undefined
+  in case x `seq` b of
+    False -&gt; 0
+    True -&gt; 1
+</pre>
+This translates to two nested <code>case</code> blocks:
+<pre class="haskell language-haskell">discriminatory =
+  \ b_a10D -&gt;
+    let {
+      x_a10E
+      x_a10E = undefined } in
+    case
+      case x_a10E of _ {
+      __DEFAULT -&gt; b_a10D
+    } of _ {
+      False -&gt; I# 0;
+      True -&gt; I# 1
+    }
+</pre>
+This statement will not bottom out <code>case undefined of { _ -&gt; False}</code> whereas <code>case undefined of { DEFAULT -&gt; False }</code> cannot be simplified by the compiler and will result in an error.
+
+There are some compiler options available that allow for observation of the interpretation of the Haskell code (<em>core dump</em>). For instance <code>:set -ddump-simpl</code> or <code>:set -dsuppress-all</code>.
+
+<strong>Call strategies</strong> are <em>call by value</em>, i.e. evaluation of an argument before passing it to a function, and <em>call by reference</em> arguments are not necessarily evaluated. <em>Call by need</em> ensures that expressions are only evaluated once.
+
+A <strong>thunk</strong> is used to reference suspended computations that might be performed or computed at a later point in a program.
+
+The <code>trace</code> function in <code>Debug.Tace</code> allows for logging at places, where the <code>IO</code> type is not present. That way, evaluation can be debugged. For instance <code>let a = trace "a" 1</code> would log <code>"a"</code>, as soon as <code>a</code> is being evaluated.
+
+<strong>Writing pointfree functions allows for caching</strong>, as can be seen in the following example:
+<pre class="haskell language-haskell">import Debug.Trace
+
+f :: Int -&gt; Int
+f = trace "f called" (+) 1
+
+f' :: Int -&gt; Int
+f' b = trace "f' called" 1 + b
+
+f 5
+f 6
+f' 5
+f' 6
+</pre>
+which outputs
+<pre>f 5
+f called
+f' 5
+f' called
+f' 6
+f' called
+</pre>
+If <code>f</code> was, however, defined with the signature <code>f :: Num a =&gt; a -&gt; a</code>, it would not be cached. That is because typeclass constraints will be resolved into additional arguments.
+
+Forcing a value <strong>not to be shared</strong> can be done by applying unit to it, as if it was a function. <code>let f x = (x ()) + (x ())</code>, where the signature is <code>f'' :: (() -&gt; Int) -&gt; Int</code>.
+
+<code>let</code> can be used to <strong>force sharing</strong>. Here, <code>(1 + 1) * (1 + 1)</code>, <code>1 + 1</code> would be computed twice. With <code>let</code> only once: <code>let x = 1 + 1 in x * x</code>.
+
+A function's pattern matching can be <strong>refutable</strong> (German: <em>widerlegbar</em>) or <strong>irrefutable</strong>. The former is for instance <code>f True = ...</code>, the latter <code>f _ = ...</code> or <code>f x = ...</code> (always matching). The terminology is not about the function, but about a single pattern matching expression, i.e. one line.
+
+<strong>Lazy pattern matches</strong> can be implemented using the <code>~</code>. The first function will fail, when invoked with <code>undefined</code>, whereas the latter works. The latter also makes the pattern irrefutable though.
+<pre class="haskell language-haskell">strictPattern :: (a, b) -&gt; Integer
+strictPattern (a,b) = const 1 a
+lazyPattern :: (a, b) -&gt; Integer
+lazyPattern ~(a,b) = const 1 a
+</pre>
+<strong>Bang patterns</strong> can be used to force evaluation of function parameters (see example below) or value contstructor parameters.
+<pre class="haskell language-haskell">banging :: Bool -&gt; Int
+banging !b = 1
+</pre>
+The extensions <code>{-# LANGUAGE Strict #-}</code> and <code>StrictData</code> force strictness for expressions in the particular source code file. Thereby, they avoid <code>seq</code>, <code>~</code>, and <code>!</code> being all over the place, if everything is supposed to be strict. The meaning of <code>~</code> is then inverted, i.e. it forces lazyness.
+<h2 id="28basiclibraries">28 Basic Libraries</h2>
+<h3 id="281benchmarkingandprofiling">28.1 Benchmarking and Profiling</h3>
+The library <code>criterion</code> can be used for benchmarking.
+<ul>
+ 	<li>Import: <code>import Criterion.Main</code></li>
+ 	<li>Compiler options: <code>stack ghc -- -O2 file.hs</code> (or without Stack: <code>ghc -O2 file.hs</code>). <code>-02</code> enables the highest level of optimization</li>
+ 	<li>Measures how long it takes (on average) to evaluate a certain expression.</li>
+ 	<li><code>whnf</code> (weak head normal form) evaluates until it reaches the first data constructor (<em>used most of the time</em>); <code>nf</code> (normal form) evaluates everything.</li>
+</ul>
+The sample snippet
+<pre class="haskell language-haskell">main :: IO ()
+main = defaultMain
+  [ bench "test" $ whnf ([1..9999] !!) 9998 ]
+</pre>
+could have this output:
+<pre>benchmarking test
+time                 41.14 μs   (37.59 μs .. 46.23 μs)
+                     0.871 R²   (0.739 R² .. 0.992 R²)
+mean                 39.91 μs   (37.36 μs .. 46.33 μs)
+std dev              13.83 μs   (3.873 μs .. 25.74 μs)
+variance introduced by outliers: 98% (severely inflated)
+</pre>
+<a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html">GHC user guide on profiling</a>
+
+<strong>CAF</strong>s (constant applicative forms) are expressions that have no free variables and are held in memory (pointfree top-level declarations). For instance (in the file profile.hs)
+<pre class="haskell language-haskell">memoizedFib :: Int -&gt; Integer
+memoizedFib = (map fib [0 ..] !!)
+   where fib 0 = 0
+         fib 1 = 1
+         fib n = memoizedFib (n-2) + memoizedFib (n-1)
+
+main :: IO ()
+main = putStrLn . show $ memoizedFib 1000
+</pre>
+the profiling
+<pre>stack ghc -- -prof -fprof-auto &gt; -rtsopts -O2 profile.hs
+./profile +RTS -P
+cat profile.prof
+</pre>
+outputs (excerpt):
+<pre>COST CENTRE     MODULE           SRC                       %time %alloc  ticks     bytes
+
+memoizedFib.fib Main             profile.hs:(3,10)-(5,54)  100.0   48.2      7    124200
+CAF             GHC.IO.Handle.FD &lt;entire-module&gt;             0.0   13.5      0     34704
+CAF             GHC.IO.Encoding  &lt;entire-module&gt;             0.0    1.1      0      2768
+main            Main             profile.hs:8:1-41           0.0    8.5      0     21800
+memoizedFib     Main             profile.hs:(2,1)-(5,54)     0.0   28.0      0     72120
+</pre>
+<h3 id="282map">28.2 Map</h3>
+Package: <code>Data.Map.Strict</code>
+Access to values through their keys, access time <em>O(log n)</em>.
+<h3 id="283set">28.3 Set</h3>
+Package: <code>Data.Set</code>
+A set stores values (none must occur more than once). It can be seen as a map without values. Access time complexity: <em>O(log n)</em>.
+<h3 id="284sequence">28.4 Sequence</h3>
+Package: <code>Data.Sequence</code>
+While appending to a normal Haskell list has <em>O(n)</em> complexity, appending to a sequence is as fast as prepending to a normal list, i.e. <em>O(1)</em>.
+<h3 id="285vector">28.5 Vector</h3>
+Package: <code>Data.Vector</code> (<a href="package">https://hackage.haskell.org/package/vector</a>)
+A vector wraps an <a href="http://hackage.haskell.org/package/array">array</a>. Should be used when having high performance requirements, accessing elements by indexing with <code>Int</code>, slicing (partitioning) is done, or uniform access time is needed.
+<h3 id="286strings">28.6 Strings</h3>
+<ul>
+ 	<li><code>String</code>: Standard, slow, list of characters, possibly infinite.</li>
+ 	<li><code>Text</code>: Text encoded as UTF-16, more efficient than <code>String</code> in terms of storage.</li>
+ 	<li><code>ByteString</code>: Internally represented as a vector of <code>Word8</code> values (i.e. bytes), can contain non-text data. Easy to use via the <code>OverloadedStrings</code> extension.</li>
+</ul>
+<h2 id="29io">29 IO</h2>
+<blockquote>The IO Monad is just an instance of the ST monad, where the state is the real world.</blockquote>
+The <code>IO</code> <code>:info</code>:
+<pre class="haskell language-haskell">newtype IO a = IO (State# RealWorld -&gt; (# State# RealWorld, a #))
+instance Applicative IO
+instance Functor IO
+instance Monad IO
+instance Monoid a =&gt; Monoid (IO a)
+</pre>
+<code>IO</code> disables the reordering of operations.
+An expression is referentially transparent, if it can be replaced with its value without changing the behavior of a program.
+<h2 id="30errorhandling">30 Error Handling</h2>
+The <code>Exception</code> class lives in <code>GHC.Exception</code> and is defined as follows:
+<pre class="haskell language-haskell">class (Typeable e, Show e) =&gt; Exception e where
+  toException :: e -&gt; SomeException
+  fromException :: SomeException -&gt; Maybe e
+  displayException :: e -&gt; String
+instance Exception SomeException
+instance Exception ErrorCall
+instance Exception ArithException
+</pre>
+Some types that have an <strong>instance of the <code>Exception</code> class</strong> are <code>IOException</code>, <code>ErrorCall</code>, <code>AssertionFailed</code>, and <code>ArithException</code>. The latter contains several values, namely <code>Overflow</code>, <code>Underflow</code>, <code>LossOfPrecision</code>, <code>DivideByZero</code>, <code>Denormal</code>, and <code>RatioZeroDenominator</code>.
+
+<strong>Existential quantification</strong> allows for the definition of an exception type that represents a variety of values, some of which may have been unknown at the type the exception type was defined. <code>SomeException</code> works that way and is defined as follows:
+<pre class="haskell language-haskell">data SomeException where
+  SomeException :: Exception e =&gt; e -&gt; SomeException
+</pre>
+Exceptions occur most commonly in <code>IO</code>, because the function calls depend on the <em>outside world</em>. For a simple <code>writeFile</code> call, exception handling may look like that:
+<pre class="haskell language-haskell">import Control.Exception
+import Data.Typeable
+
+handler :: SomeException -&gt; IO ()
+handler (SomeException e) = do
+  print (typeOf e)
+  putStrLn show e
+
+main :: IO ()
+main = writeFile "file.txt" "content" `catch` handler
+</pre>
+A main function can be called with <em>command line arguments</em> from within REPL using the command <code>:main -arg -arg2</code>.
+
+Both, <code>trow</code> and <code>throwIO</code>, allow for <strong>raising</strong> an exception. Generally, <code>throwIO</code> is being used.
+
+A sum type is a convenient way of <strong>grouping several exceptions</strong> which can be caught collectively.
+
+<strong>Asynchronous exceptions</strong> are exceptions raised in a thread, other than the one which will handle the exception.
+<h3 id="quotes">Quotes</h3>
+Some funny quotes from the book.
+<ul>
+ 	<li>As natural as any competitive bodybuilder: <code>data Nat = Zero | Succ Nat</code></li>
+ 	<li>Do notation considered harmful! Just kidding.</li>
+ 	<li>If that succeeded, let’s fire up a REEEEEEEPL and see if we can call sayHello.</li>
+ 	<li>We’re going to return to the topic of natural transformations in the next chapter, so cool your jets for now.</li>
+ 	<li>If this seems confusing, it’s because it is.</li>
+ 	<li>And putStrLn takes a String argument, performs I/O, and returns nothing interesting — parents of children with an allowance can sympathize.</li>
+ 	<li>Fail fast, like an overfunded startup</li>
+ 	<li>This is how you learn to play type Tetris with the pros.</li>
+ 	<li>The rest of the chapter will wait while you verify these things.</li>
+ 	<li>Try it a couple of times to see what we mean. It seems unlikely that this will develop into a gambling addiction.</li>
+ 	<li>In reality, a modern and mature parser design in Haskell will often look about as familiar to you as the alien hellscape underneath the frozen crust of one of the moons of Jupiter.</li>
+ 	<li>In this chapter we will... ...work through an <code>Identity</code> crisis.</li>
+ 	<li>Keep in mind what these are doing, follow the types, lift till you drop.</li>
+ 	<li>We will... ...live the Thunk Life</li>
+ 	<li>We have measured time; now we shall measure space. Well, memory anyway; we’re not astrophysicists.</li>
+ 	<li>Preserve context and try to make it so somebody could understand the problem you’re solving from the types. If necessary. On a desert island. With a lot of rum. And sea turtles.</li>
+</ul>
