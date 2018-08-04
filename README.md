@@ -1093,6 +1093,7 @@ A vector wraps an [array](http://hackage.haskell.org/package/array). Should be u
 
 # 29 IO
 > The IO Monad is just an instance of the ST monad, where the state is the real world.
+
 The `IO` `:info`:
 ```haskell
 newtype IO a = IO (State# RealWorld -> (# State# RealWorld, a #))
@@ -1102,8 +1103,8 @@ instance Monad IO
 instance Monoid a => Monoid (IO a)
 ```
 
-* `IO` disables the reordering of operations.
-* An expression is referentially transparent when it can be replaced with its value without changing the behavior of a program.
+`IO` disables the reordering of operations. 
+An expression is referentially transparent, if it can be replaced with its value without changing the behavior of a program.
 
 # 30 Error Handling
 The `Exception` class resides in `GHC.Exception` and is defined as follows:
