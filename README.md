@@ -1107,7 +1107,7 @@ instance Monoid a => Monoid (IO a)
 An expression is referentially transparent, if it can be replaced with its value without changing the behavior of a program.
 
 # 30 Error Handling
-The `Exception` class resides in `GHC.Exception` and is defined as follows:
+The `Exception` class lives in `GHC.Exception` and is defined as follows:
 ```haskell
 class (Typeable e, Show e) => Exception e where
   toException :: e -> SomeException
@@ -1118,9 +1118,9 @@ instance Exception ErrorCall
 instance Exception ArithException
 ```
 
-Some types that have an instance of the `Exception` class are `IOException`, `ErrorCall`, `AssertionFailed`, and `ArithException`. The latter contains several values, namely `Overflow`, `Underflow`, `LossOfPrecision`, `DivideByZero`, `Denormal`, and `RatioZeroDenominator`.
+Some types that have an **instance of the `Exception` class** are `IOException`, `ErrorCall`, `AssertionFailed`, and `ArithException`. The latter contains several values, namely `Overflow`, `Underflow`, `LossOfPrecision`, `DivideByZero`, `Denormal`, and `RatioZeroDenominator`.
 
-Existential quantification allows for the definition of an exception type that represents a variety of values, some of which may have been unknown at the type the exception type was defined. `SomeException` works that way and is defined as follows:
+**Existential quantification** allows for the definition of an exception type that represents a variety of values, some of which may have been unknown at the type the exception type was defined. `SomeException` works that way and is defined as follows:
 ```haskell
 data SomeException where
   SomeException :: Exception e => e -> SomeException
@@ -1142,11 +1142,11 @@ main = writeFile "file.txt" "content" `catch` handler
 
 A main function can be called with _command line arguments_ from within REPL using the command `:main -arg -arg2`.
 
-Both, `trow` and `throwIO` allow for **raising** an exception. Generally, `throwIO` is being used.
+Both, `trow` and `throwIO`, allow for **raising** an exception. Generally, `throwIO` is being used.
 
 A sum type is a convenient way of **grouping several exceptions** which can be caught collectively.
 
-**Asynchronous exceptions** a exceptions raised in a thread other than the one which will handle the exception.
+**Asynchronous exceptions** are exceptions raised in a thread, other than the one which will handle the exception.
 
 ---
 
