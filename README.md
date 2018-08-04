@@ -1020,7 +1020,7 @@ The extensions `{-# LANGUAGE Strict #-}` and `StrictData` force strictness for e
 The library `criterion` can be used for benchmarking.
 * Import: `import Criterion.Main`
 * Compiler options: `stack ghc -- -O2 file.hs` (or without Stack: `ghc -O2 file.hs`). `-02` enables the highest level of optimization
-* Measures how long it takes (on average) to evluate a certain expression.
+* Measures how long it takes (on average) to evaluate a certain expression.
 * `whnf` (weak head normal form) evaluates until it reaches the first data constructor (_used most of the time_); `nf` (normal form) evaluates everything.
 
 The sample snippet
