@@ -45,6 +45,36 @@ The argument passed to `rpar` is called **spark**. The number of created sparks 
 The **speedup** of a parallel program is defined to be the ratio of two times _t1_ and _t2_, where both are wall-clock times: _s=t1/t2_. It may be a value like ~1.9, when _t1_ is measured on one CPU core and _t2_ on two. **Amdahl's law** makes a statement on the maximum possible theoretical speedup _S_ of a task depending on the number of processors _n_ and the proportion of the task that can be parallelized _p_: _S=1/((1-p)+p/n)_. For an infinite number of cores, _lim n-->inf S=1/(1-p)_.
 
 
+## 3 Evaluation Strategies
+
+An **evaluation strategy** defines one way of evaluating a data structure. It may do that in parallel using `rpar` and `rseq`. The `Strategy` type is defined as
+```haskell
+type Strategy a = a -> Eval a
+```
+The idea is that a strategy can be implemented for a certain data type, e.g. `parPair :: Strategy (a,b)` would define a strategy for evaluating a pair. Once a pair is available (not evaluated yet, due to lazyness) the strategy can be used as follows:
+```haskell
+somePair `using` strategy
+```
+which is equivalent to
+```haskell
+runEval $ strategy somePair
+```
+The `using` could be removed from the program at any place and nothing would break, because the pair (or whatever is the first argument to `using`) would then be evaluated without any particular strategy without any parallelism. For that to hold, the `Strategy` must staisfy the _identity property_. That is, the value it returns must be equal to the value it was passed. That is guaranteed for the strategies in `Control.Parallel.Strategy` but must be manually ensured for custom instances of the monad.
+
+A strategy can becomes a **parameterized strategy** if arguments are passed to it. Note that `rpar :: Eval a` (and `rseq`) is a `Strategy` for any type.
+
+Evaluating a **list in parallel** can be achieved with the function `parList :: Strategy a -> Strategy [a]` from `Control.Parallel.Strategies`.
+
+A _foreign call_ typically indicates IO activity and comes with a parallelization slowdown.
+
+Creating a spark comes at the cost of some operational overhead. There is a sweet spot for the optimal number of sparks. The tradeoff is between creation overhead and idle cores (while other cores process the last remaining sparks).
+
+Sparks are also subject to garbage collection: The runtime automatically deletes _speculative tasks_, i.e. ones that are not being referenced. Speculative, because they might have been created with uncertainty about whether they will be needed and the reference was deleted later on, before the sparks were actually evaluated.
+
+A type of Haskell programs follows a streaming pattern: Input is being consumed and output is being created with _O(1)_ memory requirements. This is known as **streaming**. In such cases, using `parList` can break the parallelism, because all the input would be consumed at once. The method `parBuffer :: Int -> Strategy a -> Strategy [a]` mitigates this problem by creatingat most _n_ (the first parameter) sparks.
+
+**Chunking** data into parts to process them in parallel is a common thing to do. `Control.Parallel.Strategies` provides the method `parListChunk :: Int -> Strategy a -> Strategy [a]` for that purpose. The method's first parameter indicates the number of elements per chunk. 
+
 ## Other
 
 New project
