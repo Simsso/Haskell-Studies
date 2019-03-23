@@ -16,7 +16,10 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["Build"]
+            "dependsOn": [
+                "Build"
+            ],
+            "problemMatcher": []
         }
     ]
 }

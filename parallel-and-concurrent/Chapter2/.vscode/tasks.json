@@ -11,12 +11,15 @@
         {
             "label": "Run",
             "type": "shell",
-            "command": "stack run -- +RTS -s -N1",
+            "command": "stack run -- +RTS -s -N2",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["Build"]
+            "dependsOn": [
+                "Build"
+            ],
+            "problemMatcher": []
         }
     ]
 }

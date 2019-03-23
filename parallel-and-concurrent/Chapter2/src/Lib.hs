@@ -1,6 +1,7 @@
 module Lib
     ( runSlowParallel,
-      printTimeSince
+      printTimeSince,
+      fizzleSample
     ) where
 
 import Control.Parallel ()
@@ -10,7 +11,7 @@ import Data.Time.Clock (diffUTCTime, getCurrentTime)
 import Text.Printf (printf)
 import System.Environment ()
 
-fib :: Int -> Int
+fib :: Integer -> Integer
 fib 0 = 0
 fib 1 = 1
 fib n = fib (n-1) + fib (n-2)
@@ -20,13 +21,20 @@ printTimeSince t0 = do
     t1 <- getCurrentTime
     printf "time: %.2fs\n" (realToFrac (diffUTCTime t1 t0) :: Double)
 
-runSlowParallel :: IO (Int, Int)
+runSlowParallel :: IO (Integer, Integer)
 runSlowParallel = evaluate $ runEval slowParallel
 
-slowParallel :: Eval (Int, Int)
+slowParallel :: Eval (Integer, Integer)
 slowParallel = do
-    a <- rpar $ fib 42
-    b <- rpar $ fib 43
+    a <- rpar $ fib 40
+    b <- rpar $ fib 41
     rseq a
     --rseq b
     return (a,b)
+
+fizzleSample = runEval $ do
+    let a = fib 40
+    b <- rpar (a + fib 41)
+    c <- rpar a
+    rseq b
+    return (b,c)
